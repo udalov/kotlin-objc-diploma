@@ -1,5 +1,11 @@
+#pragma once
+
+#ifdef __cplusplus
 extern "C" {
+#endif
 
-void ObjCIndex_buildIndex(char** headers, int numHeaders, char* outputFile);
+void buildObjCIndex(const char *const *headers, int numHeaders, const char *outputFile);
 
+#ifdef __cplusplus
 };
+#endif

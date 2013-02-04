@@ -1,12 +1,15 @@
-#include <cstdio>
+#include <vector>
+#include <string>
+
+#include "Indexer.h"
 #include "ObjCIndex.h"
 
-void ObjCIndex_buildIndex(char** headers, int numHeaders, char* outputFile) {
-    FILE* file = fopen(outputFile, "w");
-    fprintf(file, "Hello, world!\n");
-    fprintf(file, "%d headers passed\n", numHeaders);
+void buildObjCIndex(const char *const *headers, int numHeaders, const char *outputFile) {
+    std::vector<std::string> headersVector;
+    headersVector.reserve(static_cast<size_t>(numHeaders));
     for (int i = 0; i < numHeaders; i++) {
-        fprintf(file, "  %s\n", headers[i]);
+        headersVector.push_back(headers[i]);
     }
-    fclose(file);
+    Indexer indexer(headersVector, outputFile);
+    indexer.run();
 }
