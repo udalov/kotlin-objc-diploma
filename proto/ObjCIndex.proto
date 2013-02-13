@@ -1,0 +1,12 @@
+message ObjCClass {
+    required string name = 1;
+}
+
+message ObjCProtocol {
+    required string name = 1;
+}
+
+message TranslationUnit {
+    repeated ObjCClass class = 1;
+    repeated ObjCProtocol protocol = 2;
+}
