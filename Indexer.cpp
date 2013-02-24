@@ -4,6 +4,7 @@
 #include "clang-c/Index.h"
 
 #include "asserts.h"
+#include "AutoCXString.h"
 #include "Indexer.h"
 #include "OutputCollector.h"
 #include "ObjCIndex.pb.h"
@@ -68,17 +69,14 @@ void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
 
 void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassMethod) {
     assertNotNull(info->semanticContainer);
-    auto usr = clang_getCursorUSR(info->semanticContainer->cursor);
+    AutoCXString usr = clang_getCursorUSR(info->semanticContainer->cursor);
     
-    // TODO: auto-CXString
-    const char *cstr = clang_getCString(usr);
-
     ObjCMethod *method;
-    auto clazz = data->loadClassByUSR(cstr);
+    auto clazz = data->loadClassByUSR(usr.str());
     if (clazz) {
         method = clazz->add_method();
     } else {
-        auto protocol = data->loadProtocolByUSR(cstr);
+        auto protocol = data->loadProtocolByUSR(usr.str());
         if (!protocol) {
             // TODO: categories
             return;
@@ -92,10 +90,8 @@ void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassM
 
     auto returnType = clang_getCursorResultType(info->cursor);
     // TODO: type serialization
-    auto typeSpelling = clang_getTypeKindSpelling(returnType.kind);
-    // TODO: ditto
-    const char *typestr = clang_getCString(typeSpelling);
-    method->set_return_type(typestr);
+    AutoCXString typeSpelling = clang_getTypeKindSpelling(returnType.kind);
+    method->set_return_type(typeSpelling.str());
 }
 
 void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
