@@ -1,12 +1,26 @@
+message ObjCMethod {
+    required string name = 1;
+    required bool class_method = 2;
+    required string return_type = 3;
+    repeated Parameter parameter = 4;
+
+    message Parameter {
+        required string name = 1;
+        required string type = 2;
+    }
+}
+
 message ObjCClass {
     required string name = 1;
     optional string base_class = 2;
     repeated string protocol = 3;
+    repeated ObjCMethod method = 4;
 }
 
 message ObjCProtocol {
     required string name = 1;
     repeated string base_protocol = 2;
+    repeated ObjCMethod method = 3;
 }
 
 message TranslationUnit {

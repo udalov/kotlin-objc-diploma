@@ -69,7 +69,33 @@ void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
 void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassMethod) {
     assertNotNull(info->semanticContainer);
     auto usr = clang_getCursorUSR(info->semanticContainer->cursor);
+    
+    // TODO: auto-CXString
+    const char *cstr = clang_getCString(usr);
+
+    ObjCMethod *method;
+    auto clazz = data->loadClassByUSR(cstr);
+    if (clazz) {
+        method = clazz->add_method();
+    } else {
+        auto protocol = data->loadProtocolByUSR(cstr);
+        if (!protocol) {
+            // TODO: categories
+            return;
+        }
+        method = protocol->add_method();
+    }
+    assertNotNull(method);
+
+    method->set_name(info->entityInfo->name);
+    method->set_class_method(isClassMethod);
+
     auto returnType = clang_getCursorResultType(info->cursor);
+    // TODO: type serialization
+    auto typeSpelling = clang_getTypeKindSpelling(returnType.kind);
+    // TODO: ditto
+    const char *typestr = clang_getCString(typeSpelling);
+    method->set_return_type(typestr);
 }
 
 void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
