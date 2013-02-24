@@ -4,6 +4,7 @@
 #include "clang-c/Index.h"
 
 #include "Indexer.h"
+#include "OutputCollector.h"
 #include "ObjCIndex.pb.h"
 
 
@@ -15,16 +16,20 @@
 #define assertEquals(o1, o2) assertWithMessage((o1) == (o2), "'" #o1 "' is not equal to '" #o2 "'")
 
 
-struct IndexerClientData {
-    TranslationUnit result;
+const std::vector<std::string> extractProtocolNames(const CXIdxObjCProtocolRefListInfo *protocols) {
+    std::vector<std::string> result;
+    auto numProtocols = protocols->numProtocols;
+    for (auto i = 0; i < numProtocols; ++i) {
+        auto *refInfo = protocols->protocols[i];
+        assertNotNull(refInfo);
+        auto *protocolInfo = refInfo->protocol;
+        assertNotNull(protocolInfo);
+        result.push_back(protocolInfo->name);
+    }
+    return result;
+}
 
-    IndexerClientData():
-        result()
-    {}
-};
-
-
-void indexClass(const CXIdxDeclInfo *info, TranslationUnit& result) {
+void indexClass(const CXIdxDeclInfo *info, OutputCollector *data) {
     if (!info->isDefinition) return;
     auto *interfaceDeclInfo = clang_index_getObjCInterfaceDeclInfo(info);
     assertNotNull(interfaceDeclInfo);
@@ -35,7 +40,7 @@ void indexClass(const CXIdxDeclInfo *info, TranslationUnit& result) {
         return;
     }
 
-    auto *clazz = result.add_class_();
+    auto *clazz = data->result().add_class_();
     clazz->set_name(info->entityInfo->name);
 
     auto *superInfo = interfaceDeclInfo->superInfo; 
@@ -47,32 +52,28 @@ void indexClass(const CXIdxDeclInfo *info, TranslationUnit& result) {
 
     auto *protocols = interfaceDeclInfo->protocols;
     assertNotNull(protocols);
-    auto numProtocols = protocols->numProtocols;
-    for (auto i = 0; i < numProtocols; ++i) {
-        auto *refInfo = protocols->protocols[i];
-        assertNotNull(refInfo);
-        auto *protocolInfo = refInfo->protocol;
-        assertNotNull(protocolInfo);
-        clazz->add_protocol(protocolInfo->name);
+    for (auto protocolName : extractProtocolNames(protocols)) {
+        clazz->add_protocol(protocolName);
     }
 }
 
-void indexProtocol(const CXIdxDeclInfo *info, TranslationUnit& result) {
+void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
     if (!info->isDefinition) return;
 
-    auto *protocol = result.add_protocol();
+    auto *protocol = data->result().add_protocol();
     protocol->set_name(info->entityInfo->name);
 
     auto *protocols = clang_index_getObjCProtocolRefListInfo(info);
     assertNotNull(protocols);
-    auto numProtocols = protocols->numProtocols;
-    for (unsigned i = 0; i < numProtocols; ++i) {
-        auto *refInfo = protocols->protocols[i];
-        assertNotNull(refInfo);
-        auto *protocolInfo = refInfo->protocol;
-        assertNotNull(protocolInfo);
-        protocol->add_base_protocol(protocolInfo->name);
+    for (auto protocolName : extractProtocolNames(protocols)) {
+        protocol->add_base_protocol(protocolName);
     }
+}
+
+void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassMethod) {
+    assertNotNull(info->semanticContainer);
+    auto usr = clang_getCursorUSR(info->semanticContainer->cursor);
+    auto returnType = clang_getCursorResultType(info->cursor);
 }
 
 void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
@@ -80,14 +81,17 @@ void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
     assertNotNull(info);
     assertNotNull(info->entityInfo);
 
-    IndexerClientData *data = static_cast<IndexerClientData *>(clientData);
-    TranslationUnit& result = data->result;
+    OutputCollector *data = static_cast<OutputCollector *>(clientData);
 
     switch (info->entityInfo->kind) {
         case CXIdxEntity_ObjCClass:
-            indexClass(info, result); break;
+            indexClass(info, data); break;
         case CXIdxEntity_ObjCProtocol:
-            indexProtocol(info, result); break;
+            indexProtocol(info, data); break;
+        case CXIdxEntity_ObjCInstanceMethod:
+            indexMethod(info, data, false); break;
+        case CXIdxEntity_ObjCClassMethod:
+            indexMethod(info, data, true); break;
         default:
             break;
     }
@@ -103,7 +107,7 @@ void Indexer::run() const {
     IndexerCallbacks callbacks = {};
     callbacks.indexDeclaration = indexDeclaration;
 
-    IndexerClientData clientData;
+    OutputCollector clientData;
 
     std::vector<const char *> args;
     std::transform(headers.begin(), headers.end(), std::back_inserter(args), std::mem_fun_ref(&std::string::c_str));
@@ -115,6 +119,5 @@ void Indexer::run() const {
     clang_IndexAction_dispose(action);
     clang_disposeIndex(index);
 
-    std::ofstream output(outputFile.c_str());
-    clientData.result.SerializeToOstream(&output);
+    clientData.writeToFile(outputFile);
 }
