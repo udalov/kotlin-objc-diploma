@@ -20,9 +20,9 @@ const std::vector<std::string> extractProtocolNames(const CXIdxObjCProtocolRefLi
     std::vector<std::string> result;
     auto numProtocols = protocols->numProtocols;
     for (auto i = 0; i < numProtocols; ++i) {
-        auto *refInfo = protocols->protocols[i];
+        auto refInfo = protocols->protocols[i];
         assertNotNull(refInfo);
-        auto *protocolInfo = refInfo->protocol;
+        auto protocolInfo = refInfo->protocol;
         assertNotNull(protocolInfo);
         result.push_back(protocolInfo->name);
     }
@@ -31,26 +31,26 @@ const std::vector<std::string> extractProtocolNames(const CXIdxObjCProtocolRefLi
 
 void indexClass(const CXIdxDeclInfo *info, OutputCollector *data) {
     if (!info->isDefinition) return;
-    auto *interfaceDeclInfo = clang_index_getObjCInterfaceDeclInfo(info);
+    auto interfaceDeclInfo = clang_index_getObjCInterfaceDeclInfo(info);
     assertNotNull(interfaceDeclInfo);
-    auto *containerDeclInfo = interfaceDeclInfo->containerInfo;
+    auto containerDeclInfo = interfaceDeclInfo->containerInfo;
     assertNotNull(containerDeclInfo);
     if (containerDeclInfo->kind != CXIdxObjCContainer_Interface) {
         // TODO: report a warning if it's @implementation
         return;
     }
 
-    auto *clazz = data->result().add_class_();
+    auto clazz = data->result().add_class_();
     clazz->set_name(info->entityInfo->name);
 
-    auto *superInfo = interfaceDeclInfo->superInfo; 
+    auto superInfo = interfaceDeclInfo->superInfo; 
     if (superInfo) {
-        auto *base = superInfo->base;
+        auto base = superInfo->base;
         assertNotNull(base);
         clazz->set_base_class(base->name);
     }
 
-    auto *protocols = interfaceDeclInfo->protocols;
+    auto protocols = interfaceDeclInfo->protocols;
     assertNotNull(protocols);
     for (auto protocolName : extractProtocolNames(protocols)) {
         clazz->add_protocol(protocolName);
@@ -60,10 +60,10 @@ void indexClass(const CXIdxDeclInfo *info, OutputCollector *data) {
 void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
     if (!info->isDefinition) return;
 
-    auto *protocol = data->result().add_protocol();
+    auto protocol = data->result().add_protocol();
     protocol->set_name(info->entityInfo->name);
 
-    auto *protocols = clang_index_getObjCProtocolRefListInfo(info);
+    auto protocols = clang_index_getObjCProtocolRefListInfo(info);
     assertNotNull(protocols);
     for (auto protocolName : extractProtocolNames(protocols)) {
         protocol->add_base_protocol(protocolName);
