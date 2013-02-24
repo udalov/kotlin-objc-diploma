@@ -1,5 +1,5 @@
 all:
-	clang++ -Iinclude -Llib -lclang -lprotobuf *.cpp *.cc
+	clang++ -std=c++0x -Iinclude -Llib -lclang -lprotobuf *.cpp *.cc
 
 run: all
 	./a.out

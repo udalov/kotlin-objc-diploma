@@ -26,32 +26,32 @@ struct IndexerClientData {
 
 void indexClass(const CXIdxDeclInfo *info, TranslationUnit& result) {
     if (!info->isDefinition) return;
-    const CXIdxObjCInterfaceDeclInfo *interfaceDeclInfo = clang_index_getObjCInterfaceDeclInfo(info);
+    auto *interfaceDeclInfo = clang_index_getObjCInterfaceDeclInfo(info);
     assertNotNull(interfaceDeclInfo);
-    const CXIdxObjCContainerDeclInfo *containerDeclInfo = interfaceDeclInfo->containerInfo;
+    auto *containerDeclInfo = interfaceDeclInfo->containerInfo;
     assertNotNull(containerDeclInfo);
     if (containerDeclInfo->kind != CXIdxObjCContainer_Interface) {
         // TODO: report a warning if it's @implementation
         return;
     }
 
-    ObjCClass *clazz = result.add_class_();
+    auto *clazz = result.add_class_();
     clazz->set_name(info->entityInfo->name);
 
-    const CXIdxBaseClassInfo *superInfo = interfaceDeclInfo->superInfo; 
+    auto *superInfo = interfaceDeclInfo->superInfo; 
     if (superInfo) {
-        const CXIdxEntityInfo *base = superInfo->base;
+        auto *base = superInfo->base;
         assertNotNull(base);
         clazz->set_base_class(base->name);
     }
 
-    const CXIdxObjCProtocolRefListInfo *protocols = interfaceDeclInfo->protocols;
+    auto *protocols = interfaceDeclInfo->protocols;
     assertNotNull(protocols);
-    unsigned numProtocols = protocols->numProtocols;
-    for (unsigned i = 0; i < numProtocols; ++i) {
-        const CXIdxObjCProtocolRefInfo *refInfo = protocols->protocols[i];
+    auto numProtocols = protocols->numProtocols;
+    for (auto i = 0; i < numProtocols; ++i) {
+        auto *refInfo = protocols->protocols[i];
         assertNotNull(refInfo);
-        const CXIdxEntityInfo *protocolInfo = refInfo->protocol;
+        auto *protocolInfo = refInfo->protocol;
         assertNotNull(protocolInfo);
         clazz->add_protocol(protocolInfo->name);
     }
@@ -60,16 +60,16 @@ void indexClass(const CXIdxDeclInfo *info, TranslationUnit& result) {
 void indexProtocol(const CXIdxDeclInfo *info, TranslationUnit& result) {
     if (!info->isDefinition) return;
 
-    ObjCProtocol *protocol = result.add_protocol();
+    auto *protocol = result.add_protocol();
     protocol->set_name(info->entityInfo->name);
 
-    const CXIdxObjCProtocolRefListInfo *protocols = clang_index_getObjCProtocolRefListInfo(info);
+    auto *protocols = clang_index_getObjCProtocolRefListInfo(info);
     assertNotNull(protocols);
-    unsigned numProtocols = protocols->numProtocols;
+    auto numProtocols = protocols->numProtocols;
     for (unsigned i = 0; i < numProtocols; ++i) {
-        const CXIdxObjCProtocolRefInfo *refInfo = protocols->protocols[i];
+        auto *refInfo = protocols->protocols[i];
         assertNotNull(refInfo);
-        const CXIdxEntityInfo *protocolInfo = refInfo->protocol;
+        auto *protocolInfo = refInfo->protocol;
         assertNotNull(protocolInfo);
         protocol->add_base_protocol(protocolInfo->name);
     }
