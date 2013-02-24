@@ -35,8 +35,10 @@ void protobuf_AssignDesc_ObjCIndex_2eproto() {
       "ObjCIndex.proto");
   GOOGLE_CHECK(file != NULL);
   ObjCClass_descriptor_ = file->message_type(0);
-  static const int ObjCClass_offsets_[1] = {
+  static const int ObjCClass_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, base_class_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, protocol_),
   };
   ObjCClass_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -50,8 +52,9 @@ void protobuf_AssignDesc_ObjCIndex_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ObjCClass));
   ObjCProtocol_descriptor_ = file->message_type(1);
-  static const int ObjCProtocol_offsets_[1] = {
+  static const int ObjCProtocol_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCProtocol, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCProtocol, base_protocol_),
   };
   ObjCProtocol_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -118,10 +121,12 @@ void protobuf_AddDesc_ObjCIndex_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\017ObjCIndex.proto\"\031\n\tObjCClass\022\014\n\004name\030\001"
-    " \002(\t\"\034\n\014ObjCProtocol\022\014\n\004name\030\001 \002(\t\"M\n\017Tr"
-    "anslationUnit\022\031\n\005class\030\001 \003(\0132\n.ObjCClass"
-    "\022\037\n\010protocol\030\002 \003(\0132\r.ObjCProtocol", 153);
+    "\n\017ObjCIndex.proto\"\?\n\tObjCClass\022\014\n\004name\030\001"
+    " \002(\t\022\022\n\nbase_class\030\002 \001(\t\022\020\n\010protocol\030\003 \003"
+    "(\t\"3\n\014ObjCProtocol\022\014\n\004name\030\001 \002(\t\022\025\n\rbase"
+    "_protocol\030\002 \003(\t\"M\n\017TranslationUnit\022\031\n\005cl"
+    "ass\030\001 \003(\0132\n.ObjCClass\022\037\n\010protocol\030\002 \003(\0132"
+    "\r.ObjCProtocol", 214);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ObjCIndex.proto", &protobuf_RegisterTypes);
   ObjCClass::default_instance_ = new ObjCClass();
@@ -145,6 +150,8 @@ struct StaticDescriptorInitializer_ObjCIndex_2eproto {
 
 #ifndef _MSC_VER
 const int ObjCClass::kNameFieldNumber;
+const int ObjCClass::kBaseClassFieldNumber;
+const int ObjCClass::kProtocolFieldNumber;
 #endif  // !_MSC_VER
 
 ObjCClass::ObjCClass()
@@ -164,6 +171,7 @@ ObjCClass::ObjCClass(const ObjCClass& from)
 void ObjCClass::SharedCtor() {
   _cached_size_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  base_class_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -174,6 +182,9 @@ ObjCClass::~ObjCClass() {
 void ObjCClass::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
+  }
+  if (base_class_ != &::google::protobuf::internal::kEmptyString) {
+    delete base_class_;
   }
   if (this != default_instance_) {
   }
@@ -206,7 +217,13 @@ void ObjCClass::Clear() {
         name_->clear();
       }
     }
+    if (has_base_class()) {
+      if (base_class_ != &::google::protobuf::internal::kEmptyString) {
+        base_class_->clear();
+      }
+    }
   }
+  protocol_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -229,6 +246,41 @@ bool ObjCClass::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(18)) goto parse_base_class;
+        break;
+      }
+      
+      // optional string base_class = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_base_class:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_base_class()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->base_class().data(), this->base_class().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_protocol;
+        break;
+      }
+      
+      // repeated string protocol = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_protocol:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->add_protocol()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->protocol(0).data(), this->protocol(0).length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_protocol;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -260,6 +312,24 @@ void ObjCClass::SerializeWithCachedSizes(
       1, this->name(), output);
   }
   
+  // optional string base_class = 2;
+  if (has_base_class()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->base_class().data(), this->base_class().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->base_class(), output);
+  }
+  
+  // repeated string protocol = 3;
+  for (int i = 0; i < this->protocol_size(); i++) {
+  ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    this->protocol(i).data(), this->protocol(i).length(),
+    ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      3, this->protocol(i), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -276,6 +346,25 @@ void ObjCClass::SerializeWithCachedSizes(
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->name(), target);
+  }
+  
+  // optional string base_class = 2;
+  if (has_base_class()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->base_class().data(), this->base_class().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->base_class(), target);
+  }
+  
+  // repeated string protocol = 3;
+  for (int i = 0; i < this->protocol_size(); i++) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->protocol(i).data(), this->protocol(i).length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteStringToArray(3, this->protocol(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -296,7 +385,21 @@ int ObjCClass::ByteSize() const {
           this->name());
     }
     
+    // optional string base_class = 2;
+    if (has_base_class()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->base_class());
+    }
+    
   }
+  // repeated string protocol = 3;
+  total_size += 1 * this->protocol_size();
+  for (int i = 0; i < this->protocol_size(); i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+      this->protocol(i));
+  }
+  
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -322,9 +425,13 @@ void ObjCClass::MergeFrom(const ::google::protobuf::Message& from) {
 
 void ObjCClass::MergeFrom(const ObjCClass& from) {
   GOOGLE_CHECK_NE(&from, this);
+  protocol_.MergeFrom(from.protocol_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_name()) {
       set_name(from.name());
+    }
+    if (from.has_base_class()) {
+      set_base_class(from.base_class());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -351,6 +458,8 @@ bool ObjCClass::IsInitialized() const {
 void ObjCClass::Swap(ObjCClass* other) {
   if (other != this) {
     std::swap(name_, other->name_);
+    std::swap(base_class_, other->base_class_);
+    protocol_.Swap(&other->protocol_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -370,6 +479,7 @@ void ObjCClass::Swap(ObjCClass* other) {
 
 #ifndef _MSC_VER
 const int ObjCProtocol::kNameFieldNumber;
+const int ObjCProtocol::kBaseProtocolFieldNumber;
 #endif  // !_MSC_VER
 
 ObjCProtocol::ObjCProtocol()
@@ -432,6 +542,7 @@ void ObjCProtocol::Clear() {
       }
     }
   }
+  base_protocol_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -454,6 +565,24 @@ bool ObjCProtocol::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(18)) goto parse_base_protocol;
+        break;
+      }
+      
+      // repeated string base_protocol = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_base_protocol:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->add_base_protocol()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->base_protocol(0).data(), this->base_protocol(0).length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_base_protocol;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -485,6 +614,15 @@ void ObjCProtocol::SerializeWithCachedSizes(
       1, this->name(), output);
   }
   
+  // repeated string base_protocol = 2;
+  for (int i = 0; i < this->base_protocol_size(); i++) {
+  ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    this->base_protocol(i).data(), this->base_protocol(i).length(),
+    ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->base_protocol(i), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -501,6 +639,15 @@ void ObjCProtocol::SerializeWithCachedSizes(
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->name(), target);
+  }
+  
+  // repeated string base_protocol = 2;
+  for (int i = 0; i < this->base_protocol_size(); i++) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->base_protocol(i).data(), this->base_protocol(i).length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteStringToArray(2, this->base_protocol(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -522,6 +669,13 @@ int ObjCProtocol::ByteSize() const {
     }
     
   }
+  // repeated string base_protocol = 2;
+  total_size += 1 * this->base_protocol_size();
+  for (int i = 0; i < this->base_protocol_size(); i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+      this->base_protocol(i));
+  }
+  
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -547,6 +701,7 @@ void ObjCProtocol::MergeFrom(const ::google::protobuf::Message& from) {
 
 void ObjCProtocol::MergeFrom(const ObjCProtocol& from) {
   GOOGLE_CHECK_NE(&from, this);
+  base_protocol_.MergeFrom(from.base_protocol_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_name()) {
       set_name(from.name());
@@ -576,6 +731,7 @@ bool ObjCProtocol::IsInitialized() const {
 void ObjCProtocol::Swap(ObjCProtocol* other) {
   if (other != this) {
     std::swap(name_, other->name_);
+    base_protocol_.Swap(&other->base_protocol_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

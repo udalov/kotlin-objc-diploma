@@ -7,6 +7,14 @@
 #include "ObjCIndex.pb.h"
 
 
+#define fail(msg) fprintf(stderr, "Assertion failed: %s (%s:%d)\n", msg, __FILE__, __LINE__), exit(1)
+#define assertWithMessage(condition, message) do { if (!(condition)) fail(message); } while (0)
+#define assertNotNull(o) assertWithMessage(o, "'" #o "' cannot be null")
+#define assertTrue(cond) assertWithMessage(cond, "'" #cond "' should be true")
+#define assertFalse(cond) assertWithMessage(cond, "'" #cond "' should be false")
+#define assertEquals(o1, o2) assertWithMessage((o1) == (o2), "'" #o1 "' is not equal to '" #o2 "'")
+
+
 struct IndexerClientData {
     TranslationUnit result;
 
@@ -16,22 +24,72 @@ struct IndexerClientData {
 };
 
 
-void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
-    if (!info->isDefinition) {
+void indexClass(const CXIdxDeclInfo *info, TranslationUnit& result) {
+    if (!info->isDefinition) return;
+    const CXIdxObjCInterfaceDeclInfo *interfaceDeclInfo = clang_index_getObjCInterfaceDeclInfo(info);
+    assertNotNull(interfaceDeclInfo);
+    const CXIdxObjCContainerDeclInfo *containerDeclInfo = interfaceDeclInfo->containerInfo;
+    assertNotNull(containerDeclInfo);
+    if (containerDeclInfo->kind != CXIdxObjCContainer_Interface) {
+        // TODO: report a warning if it's @implementation
         return;
     }
 
+    ObjCClass *clazz = result.add_class_();
+    clazz->set_name(info->entityInfo->name);
+
+    const CXIdxBaseClassInfo *superInfo = interfaceDeclInfo->superInfo; 
+    if (superInfo) {
+        const CXIdxEntityInfo *base = superInfo->base;
+        assertNotNull(base);
+        clazz->set_base_class(base->name);
+    }
+
+    const CXIdxObjCProtocolRefListInfo *protocols = interfaceDeclInfo->protocols;
+    assertNotNull(protocols);
+    unsigned numProtocols = protocols->numProtocols;
+    for (unsigned i = 0; i < numProtocols; ++i) {
+        const CXIdxObjCProtocolRefInfo *refInfo = protocols->protocols[i];
+        assertNotNull(refInfo);
+        const CXIdxEntityInfo *protocolInfo = refInfo->protocol;
+        assertNotNull(protocolInfo);
+        clazz->add_protocol(protocolInfo->name);
+    }
+}
+
+void indexProtocol(const CXIdxDeclInfo *info, TranslationUnit& result) {
+    if (!info->isDefinition) return;
+
+    ObjCProtocol *protocol = result.add_protocol();
+    protocol->set_name(info->entityInfo->name);
+
+    const CXIdxObjCProtocolRefListInfo *protocols = clang_index_getObjCProtocolRefListInfo(info);
+    assertNotNull(protocols);
+    unsigned numProtocols = protocols->numProtocols;
+    for (unsigned i = 0; i < numProtocols; ++i) {
+        const CXIdxObjCProtocolRefInfo *refInfo = protocols->protocols[i];
+        assertNotNull(refInfo);
+        const CXIdxEntityInfo *protocolInfo = refInfo->protocol;
+        assertNotNull(protocolInfo);
+        protocol->add_base_protocol(protocolInfo->name);
+    }
+}
+
+void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
+    assertNotNull(clientData);
+    assertNotNull(info);
+    assertNotNull(info->entityInfo);
+
     IndexerClientData *data = static_cast<IndexerClientData *>(clientData);
     TranslationUnit& result = data->result;
-    const CXIdxEntityInfo *entityInfo = info->entityInfo;
 
-    if (entityInfo->kind == CXIdxEntity_ObjCClass) {
-        ObjCClass *clazz = result.add_class_();
-        clazz->set_name(entityInfo->name);
-    }
-    else if (entityInfo->kind == CXIdxEntity_ObjCProtocol) {
-        ObjCProtocol *protocol = result.add_protocol();
-        protocol->set_name(entityInfo->name);
+    switch (info->entityInfo->kind) {
+        case CXIdxEntity_ObjCClass:
+            indexClass(info, result); break;
+        case CXIdxEntity_ObjCProtocol:
+            indexProtocol(info, result); break;
+        default:
+            break;
     }
 }
 

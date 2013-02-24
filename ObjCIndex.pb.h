@@ -101,17 +101,48 @@ class ObjCClass : public ::google::protobuf::Message {
   inline ::std::string* mutable_name();
   inline ::std::string* release_name();
   
+  // optional string base_class = 2;
+  inline bool has_base_class() const;
+  inline void clear_base_class();
+  static const int kBaseClassFieldNumber = 2;
+  inline const ::std::string& base_class() const;
+  inline void set_base_class(const ::std::string& value);
+  inline void set_base_class(const char* value);
+  inline void set_base_class(const char* value, size_t size);
+  inline ::std::string* mutable_base_class();
+  inline ::std::string* release_base_class();
+  
+  // repeated string protocol = 3;
+  inline int protocol_size() const;
+  inline void clear_protocol();
+  static const int kProtocolFieldNumber = 3;
+  inline const ::std::string& protocol(int index) const;
+  inline ::std::string* mutable_protocol(int index);
+  inline void set_protocol(int index, const ::std::string& value);
+  inline void set_protocol(int index, const char* value);
+  inline void set_protocol(int index, const char* value, size_t size);
+  inline ::std::string* add_protocol();
+  inline void add_protocol(const ::std::string& value);
+  inline void add_protocol(const char* value);
+  inline void add_protocol(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& protocol() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_protocol();
+  
   // @@protoc_insertion_point(class_scope:ObjCClass)
  private:
   inline void set_has_name();
   inline void clear_has_name();
+  inline void set_has_base_class();
+  inline void clear_has_base_class();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* name_;
+  ::std::string* base_class_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> protocol_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_ObjCIndex_2eproto();
   friend void protobuf_AssignDesc_ObjCIndex_2eproto();
@@ -187,6 +218,22 @@ class ObjCProtocol : public ::google::protobuf::Message {
   inline ::std::string* mutable_name();
   inline ::std::string* release_name();
   
+  // repeated string base_protocol = 2;
+  inline int base_protocol_size() const;
+  inline void clear_base_protocol();
+  static const int kBaseProtocolFieldNumber = 2;
+  inline const ::std::string& base_protocol(int index) const;
+  inline ::std::string* mutable_base_protocol(int index);
+  inline void set_base_protocol(int index, const ::std::string& value);
+  inline void set_base_protocol(int index, const char* value);
+  inline void set_base_protocol(int index, const char* value, size_t size);
+  inline ::std::string* add_base_protocol();
+  inline void add_base_protocol(const ::std::string& value);
+  inline void add_base_protocol(const char* value);
+  inline void add_base_protocol(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& base_protocol() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_base_protocol();
+  
   // @@protoc_insertion_point(class_scope:ObjCProtocol)
  private:
   inline void set_has_name();
@@ -195,9 +242,10 @@ class ObjCProtocol : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* name_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> base_protocol_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_ObjCIndex_2eproto();
   friend void protobuf_AssignDesc_ObjCIndex_2eproto();
@@ -369,6 +417,108 @@ inline ::std::string* ObjCClass::release_name() {
   }
 }
 
+// optional string base_class = 2;
+inline bool ObjCClass::has_base_class() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ObjCClass::set_has_base_class() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ObjCClass::clear_has_base_class() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ObjCClass::clear_base_class() {
+  if (base_class_ != &::google::protobuf::internal::kEmptyString) {
+    base_class_->clear();
+  }
+  clear_has_base_class();
+}
+inline const ::std::string& ObjCClass::base_class() const {
+  return *base_class_;
+}
+inline void ObjCClass::set_base_class(const ::std::string& value) {
+  set_has_base_class();
+  if (base_class_ == &::google::protobuf::internal::kEmptyString) {
+    base_class_ = new ::std::string;
+  }
+  base_class_->assign(value);
+}
+inline void ObjCClass::set_base_class(const char* value) {
+  set_has_base_class();
+  if (base_class_ == &::google::protobuf::internal::kEmptyString) {
+    base_class_ = new ::std::string;
+  }
+  base_class_->assign(value);
+}
+inline void ObjCClass::set_base_class(const char* value, size_t size) {
+  set_has_base_class();
+  if (base_class_ == &::google::protobuf::internal::kEmptyString) {
+    base_class_ = new ::std::string;
+  }
+  base_class_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ObjCClass::mutable_base_class() {
+  set_has_base_class();
+  if (base_class_ == &::google::protobuf::internal::kEmptyString) {
+    base_class_ = new ::std::string;
+  }
+  return base_class_;
+}
+inline ::std::string* ObjCClass::release_base_class() {
+  clear_has_base_class();
+  if (base_class_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = base_class_;
+    base_class_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// repeated string protocol = 3;
+inline int ObjCClass::protocol_size() const {
+  return protocol_.size();
+}
+inline void ObjCClass::clear_protocol() {
+  protocol_.Clear();
+}
+inline const ::std::string& ObjCClass::protocol(int index) const {
+  return protocol_.Get(index);
+}
+inline ::std::string* ObjCClass::mutable_protocol(int index) {
+  return protocol_.Mutable(index);
+}
+inline void ObjCClass::set_protocol(int index, const ::std::string& value) {
+  protocol_.Mutable(index)->assign(value);
+}
+inline void ObjCClass::set_protocol(int index, const char* value) {
+  protocol_.Mutable(index)->assign(value);
+}
+inline void ObjCClass::set_protocol(int index, const char* value, size_t size) {
+  protocol_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ObjCClass::add_protocol() {
+  return protocol_.Add();
+}
+inline void ObjCClass::add_protocol(const ::std::string& value) {
+  protocol_.Add()->assign(value);
+}
+inline void ObjCClass::add_protocol(const char* value) {
+  protocol_.Add()->assign(value);
+}
+inline void ObjCClass::add_protocol(const char* value, size_t size) {
+  protocol_.Add()->assign(reinterpret_cast<const char*>(value), size);
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+ObjCClass::protocol() const {
+  return protocol_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+ObjCClass::mutable_protocol() {
+  return &protocol_;
+}
+
 // -------------------------------------------------------------------
 
 // ObjCProtocol
@@ -429,6 +579,50 @@ inline ::std::string* ObjCProtocol::release_name() {
     name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
     return temp;
   }
+}
+
+// repeated string base_protocol = 2;
+inline int ObjCProtocol::base_protocol_size() const {
+  return base_protocol_.size();
+}
+inline void ObjCProtocol::clear_base_protocol() {
+  base_protocol_.Clear();
+}
+inline const ::std::string& ObjCProtocol::base_protocol(int index) const {
+  return base_protocol_.Get(index);
+}
+inline ::std::string* ObjCProtocol::mutable_base_protocol(int index) {
+  return base_protocol_.Mutable(index);
+}
+inline void ObjCProtocol::set_base_protocol(int index, const ::std::string& value) {
+  base_protocol_.Mutable(index)->assign(value);
+}
+inline void ObjCProtocol::set_base_protocol(int index, const char* value) {
+  base_protocol_.Mutable(index)->assign(value);
+}
+inline void ObjCProtocol::set_base_protocol(int index, const char* value, size_t size) {
+  base_protocol_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ObjCProtocol::add_base_protocol() {
+  return base_protocol_.Add();
+}
+inline void ObjCProtocol::add_base_protocol(const ::std::string& value) {
+  base_protocol_.Add()->assign(value);
+}
+inline void ObjCProtocol::add_base_protocol(const char* value) {
+  base_protocol_.Add()->assign(value);
+}
+inline void ObjCProtocol::add_base_protocol(const char* value, size_t size) {
+  base_protocol_.Add()->assign(reinterpret_cast<const char*>(value), size);
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+ObjCProtocol::base_protocol() const {
+  return base_protocol_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+ObjCProtocol::mutable_base_protocol() {
+  return &base_protocol_;
 }
 
 // -------------------------------------------------------------------
