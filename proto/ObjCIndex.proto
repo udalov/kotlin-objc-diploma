@@ -1,13 +1,17 @@
-message ObjCMethod {
+message Function {
     required string name = 1;
-    required bool class_method = 2;
-    required string return_type = 3;
-    repeated Parameter parameter = 4;
+    required string return_type = 2;
+    repeated Parameter parameter = 3;
 
     message Parameter {
         required string name = 1;
         required string type = 2;
     }
+}
+
+message ObjCMethod {
+    required Function function = 1;
+    required bool class_method = 2;
 }
 
 message ObjCClass {

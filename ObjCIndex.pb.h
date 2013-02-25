@@ -30,22 +30,23 @@ void  protobuf_AddDesc_ObjCIndex_2eproto();
 void protobuf_AssignDesc_ObjCIndex_2eproto();
 void protobuf_ShutdownFile_ObjCIndex_2eproto();
 
+class Function;
+class Function_Parameter;
 class ObjCMethod;
-class ObjCMethod_Parameter;
 class ObjCClass;
 class ObjCProtocol;
 class TranslationUnit;
 
 // ===================================================================
 
-class ObjCMethod_Parameter : public ::google::protobuf::Message {
+class Function_Parameter : public ::google::protobuf::Message {
  public:
-  ObjCMethod_Parameter();
-  virtual ~ObjCMethod_Parameter();
+  Function_Parameter();
+  virtual ~Function_Parameter();
   
-  ObjCMethod_Parameter(const ObjCMethod_Parameter& from);
+  Function_Parameter(const Function_Parameter& from);
   
-  inline ObjCMethod_Parameter& operator=(const ObjCMethod_Parameter& from) {
+  inline Function_Parameter& operator=(const Function_Parameter& from) {
     CopyFrom(from);
     return *this;
   }
@@ -59,17 +60,17 @@ class ObjCMethod_Parameter : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const ObjCMethod_Parameter& default_instance();
+  static const Function_Parameter& default_instance();
   
-  void Swap(ObjCMethod_Parameter* other);
+  void Swap(Function_Parameter* other);
   
   // implements Message ----------------------------------------------
   
-  ObjCMethod_Parameter* New() const;
+  Function_Parameter* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const ObjCMethod_Parameter& from);
-  void MergeFrom(const ObjCMethod_Parameter& from);
+  void CopyFrom(const Function_Parameter& from);
+  void MergeFrom(const Function_Parameter& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -114,7 +115,7 @@ class ObjCMethod_Parameter : public ::google::protobuf::Message {
   inline ::std::string* mutable_type();
   inline ::std::string* release_type();
   
-  // @@protoc_insertion_point(class_scope:ObjCMethod.Parameter)
+  // @@protoc_insertion_point(class_scope:Function.Parameter)
  private:
   inline void set_has_name();
   inline void clear_has_name();
@@ -134,7 +135,122 @@ class ObjCMethod_Parameter : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_ObjCIndex_2eproto();
   
   void InitAsDefaultInstance();
-  static ObjCMethod_Parameter* default_instance_;
+  static Function_Parameter* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Function : public ::google::protobuf::Message {
+ public:
+  Function();
+  virtual ~Function();
+  
+  Function(const Function& from);
+  
+  inline Function& operator=(const Function& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Function& default_instance();
+  
+  void Swap(Function* other);
+  
+  // implements Message ----------------------------------------------
+  
+  Function* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Function& from);
+  void MergeFrom(const Function& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  typedef Function_Parameter Parameter;
+  
+  // accessors -------------------------------------------------------
+  
+  // required string name = 1;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 1;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  
+  // required string return_type = 2;
+  inline bool has_return_type() const;
+  inline void clear_return_type();
+  static const int kReturnTypeFieldNumber = 2;
+  inline const ::std::string& return_type() const;
+  inline void set_return_type(const ::std::string& value);
+  inline void set_return_type(const char* value);
+  inline void set_return_type(const char* value, size_t size);
+  inline ::std::string* mutable_return_type();
+  inline ::std::string* release_return_type();
+  
+  // repeated .Function.Parameter parameter = 3;
+  inline int parameter_size() const;
+  inline void clear_parameter();
+  static const int kParameterFieldNumber = 3;
+  inline const ::Function_Parameter& parameter(int index) const;
+  inline ::Function_Parameter* mutable_parameter(int index);
+  inline ::Function_Parameter* add_parameter();
+  inline const ::google::protobuf::RepeatedPtrField< ::Function_Parameter >&
+      parameter() const;
+  inline ::google::protobuf::RepeatedPtrField< ::Function_Parameter >*
+      mutable_parameter();
+  
+  // @@protoc_insertion_point(class_scope:Function)
+ private:
+  inline void set_has_name();
+  inline void clear_has_name();
+  inline void set_has_return_type();
+  inline void clear_has_return_type();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* name_;
+  ::std::string* return_type_;
+  ::google::protobuf::RepeatedPtrField< ::Function_Parameter > parameter_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_ObjCIndex_2eproto();
+  friend void protobuf_AssignDesc_ObjCIndex_2eproto();
+  friend void protobuf_ShutdownFile_ObjCIndex_2eproto();
+  
+  void InitAsDefaultInstance();
+  static Function* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -190,20 +306,15 @@ class ObjCMethod : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
-  typedef ObjCMethod_Parameter Parameter;
-  
   // accessors -------------------------------------------------------
   
-  // required string name = 1;
-  inline bool has_name() const;
-  inline void clear_name();
-  static const int kNameFieldNumber = 1;
-  inline const ::std::string& name() const;
-  inline void set_name(const ::std::string& value);
-  inline void set_name(const char* value);
-  inline void set_name(const char* value, size_t size);
-  inline ::std::string* mutable_name();
-  inline ::std::string* release_name();
+  // required .Function function = 1;
+  inline bool has_function() const;
+  inline void clear_function();
+  static const int kFunctionFieldNumber = 1;
+  inline const ::Function& function() const;
+  inline ::Function* mutable_function();
+  inline ::Function* release_function();
   
   // required bool class_method = 2;
   inline bool has_class_method() const;
@@ -212,47 +323,20 @@ class ObjCMethod : public ::google::protobuf::Message {
   inline bool class_method() const;
   inline void set_class_method(bool value);
   
-  // required string return_type = 3;
-  inline bool has_return_type() const;
-  inline void clear_return_type();
-  static const int kReturnTypeFieldNumber = 3;
-  inline const ::std::string& return_type() const;
-  inline void set_return_type(const ::std::string& value);
-  inline void set_return_type(const char* value);
-  inline void set_return_type(const char* value, size_t size);
-  inline ::std::string* mutable_return_type();
-  inline ::std::string* release_return_type();
-  
-  // repeated .ObjCMethod.Parameter parameter = 4;
-  inline int parameter_size() const;
-  inline void clear_parameter();
-  static const int kParameterFieldNumber = 4;
-  inline const ::ObjCMethod_Parameter& parameter(int index) const;
-  inline ::ObjCMethod_Parameter* mutable_parameter(int index);
-  inline ::ObjCMethod_Parameter* add_parameter();
-  inline const ::google::protobuf::RepeatedPtrField< ::ObjCMethod_Parameter >&
-      parameter() const;
-  inline ::google::protobuf::RepeatedPtrField< ::ObjCMethod_Parameter >*
-      mutable_parameter();
-  
   // @@protoc_insertion_point(class_scope:ObjCMethod)
  private:
-  inline void set_has_name();
-  inline void clear_has_name();
+  inline void set_has_function();
+  inline void clear_has_function();
   inline void set_has_class_method();
   inline void clear_has_class_method();
-  inline void set_has_return_type();
-  inline void clear_has_return_type();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::std::string* name_;
-  ::std::string* return_type_;
-  ::google::protobuf::RepeatedPtrField< ::ObjCMethod_Parameter > parameter_;
+  ::Function* function_;
   bool class_method_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_ObjCIndex_2eproto();
   friend void protobuf_AssignDesc_ObjCIndex_2eproto();
@@ -610,56 +694,56 @@ class TranslationUnit : public ::google::protobuf::Message {
 
 // ===================================================================
 
-// ObjCMethod_Parameter
+// Function_Parameter
 
 // required string name = 1;
-inline bool ObjCMethod_Parameter::has_name() const {
+inline bool Function_Parameter::has_name() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void ObjCMethod_Parameter::set_has_name() {
+inline void Function_Parameter::set_has_name() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void ObjCMethod_Parameter::clear_has_name() {
+inline void Function_Parameter::clear_has_name() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void ObjCMethod_Parameter::clear_name() {
+inline void Function_Parameter::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     name_->clear();
   }
   clear_has_name();
 }
-inline const ::std::string& ObjCMethod_Parameter::name() const {
+inline const ::std::string& Function_Parameter::name() const {
   return *name_;
 }
-inline void ObjCMethod_Parameter::set_name(const ::std::string& value) {
+inline void Function_Parameter::set_name(const ::std::string& value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void ObjCMethod_Parameter::set_name(const char* value) {
+inline void Function_Parameter::set_name(const char* value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void ObjCMethod_Parameter::set_name(const char* value, size_t size) {
+inline void Function_Parameter::set_name(const char* value, size_t size) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* ObjCMethod_Parameter::mutable_name() {
+inline ::std::string* Function_Parameter::mutable_name() {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   return name_;
 }
-inline ::std::string* ObjCMethod_Parameter::release_name() {
+inline ::std::string* Function_Parameter::release_name() {
   clear_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -671,53 +755,53 @@ inline ::std::string* ObjCMethod_Parameter::release_name() {
 }
 
 // required string type = 2;
-inline bool ObjCMethod_Parameter::has_type() const {
+inline bool Function_Parameter::has_type() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void ObjCMethod_Parameter::set_has_type() {
+inline void Function_Parameter::set_has_type() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void ObjCMethod_Parameter::clear_has_type() {
+inline void Function_Parameter::clear_has_type() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void ObjCMethod_Parameter::clear_type() {
+inline void Function_Parameter::clear_type() {
   if (type_ != &::google::protobuf::internal::kEmptyString) {
     type_->clear();
   }
   clear_has_type();
 }
-inline const ::std::string& ObjCMethod_Parameter::type() const {
+inline const ::std::string& Function_Parameter::type() const {
   return *type_;
 }
-inline void ObjCMethod_Parameter::set_type(const ::std::string& value) {
+inline void Function_Parameter::set_type(const ::std::string& value) {
   set_has_type();
   if (type_ == &::google::protobuf::internal::kEmptyString) {
     type_ = new ::std::string;
   }
   type_->assign(value);
 }
-inline void ObjCMethod_Parameter::set_type(const char* value) {
+inline void Function_Parameter::set_type(const char* value) {
   set_has_type();
   if (type_ == &::google::protobuf::internal::kEmptyString) {
     type_ = new ::std::string;
   }
   type_->assign(value);
 }
-inline void ObjCMethod_Parameter::set_type(const char* value, size_t size) {
+inline void Function_Parameter::set_type(const char* value, size_t size) {
   set_has_type();
   if (type_ == &::google::protobuf::internal::kEmptyString) {
     type_ = new ::std::string;
   }
   type_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* ObjCMethod_Parameter::mutable_type() {
+inline ::std::string* Function_Parameter::mutable_type() {
   set_has_type();
   if (type_ == &::google::protobuf::internal::kEmptyString) {
     type_ = new ::std::string;
   }
   return type_;
 }
-inline ::std::string* ObjCMethod_Parameter::release_type() {
+inline ::std::string* Function_Parameter::release_type() {
   clear_has_type();
   if (type_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -730,56 +814,56 @@ inline ::std::string* ObjCMethod_Parameter::release_type() {
 
 // -------------------------------------------------------------------
 
-// ObjCMethod
+// Function
 
 // required string name = 1;
-inline bool ObjCMethod::has_name() const {
+inline bool Function::has_name() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void ObjCMethod::set_has_name() {
+inline void Function::set_has_name() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void ObjCMethod::clear_has_name() {
+inline void Function::clear_has_name() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void ObjCMethod::clear_name() {
+inline void Function::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     name_->clear();
   }
   clear_has_name();
 }
-inline const ::std::string& ObjCMethod::name() const {
+inline const ::std::string& Function::name() const {
   return *name_;
 }
-inline void ObjCMethod::set_name(const ::std::string& value) {
+inline void Function::set_name(const ::std::string& value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void ObjCMethod::set_name(const char* value) {
+inline void Function::set_name(const char* value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void ObjCMethod::set_name(const char* value, size_t size) {
+inline void Function::set_name(const char* value, size_t size) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* ObjCMethod::mutable_name() {
+inline ::std::string* Function::mutable_name() {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   return name_;
 }
-inline ::std::string* ObjCMethod::release_name() {
+inline ::std::string* Function::release_name() {
   clear_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -788,6 +872,122 @@ inline ::std::string* ObjCMethod::release_name() {
     name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
     return temp;
   }
+}
+
+// required string return_type = 2;
+inline bool Function::has_return_type() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Function::set_has_return_type() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Function::clear_has_return_type() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Function::clear_return_type() {
+  if (return_type_ != &::google::protobuf::internal::kEmptyString) {
+    return_type_->clear();
+  }
+  clear_has_return_type();
+}
+inline const ::std::string& Function::return_type() const {
+  return *return_type_;
+}
+inline void Function::set_return_type(const ::std::string& value) {
+  set_has_return_type();
+  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
+    return_type_ = new ::std::string;
+  }
+  return_type_->assign(value);
+}
+inline void Function::set_return_type(const char* value) {
+  set_has_return_type();
+  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
+    return_type_ = new ::std::string;
+  }
+  return_type_->assign(value);
+}
+inline void Function::set_return_type(const char* value, size_t size) {
+  set_has_return_type();
+  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
+    return_type_ = new ::std::string;
+  }
+  return_type_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Function::mutable_return_type() {
+  set_has_return_type();
+  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
+    return_type_ = new ::std::string;
+  }
+  return return_type_;
+}
+inline ::std::string* Function::release_return_type() {
+  clear_has_return_type();
+  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = return_type_;
+    return_type_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// repeated .Function.Parameter parameter = 3;
+inline int Function::parameter_size() const {
+  return parameter_.size();
+}
+inline void Function::clear_parameter() {
+  parameter_.Clear();
+}
+inline const ::Function_Parameter& Function::parameter(int index) const {
+  return parameter_.Get(index);
+}
+inline ::Function_Parameter* Function::mutable_parameter(int index) {
+  return parameter_.Mutable(index);
+}
+inline ::Function_Parameter* Function::add_parameter() {
+  return parameter_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::Function_Parameter >&
+Function::parameter() const {
+  return parameter_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::Function_Parameter >*
+Function::mutable_parameter() {
+  return &parameter_;
+}
+
+// -------------------------------------------------------------------
+
+// ObjCMethod
+
+// required .Function function = 1;
+inline bool ObjCMethod::has_function() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ObjCMethod::set_has_function() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ObjCMethod::clear_has_function() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ObjCMethod::clear_function() {
+  if (function_ != NULL) function_->::Function::Clear();
+  clear_has_function();
+}
+inline const ::Function& ObjCMethod::function() const {
+  return function_ != NULL ? *function_ : *default_instance_->function_;
+}
+inline ::Function* ObjCMethod::mutable_function() {
+  set_has_function();
+  if (function_ == NULL) function_ = new ::Function;
+  return function_;
+}
+inline ::Function* ObjCMethod::release_function() {
+  clear_has_function();
+  ::Function* temp = function_;
+  function_ = NULL;
+  return temp;
 }
 
 // required bool class_method = 2;
@@ -810,89 +1010,6 @@ inline bool ObjCMethod::class_method() const {
 inline void ObjCMethod::set_class_method(bool value) {
   set_has_class_method();
   class_method_ = value;
-}
-
-// required string return_type = 3;
-inline bool ObjCMethod::has_return_type() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void ObjCMethod::set_has_return_type() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void ObjCMethod::clear_has_return_type() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void ObjCMethod::clear_return_type() {
-  if (return_type_ != &::google::protobuf::internal::kEmptyString) {
-    return_type_->clear();
-  }
-  clear_has_return_type();
-}
-inline const ::std::string& ObjCMethod::return_type() const {
-  return *return_type_;
-}
-inline void ObjCMethod::set_return_type(const ::std::string& value) {
-  set_has_return_type();
-  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
-    return_type_ = new ::std::string;
-  }
-  return_type_->assign(value);
-}
-inline void ObjCMethod::set_return_type(const char* value) {
-  set_has_return_type();
-  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
-    return_type_ = new ::std::string;
-  }
-  return_type_->assign(value);
-}
-inline void ObjCMethod::set_return_type(const char* value, size_t size) {
-  set_has_return_type();
-  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
-    return_type_ = new ::std::string;
-  }
-  return_type_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* ObjCMethod::mutable_return_type() {
-  set_has_return_type();
-  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
-    return_type_ = new ::std::string;
-  }
-  return return_type_;
-}
-inline ::std::string* ObjCMethod::release_return_type() {
-  clear_has_return_type();
-  if (return_type_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = return_type_;
-    return_type_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-
-// repeated .ObjCMethod.Parameter parameter = 4;
-inline int ObjCMethod::parameter_size() const {
-  return parameter_.size();
-}
-inline void ObjCMethod::clear_parameter() {
-  parameter_.Clear();
-}
-inline const ::ObjCMethod_Parameter& ObjCMethod::parameter(int index) const {
-  return parameter_.Get(index);
-}
-inline ::ObjCMethod_Parameter* ObjCMethod::mutable_parameter(int index) {
-  return parameter_.Mutable(index);
-}
-inline ::ObjCMethod_Parameter* ObjCMethod::add_parameter() {
-  return parameter_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::ObjCMethod_Parameter >&
-ObjCMethod::parameter() const {
-  return parameter_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::ObjCMethod_Parameter >*
-ObjCMethod::mutable_parameter() {
-  return &parameter_;
 }
 
 // -------------------------------------------------------------------

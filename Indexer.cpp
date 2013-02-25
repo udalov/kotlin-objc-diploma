@@ -92,17 +92,19 @@ void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassM
     }
     assertNotNull(method);
 
-    method->set_name(info->entityInfo->name);
     method->set_class_method(isClassMethod);
 
+    auto function = method->mutable_function();
+    function->set_name(info->entityInfo->name);
+
     auto type = getCursorTypeSpelling(clang_getCursorResultType(info->cursor));
-    method->set_return_type(type);
+    function->set_return_type(type);
 
     // TODO: handle variadic arguments
     auto numArguments = clang_Cursor_getNumArguments(info->cursor);
     for (auto i = 0; i < numArguments; ++i) {
         auto argument = clang_Cursor_getArgument(info->cursor, i);
-        auto parameter = method->add_parameter();
+        auto parameter = function->add_parameter();
         AutoCXString name = clang_getCursorSpelling(argument);
         parameter->set_name(name.str());
         auto type = getCursorTypeSpelling(clang_getCursorType(argument));
