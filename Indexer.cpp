@@ -9,7 +9,7 @@
 #include "OutputCollector.h"
 #include "ObjCIndex.pb.h"
 
-const std::vector<std::string> extractProtocolNames(const CXIdxObjCProtocolRefListInfo *protocols) {
+std::vector<std::string> extractProtocolNames(const CXIdxObjCProtocolRefListInfo *protocols) {
     std::vector<std::string> result;
     auto numProtocols = protocols->numProtocols;
     for (auto i = 0; i < numProtocols; ++i) {
@@ -21,6 +21,13 @@ const std::vector<std::string> extractProtocolNames(const CXIdxObjCProtocolRefLi
     }
     return result;
 }
+
+std::string getCursorTypeSpelling(const CXType& type) {
+    // TODO: full type serialization
+    AutoCXString spelling = clang_getTypeKindSpelling(type.kind);
+    return spelling.str();
+}
+
 
 void indexClass(const CXIdxDeclInfo *info, OutputCollector *data) {
     if (!info->isDefinition) return;
@@ -69,14 +76,14 @@ void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
 
 void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassMethod) {
     assertNotNull(info->semanticContainer);
-    AutoCXString usr = clang_getCursorUSR(info->semanticContainer->cursor);
+    AutoCXString container = clang_getCursorUSR(info->semanticContainer->cursor);
     
     ObjCMethod *method;
-    auto clazz = data->loadClassByUSR(usr.str());
+    auto clazz = data->loadClassByUSR(container.str());
     if (clazz) {
         method = clazz->add_method();
     } else {
-        auto protocol = data->loadProtocolByUSR(usr.str());
+        auto protocol = data->loadProtocolByUSR(container.str());
         if (!protocol) {
             // TODO: categories
             return;
@@ -88,10 +95,19 @@ void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassM
     method->set_name(info->entityInfo->name);
     method->set_class_method(isClassMethod);
 
-    auto returnType = clang_getCursorResultType(info->cursor);
-    // TODO: type serialization
-    AutoCXString typeSpelling = clang_getTypeKindSpelling(returnType.kind);
-    method->set_return_type(typeSpelling.str());
+    auto type = getCursorTypeSpelling(clang_getCursorResultType(info->cursor));
+    method->set_return_type(type);
+
+    // TODO: handle variadic arguments
+    auto numArguments = clang_Cursor_getNumArguments(info->cursor);
+    for (auto i = 0; i < numArguments; ++i) {
+        auto argument = clang_Cursor_getArgument(info->cursor, i);
+        auto parameter = method->add_parameter();
+        AutoCXString name = clang_getCursorSpelling(argument);
+        parameter->set_name(name.str());
+        auto type = getCursorTypeSpelling(clang_getCursorType(argument));
+        parameter->set_type(type);
+    }
 }
 
 void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
