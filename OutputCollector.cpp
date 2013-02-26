@@ -19,6 +19,11 @@ void OutputCollector::saveProtocolByUSR(const std::string& usr, ObjCProtocol *pr
     m_protocols[usr] = protocol;
 }
 
+void OutputCollector::saveCategoryByUSR(const std::string& usr, ObjCCategory *category) {
+    assertTrue(m_categories.find(usr) == m_categories.end());
+    m_categories[usr] = category;
+}
+
 ObjCClass *OutputCollector::loadClassByUSR(const std::string& usr) const {
     auto it = m_classes.find(usr);
     if (it == m_classes.end()) return nullptr;
@@ -33,4 +38,12 @@ ObjCProtocol *OutputCollector::loadProtocolByUSR(const std::string& usr) const {
     auto protocol = it->second;
     assertNotNull(protocol);
     return protocol;
+}
+
+ObjCCategory *OutputCollector::loadCategoryByUSR(const std::string& usr) const {
+    auto it = m_categories.find(usr);
+    if (it == m_categories.end()) return nullptr;
+    auto category = it->second;
+    assertNotNull(category);
+    return category;
 }

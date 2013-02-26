@@ -59,6 +59,25 @@ void indexClass(const CXIdxDeclInfo *info, OutputCollector *data) {
     data->saveClassByUSR(info->entityInfo->USR, clazz);
 }
 
+void indexCategory(const CXIdxDeclInfo *info, OutputCollector *data) {
+    assertTrue(info->isDefinition);
+    auto categoryDeclInfo = clang_index_getObjCCategoryDeclInfo(info);
+    assertNotNull(categoryDeclInfo);
+    
+    auto category = data->result().add_category();
+    category->set_class_name(categoryDeclInfo->objcClass->name);
+
+    category->set_category_name(info->entityInfo->name);
+    
+    auto protocols = categoryDeclInfo->protocols;
+    assertNotNull(protocols);
+    for (auto protocolName : extractProtocolNames(protocols)) {
+        category->add_base_protocol(protocolName);
+    }
+
+    data->saveCategoryByUSR(info->entityInfo->USR, category);
+}
+
 void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
     if (!info->isDefinition) return;
 
@@ -74,22 +93,23 @@ void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
     data->saveProtocolByUSR(info->entityInfo->USR, protocol);
 }
 
-void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassMethod) {
+ObjCMethod *createMethodInItsContainer(const CXIdxDeclInfo *info, OutputCollector *data) {
     assertNotNull(info->semanticContainer);
     AutoCXString container = clang_getCursorUSR(info->semanticContainer->cursor);
+    auto containerUSR = container.str();
     
-    ObjCMethod *method;
-    auto clazz = data->loadClassByUSR(container.str());
-    if (clazz) {
-        method = clazz->add_method();
-    } else {
-        auto protocol = data->loadProtocolByUSR(container.str());
-        if (!protocol) {
-            // TODO: categories
-            return;
-        }
-        method = protocol->add_method();
-    }
+    auto clazz = data->loadClassByUSR(containerUSR);
+    if (clazz) return clazz->add_method();
+    auto protocol = data->loadProtocolByUSR(containerUSR);
+    if (protocol) return protocol->add_method();
+    auto category = data->loadCategoryByUSR(containerUSR);
+    if (category) return category->add_method();
+
+    return nullptr;
+}
+
+void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassMethod) {
+    ObjCMethod *method = createMethodInItsContainer(info, data);
     assertNotNull(method);
 
     method->set_class_method(isClassMethod);
@@ -124,6 +144,8 @@ void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
             indexClass(info, data); break;
         case CXIdxEntity_ObjCProtocol:
             indexProtocol(info, data); break;
+        case CXIdxEntity_ObjCCategory:
+            indexCategory(info, data); break;
         case CXIdxEntity_ObjCInstanceMethod:
             indexMethod(info, data, false); break;
         case CXIdxEntity_ObjCClassMethod:

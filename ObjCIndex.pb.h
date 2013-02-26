@@ -35,6 +35,7 @@ class Function_Parameter;
 class ObjCMethod;
 class ObjCClass;
 class ObjCProtocol;
+class ObjCCategory;
 class TranslationUnit;
 
 // ===================================================================
@@ -593,6 +594,136 @@ class ObjCProtocol : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class ObjCCategory : public ::google::protobuf::Message {
+ public:
+  ObjCCategory();
+  virtual ~ObjCCategory();
+  
+  ObjCCategory(const ObjCCategory& from);
+  
+  inline ObjCCategory& operator=(const ObjCCategory& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ObjCCategory& default_instance();
+  
+  void Swap(ObjCCategory* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ObjCCategory* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ObjCCategory& from);
+  void MergeFrom(const ObjCCategory& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required string class_name = 1;
+  inline bool has_class_name() const;
+  inline void clear_class_name();
+  static const int kClassNameFieldNumber = 1;
+  inline const ::std::string& class_name() const;
+  inline void set_class_name(const ::std::string& value);
+  inline void set_class_name(const char* value);
+  inline void set_class_name(const char* value, size_t size);
+  inline ::std::string* mutable_class_name();
+  inline ::std::string* release_class_name();
+  
+  // required string category_name = 2;
+  inline bool has_category_name() const;
+  inline void clear_category_name();
+  static const int kCategoryNameFieldNumber = 2;
+  inline const ::std::string& category_name() const;
+  inline void set_category_name(const ::std::string& value);
+  inline void set_category_name(const char* value);
+  inline void set_category_name(const char* value, size_t size);
+  inline ::std::string* mutable_category_name();
+  inline ::std::string* release_category_name();
+  
+  // repeated string base_protocol = 3;
+  inline int base_protocol_size() const;
+  inline void clear_base_protocol();
+  static const int kBaseProtocolFieldNumber = 3;
+  inline const ::std::string& base_protocol(int index) const;
+  inline ::std::string* mutable_base_protocol(int index);
+  inline void set_base_protocol(int index, const ::std::string& value);
+  inline void set_base_protocol(int index, const char* value);
+  inline void set_base_protocol(int index, const char* value, size_t size);
+  inline ::std::string* add_base_protocol();
+  inline void add_base_protocol(const ::std::string& value);
+  inline void add_base_protocol(const char* value);
+  inline void add_base_protocol(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& base_protocol() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_base_protocol();
+  
+  // repeated .ObjCMethod method = 4;
+  inline int method_size() const;
+  inline void clear_method();
+  static const int kMethodFieldNumber = 4;
+  inline const ::ObjCMethod& method(int index) const;
+  inline ::ObjCMethod* mutable_method(int index);
+  inline ::ObjCMethod* add_method();
+  inline const ::google::protobuf::RepeatedPtrField< ::ObjCMethod >&
+      method() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ObjCMethod >*
+      mutable_method();
+  
+  // @@protoc_insertion_point(class_scope:ObjCCategory)
+ private:
+  inline void set_has_class_name();
+  inline void clear_has_class_name();
+  inline void set_has_category_name();
+  inline void clear_has_category_name();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* class_name_;
+  ::std::string* category_name_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> base_protocol_;
+  ::google::protobuf::RepeatedPtrField< ::ObjCMethod > method_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_ObjCIndex_2eproto();
+  friend void protobuf_AssignDesc_ObjCIndex_2eproto();
+  friend void protobuf_ShutdownFile_ObjCIndex_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ObjCCategory* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class TranslationUnit : public ::google::protobuf::Message {
  public:
   TranslationUnit();
@@ -671,6 +802,18 @@ class TranslationUnit : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::ObjCProtocol >*
       mutable_protocol();
   
+  // repeated .ObjCCategory category = 3;
+  inline int category_size() const;
+  inline void clear_category();
+  static const int kCategoryFieldNumber = 3;
+  inline const ::ObjCCategory& category(int index) const;
+  inline ::ObjCCategory* mutable_category(int index);
+  inline ::ObjCCategory* add_category();
+  inline const ::google::protobuf::RepeatedPtrField< ::ObjCCategory >&
+      category() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ObjCCategory >*
+      mutable_category();
+  
   // @@protoc_insertion_point(class_scope:TranslationUnit)
  private:
   
@@ -678,9 +821,10 @@ class TranslationUnit : public ::google::protobuf::Message {
   
   ::google::protobuf::RepeatedPtrField< ::ObjCClass > class__;
   ::google::protobuf::RepeatedPtrField< ::ObjCProtocol > protocol_;
+  ::google::protobuf::RepeatedPtrField< ::ObjCCategory > category_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_ObjCIndex_2eproto();
   friend void protobuf_AssignDesc_ObjCIndex_2eproto();
@@ -1334,6 +1478,195 @@ ObjCProtocol::mutable_method() {
 
 // -------------------------------------------------------------------
 
+// ObjCCategory
+
+// required string class_name = 1;
+inline bool ObjCCategory::has_class_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ObjCCategory::set_has_class_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ObjCCategory::clear_has_class_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ObjCCategory::clear_class_name() {
+  if (class_name_ != &::google::protobuf::internal::kEmptyString) {
+    class_name_->clear();
+  }
+  clear_has_class_name();
+}
+inline const ::std::string& ObjCCategory::class_name() const {
+  return *class_name_;
+}
+inline void ObjCCategory::set_class_name(const ::std::string& value) {
+  set_has_class_name();
+  if (class_name_ == &::google::protobuf::internal::kEmptyString) {
+    class_name_ = new ::std::string;
+  }
+  class_name_->assign(value);
+}
+inline void ObjCCategory::set_class_name(const char* value) {
+  set_has_class_name();
+  if (class_name_ == &::google::protobuf::internal::kEmptyString) {
+    class_name_ = new ::std::string;
+  }
+  class_name_->assign(value);
+}
+inline void ObjCCategory::set_class_name(const char* value, size_t size) {
+  set_has_class_name();
+  if (class_name_ == &::google::protobuf::internal::kEmptyString) {
+    class_name_ = new ::std::string;
+  }
+  class_name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ObjCCategory::mutable_class_name() {
+  set_has_class_name();
+  if (class_name_ == &::google::protobuf::internal::kEmptyString) {
+    class_name_ = new ::std::string;
+  }
+  return class_name_;
+}
+inline ::std::string* ObjCCategory::release_class_name() {
+  clear_has_class_name();
+  if (class_name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = class_name_;
+    class_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// required string category_name = 2;
+inline bool ObjCCategory::has_category_name() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ObjCCategory::set_has_category_name() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ObjCCategory::clear_has_category_name() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ObjCCategory::clear_category_name() {
+  if (category_name_ != &::google::protobuf::internal::kEmptyString) {
+    category_name_->clear();
+  }
+  clear_has_category_name();
+}
+inline const ::std::string& ObjCCategory::category_name() const {
+  return *category_name_;
+}
+inline void ObjCCategory::set_category_name(const ::std::string& value) {
+  set_has_category_name();
+  if (category_name_ == &::google::protobuf::internal::kEmptyString) {
+    category_name_ = new ::std::string;
+  }
+  category_name_->assign(value);
+}
+inline void ObjCCategory::set_category_name(const char* value) {
+  set_has_category_name();
+  if (category_name_ == &::google::protobuf::internal::kEmptyString) {
+    category_name_ = new ::std::string;
+  }
+  category_name_->assign(value);
+}
+inline void ObjCCategory::set_category_name(const char* value, size_t size) {
+  set_has_category_name();
+  if (category_name_ == &::google::protobuf::internal::kEmptyString) {
+    category_name_ = new ::std::string;
+  }
+  category_name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ObjCCategory::mutable_category_name() {
+  set_has_category_name();
+  if (category_name_ == &::google::protobuf::internal::kEmptyString) {
+    category_name_ = new ::std::string;
+  }
+  return category_name_;
+}
+inline ::std::string* ObjCCategory::release_category_name() {
+  clear_has_category_name();
+  if (category_name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = category_name_;
+    category_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// repeated string base_protocol = 3;
+inline int ObjCCategory::base_protocol_size() const {
+  return base_protocol_.size();
+}
+inline void ObjCCategory::clear_base_protocol() {
+  base_protocol_.Clear();
+}
+inline const ::std::string& ObjCCategory::base_protocol(int index) const {
+  return base_protocol_.Get(index);
+}
+inline ::std::string* ObjCCategory::mutable_base_protocol(int index) {
+  return base_protocol_.Mutable(index);
+}
+inline void ObjCCategory::set_base_protocol(int index, const ::std::string& value) {
+  base_protocol_.Mutable(index)->assign(value);
+}
+inline void ObjCCategory::set_base_protocol(int index, const char* value) {
+  base_protocol_.Mutable(index)->assign(value);
+}
+inline void ObjCCategory::set_base_protocol(int index, const char* value, size_t size) {
+  base_protocol_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ObjCCategory::add_base_protocol() {
+  return base_protocol_.Add();
+}
+inline void ObjCCategory::add_base_protocol(const ::std::string& value) {
+  base_protocol_.Add()->assign(value);
+}
+inline void ObjCCategory::add_base_protocol(const char* value) {
+  base_protocol_.Add()->assign(value);
+}
+inline void ObjCCategory::add_base_protocol(const char* value, size_t size) {
+  base_protocol_.Add()->assign(reinterpret_cast<const char*>(value), size);
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+ObjCCategory::base_protocol() const {
+  return base_protocol_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+ObjCCategory::mutable_base_protocol() {
+  return &base_protocol_;
+}
+
+// repeated .ObjCMethod method = 4;
+inline int ObjCCategory::method_size() const {
+  return method_.size();
+}
+inline void ObjCCategory::clear_method() {
+  method_.Clear();
+}
+inline const ::ObjCMethod& ObjCCategory::method(int index) const {
+  return method_.Get(index);
+}
+inline ::ObjCMethod* ObjCCategory::mutable_method(int index) {
+  return method_.Mutable(index);
+}
+inline ::ObjCMethod* ObjCCategory::add_method() {
+  return method_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ObjCMethod >&
+ObjCCategory::method() const {
+  return method_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ObjCMethod >*
+ObjCCategory::mutable_method() {
+  return &method_;
+}
+
+// -------------------------------------------------------------------
+
 // TranslationUnit
 
 // repeated .ObjCClass class = 1;
@@ -1384,6 +1717,31 @@ TranslationUnit::protocol() const {
 inline ::google::protobuf::RepeatedPtrField< ::ObjCProtocol >*
 TranslationUnit::mutable_protocol() {
   return &protocol_;
+}
+
+// repeated .ObjCCategory category = 3;
+inline int TranslationUnit::category_size() const {
+  return category_.size();
+}
+inline void TranslationUnit::clear_category() {
+  category_.Clear();
+}
+inline const ::ObjCCategory& TranslationUnit::category(int index) const {
+  return category_.Get(index);
+}
+inline ::ObjCCategory* TranslationUnit::mutable_category(int index) {
+  return category_.Mutable(index);
+}
+inline ::ObjCCategory* TranslationUnit::add_category() {
+  return category_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ObjCCategory >&
+TranslationUnit::category() const {
+  return category_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ObjCCategory >*
+TranslationUnit::mutable_category() {
+  return &category_;
 }
 
 

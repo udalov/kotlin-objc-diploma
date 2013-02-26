@@ -27,7 +27,15 @@ message ObjCProtocol {
     repeated ObjCMethod method = 3;
 }
 
+message ObjCCategory {
+    required string class_name = 1;
+    required string category_name = 2;
+    repeated string base_protocol = 3;
+    repeated ObjCMethod method = 4;
+}
+
 message TranslationUnit {
     repeated ObjCClass class = 1;
     repeated ObjCProtocol protocol = 2;
+    repeated ObjCCategory category = 3;
 }

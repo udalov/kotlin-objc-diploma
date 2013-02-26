@@ -30,6 +30,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* ObjCProtocol_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ObjCProtocol_reflection_ = NULL;
+const ::google::protobuf::Descriptor* ObjCCategory_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ObjCCategory_reflection_ = NULL;
 const ::google::protobuf::Descriptor* TranslationUnit_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   TranslationUnit_reflection_ = NULL;
@@ -127,10 +130,29 @@ void protobuf_AssignDesc_ObjCIndex_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ObjCProtocol));
-  TranslationUnit_descriptor_ = file->message_type(4);
-  static const int TranslationUnit_offsets_[2] = {
+  ObjCCategory_descriptor_ = file->message_type(4);
+  static const int ObjCCategory_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, class_name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, category_name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, base_protocol_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, method_),
+  };
+  ObjCCategory_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ObjCCategory_descriptor_,
+      ObjCCategory::default_instance_,
+      ObjCCategory_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ObjCCategory));
+  TranslationUnit_descriptor_ = file->message_type(5);
+  static const int TranslationUnit_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslationUnit, class__),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslationUnit, protocol_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TranslationUnit, category_),
   };
   TranslationUnit_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -166,6 +188,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ObjCProtocol_descriptor_, &ObjCProtocol::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ObjCCategory_descriptor_, &ObjCCategory::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     TranslationUnit_descriptor_, &TranslationUnit::default_instance());
 }
 
@@ -182,6 +206,8 @@ void protobuf_ShutdownFile_ObjCIndex_2eproto() {
   delete ObjCClass_reflection_;
   delete ObjCProtocol::default_instance_;
   delete ObjCProtocol_reflection_;
+  delete ObjCCategory::default_instance_;
+  delete ObjCCategory_reflection_;
   delete TranslationUnit::default_instance_;
   delete TranslationUnit_reflection_;
 }
@@ -202,9 +228,13 @@ void protobuf_AddDesc_ObjCIndex_2eproto() {
     "\nbase_class\030\002 \001(\t\022\020\n\010protocol\030\003 \003(\t\022\033\n\006m"
     "ethod\030\004 \003(\0132\013.ObjCMethod\"P\n\014ObjCProtocol"
     "\022\014\n\004name\030\001 \002(\t\022\025\n\rbase_protocol\030\002 \003(\t\022\033\n"
-    "\006method\030\003 \003(\0132\013.ObjCMethod\"M\n\017Translatio"
-    "nUnit\022\031\n\005class\030\001 \003(\0132\n.ObjCClass\022\037\n\010prot"
-    "ocol\030\002 \003(\0132\r.ObjCProtocol", 465);
+    "\006method\030\003 \003(\0132\013.ObjCMethod\"m\n\014ObjCCatego"
+    "ry\022\022\n\nclass_name\030\001 \002(\t\022\025\n\rcategory_name\030"
+    "\002 \002(\t\022\025\n\rbase_protocol\030\003 \003(\t\022\033\n\006method\030\004"
+    " \003(\0132\013.ObjCMethod\"n\n\017TranslationUnit\022\031\n\005"
+    "class\030\001 \003(\0132\n.ObjCClass\022\037\n\010protocol\030\002 \003("
+    "\0132\r.ObjCProtocol\022\037\n\010category\030\003 \003(\0132\r.Obj"
+    "CCategory", 609);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ObjCIndex.proto", &protobuf_RegisterTypes);
   Function::default_instance_ = new Function();
@@ -212,12 +242,14 @@ void protobuf_AddDesc_ObjCIndex_2eproto() {
   ObjCMethod::default_instance_ = new ObjCMethod();
   ObjCClass::default_instance_ = new ObjCClass();
   ObjCProtocol::default_instance_ = new ObjCProtocol();
+  ObjCCategory::default_instance_ = new ObjCCategory();
   TranslationUnit::default_instance_ = new TranslationUnit();
   Function::default_instance_->InitAsDefaultInstance();
   Function_Parameter::default_instance_->InitAsDefaultInstance();
   ObjCMethod::default_instance_->InitAsDefaultInstance();
   ObjCClass::default_instance_->InitAsDefaultInstance();
   ObjCProtocol::default_instance_->InitAsDefaultInstance();
+  ObjCCategory::default_instance_->InitAsDefaultInstance();
   TranslationUnit::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_ObjCIndex_2eproto);
 }
@@ -1781,8 +1813,381 @@ void ObjCProtocol::Swap(ObjCProtocol* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int ObjCCategory::kClassNameFieldNumber;
+const int ObjCCategory::kCategoryNameFieldNumber;
+const int ObjCCategory::kBaseProtocolFieldNumber;
+const int ObjCCategory::kMethodFieldNumber;
+#endif  // !_MSC_VER
+
+ObjCCategory::ObjCCategory()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void ObjCCategory::InitAsDefaultInstance() {
+}
+
+ObjCCategory::ObjCCategory(const ObjCCategory& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void ObjCCategory::SharedCtor() {
+  _cached_size_ = 0;
+  class_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  category_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ObjCCategory::~ObjCCategory() {
+  SharedDtor();
+}
+
+void ObjCCategory::SharedDtor() {
+  if (class_name_ != &::google::protobuf::internal::kEmptyString) {
+    delete class_name_;
+  }
+  if (category_name_ != &::google::protobuf::internal::kEmptyString) {
+    delete category_name_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void ObjCCategory::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ObjCCategory::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ObjCCategory_descriptor_;
+}
+
+const ObjCCategory& ObjCCategory::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_ObjCIndex_2eproto();  return *default_instance_;
+}
+
+ObjCCategory* ObjCCategory::default_instance_ = NULL;
+
+ObjCCategory* ObjCCategory::New() const {
+  return new ObjCCategory;
+}
+
+void ObjCCategory::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_class_name()) {
+      if (class_name_ != &::google::protobuf::internal::kEmptyString) {
+        class_name_->clear();
+      }
+    }
+    if (has_category_name()) {
+      if (category_name_ != &::google::protobuf::internal::kEmptyString) {
+        category_name_->clear();
+      }
+    }
+  }
+  base_protocol_.Clear();
+  method_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ObjCCategory::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string class_name = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_class_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->class_name().data(), this->class_name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_category_name;
+        break;
+      }
+      
+      // required string category_name = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_category_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_category_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->category_name().data(), this->category_name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_base_protocol;
+        break;
+      }
+      
+      // repeated string base_protocol = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_base_protocol:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->add_base_protocol()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->base_protocol(0).data(), this->base_protocol(0).length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_base_protocol;
+        if (input->ExpectTag(34)) goto parse_method;
+        break;
+      }
+      
+      // repeated .ObjCMethod method = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_method:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_method()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_method;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void ObjCCategory::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required string class_name = 1;
+  if (has_class_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->class_name().data(), this->class_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->class_name(), output);
+  }
+  
+  // required string category_name = 2;
+  if (has_category_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->category_name().data(), this->category_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->category_name(), output);
+  }
+  
+  // repeated string base_protocol = 3;
+  for (int i = 0; i < this->base_protocol_size(); i++) {
+  ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    this->base_protocol(i).data(), this->base_protocol(i).length(),
+    ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      3, this->base_protocol(i), output);
+  }
+  
+  // repeated .ObjCMethod method = 4;
+  for (int i = 0; i < this->method_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, this->method(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* ObjCCategory::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required string class_name = 1;
+  if (has_class_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->class_name().data(), this->class_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->class_name(), target);
+  }
+  
+  // required string category_name = 2;
+  if (has_category_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->category_name().data(), this->category_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->category_name(), target);
+  }
+  
+  // repeated string base_protocol = 3;
+  for (int i = 0; i < this->base_protocol_size(); i++) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->base_protocol(i).data(), this->base_protocol(i).length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteStringToArray(3, this->base_protocol(i), target);
+  }
+  
+  // repeated .ObjCMethod method = 4;
+  for (int i = 0; i < this->method_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        4, this->method(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int ObjCCategory::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string class_name = 1;
+    if (has_class_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->class_name());
+    }
+    
+    // required string category_name = 2;
+    if (has_category_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->category_name());
+    }
+    
+  }
+  // repeated string base_protocol = 3;
+  total_size += 1 * this->base_protocol_size();
+  for (int i = 0; i < this->base_protocol_size(); i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+      this->base_protocol(i));
+  }
+  
+  // repeated .ObjCMethod method = 4;
+  total_size += 1 * this->method_size();
+  for (int i = 0; i < this->method_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->method(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ObjCCategory::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ObjCCategory* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ObjCCategory*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ObjCCategory::MergeFrom(const ObjCCategory& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  base_protocol_.MergeFrom(from.base_protocol_);
+  method_.MergeFrom(from.method_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_class_name()) {
+      set_class_name(from.class_name());
+    }
+    if (from.has_category_name()) {
+      set_category_name(from.category_name());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ObjCCategory::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ObjCCategory::CopyFrom(const ObjCCategory& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ObjCCategory::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  
+  for (int i = 0; i < method_size(); i++) {
+    if (!this->method(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void ObjCCategory::Swap(ObjCCategory* other) {
+  if (other != this) {
+    std::swap(class_name_, other->class_name_);
+    std::swap(category_name_, other->category_name_);
+    base_protocol_.Swap(&other->base_protocol_);
+    method_.Swap(&other->method_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ObjCCategory::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ObjCCategory_descriptor_;
+  metadata.reflection = ObjCCategory_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int TranslationUnit::kClassFieldNumber;
 const int TranslationUnit::kProtocolFieldNumber;
+const int TranslationUnit::kCategoryFieldNumber;
 #endif  // !_MSC_VER
 
 TranslationUnit::TranslationUnit()
@@ -1836,6 +2241,7 @@ TranslationUnit* TranslationUnit::New() const {
 void TranslationUnit::Clear() {
   class__.Clear();
   protocol_.Clear();
+  category_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -1872,6 +2278,21 @@ bool TranslationUnit::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(18)) goto parse_protocol;
+        if (input->ExpectTag(26)) goto parse_category;
+        break;
+      }
+      
+      // repeated .ObjCCategory category = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_category:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_category()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_category;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1906,6 +2327,12 @@ void TranslationUnit::SerializeWithCachedSizes(
       2, this->protocol(i), output);
   }
   
+  // repeated .ObjCCategory category = 3;
+  for (int i = 0; i < this->category_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->category(i), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -1926,6 +2353,13 @@ void TranslationUnit::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->protocol(i), target);
+  }
+  
+  // repeated .ObjCCategory category = 3;
+  for (int i = 0; i < this->category_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->category(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -1952,6 +2386,14 @@ int TranslationUnit::ByteSize() const {
     total_size +=
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
         this->protocol(i));
+  }
+  
+  // repeated .ObjCCategory category = 3;
+  total_size += 1 * this->category_size();
+  for (int i = 0; i < this->category_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->category(i));
   }
   
   if (!unknown_fields().empty()) {
@@ -1981,6 +2423,7 @@ void TranslationUnit::MergeFrom(const TranslationUnit& from) {
   GOOGLE_CHECK_NE(&from, this);
   class__.MergeFrom(from.class__);
   protocol_.MergeFrom(from.protocol_);
+  category_.MergeFrom(from.category_);
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -2004,6 +2447,9 @@ bool TranslationUnit::IsInitialized() const {
   for (int i = 0; i < protocol_size(); i++) {
     if (!this->protocol(i).IsInitialized()) return false;
   }
+  for (int i = 0; i < category_size(); i++) {
+    if (!this->category(i).IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -2011,6 +2457,7 @@ void TranslationUnit::Swap(TranslationUnit* other) {
   if (other != this) {
     class__.Swap(&other->class__);
     protocol_.Swap(&other->protocol_);
+    category_.Swap(&other->category_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
