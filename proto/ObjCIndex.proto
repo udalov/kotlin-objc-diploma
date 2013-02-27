@@ -14,17 +14,31 @@ message ObjCMethod {
     required bool class_method = 2;
 }
 
+message ObjCProperty {
+    required string name = 1;
+    required string type = 2;
+    // TODO: attributes like copy/readonly/nonatomic
+}
+
+message ObjCIvar {
+    required string name = 1;
+    required string type = 2;
+}
+
 message ObjCClass {
     required string name = 1;
     optional string base_class = 2;
     repeated string protocol = 3;
     repeated ObjCMethod method = 4;
+    repeated ObjCProperty property = 5;
+    repeated ObjCIvar ivar = 6;
 }
 
 message ObjCProtocol {
     required string name = 1;
     repeated string base_protocol = 2;
     repeated ObjCMethod method = 3;
+    repeated ObjCProperty property = 4;
 }
 
 message ObjCCategory {
@@ -32,6 +46,7 @@ message ObjCCategory {
     required string category_name = 2;
     repeated string base_protocol = 3;
     repeated ObjCMethod method = 4;
+    repeated ObjCProperty property = 5;
 }
 
 message TranslationUnit {

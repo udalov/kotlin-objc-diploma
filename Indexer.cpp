@@ -93,16 +93,20 @@ void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
     data->saveProtocolByUSR(info->entityInfo->USR, protocol);
 }
 
-ObjCMethod *createMethodInItsContainer(const CXIdxDeclInfo *info, OutputCollector *data) {
+std::string getNotNullSemanticContainerUSR(const CXIdxDeclInfo *info) {
     assertNotNull(info->semanticContainer);
     AutoCXString container = clang_getCursorUSR(info->semanticContainer->cursor);
-    auto containerUSR = container.str();
-    
-    auto clazz = data->loadClassByUSR(containerUSR);
+    return container.str();
+}
+
+ObjCMethod *createMethodInItsContainer(const CXIdxDeclInfo *info, OutputCollector *data) {
+    auto container = getNotNullSemanticContainerUSR(info);
+
+    auto clazz = data->loadClassByUSR(container);
     if (clazz) return clazz->add_method();
-    auto protocol = data->loadProtocolByUSR(containerUSR);
+    auto protocol = data->loadProtocolByUSR(container);
     if (protocol) return protocol->add_method();
-    auto category = data->loadCategoryByUSR(containerUSR);
+    auto category = data->loadCategoryByUSR(container);
     if (category) return category->add_method();
 
     return nullptr;
@@ -132,6 +136,46 @@ void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassM
     }
 }
 
+ObjCProperty *createPropertyInItsContainer(const CXIdxDeclInfo *info, OutputCollector *data) {
+    // TODO: generify the code somehow (see the same method above)
+    auto container = getNotNullSemanticContainerUSR(info);
+
+    auto clazz = data->loadClassByUSR(container);
+    if (clazz) return clazz->add_property();
+    auto protocol = data->loadProtocolByUSR(container);
+    if (protocol) return protocol->add_property();
+    auto category = data->loadCategoryByUSR(container);
+    if (category) return category->add_property();
+
+    return nullptr;
+}
+
+void indexProperty(const CXIdxDeclInfo *info, OutputCollector *data) {
+    ObjCProperty *property = createPropertyInItsContainer(info, data);
+    assertNotNull(property);
+
+    property->set_name(info->entityInfo->name);
+
+    auto type = getCursorTypeSpelling(clang_getCursorType(info->cursor));
+    property->set_type(type);
+}
+
+ObjCIvar *createIvarInItsContainer(const CXIdxDeclInfo *info, OutputCollector *data) {
+    auto container = getNotNullSemanticContainerUSR(info);
+    auto clazz = data->loadClassByUSR(container);
+    return clazz ? clazz->add_ivar() : nullptr;
+}
+
+void indexIvar(const CXIdxDeclInfo *info, OutputCollector *data) {
+    ObjCIvar *ivar = createIvarInItsContainer(info, data);
+    assertNotNull(ivar);
+
+    ivar->set_name(info->entityInfo->name);
+
+    auto type = getCursorTypeSpelling(clang_getCursorType(info->cursor));
+    ivar->set_type(type);
+}
+
 void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
     assertNotNull(clientData);
     assertNotNull(info);
@@ -150,6 +194,10 @@ void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
             indexMethod(info, data, false); break;
         case CXIdxEntity_ObjCClassMethod:
             indexMethod(info, data, true); break;
+        case CXIdxEntity_ObjCProperty:
+            indexProperty(info, data); break;
+        case CXIdxEntity_ObjCIvar:
+            indexIvar(info, data); break;
         default:
             break;
     }
