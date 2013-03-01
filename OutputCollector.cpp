@@ -9,41 +9,41 @@ void OutputCollector::writeToFile(const std::string& outputFile) {
     m_result.SerializeToOstream(&output);
 }
 
+namespace {
+    template<typename T> void saveByUSR(std::map<std::string, T *>& map, const std::string& usr, T *t) {
+        assertTrue(map.find(usr) == map.end());
+        map[usr] = t;
+    }
+
+    template<typename T> T *loadByUSR(const std::map<std::string, T *>& map, const std::string& usr) {
+        auto it = map.find(usr);
+        if (it == map.end()) return nullptr;
+        auto found = it->second;
+        assertNotNull(found);
+        return found;
+    }
+}
+
 void OutputCollector::saveClassByUSR(const std::string& usr, ObjCClass *clazz) {
-    assertTrue(m_classes.find(usr) == m_classes.end());
-    m_classes[usr] = clazz;
+    saveByUSR(m_classes, usr, clazz);
 }
 
 void OutputCollector::saveProtocolByUSR(const std::string& usr, ObjCProtocol *protocol) {
-    assertTrue(m_protocols.find(usr) == m_protocols.end());
-    m_protocols[usr] = protocol;
+    saveByUSR(m_protocols, usr, protocol);
 }
 
 void OutputCollector::saveCategoryByUSR(const std::string& usr, ObjCCategory *category) {
-    assertTrue(m_categories.find(usr) == m_categories.end());
-    m_categories[usr] = category;
+    saveByUSR(m_categories, usr, category);
 }
 
 ObjCClass *OutputCollector::loadClassByUSR(const std::string& usr) const {
-    auto it = m_classes.find(usr);
-    if (it == m_classes.end()) return nullptr;
-    auto clazz = it->second;
-    assertNotNull(clazz);
-    return clazz;
+    return loadByUSR(m_classes, usr);
 }
 
 ObjCProtocol *OutputCollector::loadProtocolByUSR(const std::string& usr) const {
-    auto it = m_protocols.find(usr);
-    if (it == m_protocols.end()) return nullptr;
-    auto protocol = it->second;
-    assertNotNull(protocol);
-    return protocol;
+    return loadByUSR(m_protocols, usr);
 }
 
 ObjCCategory *OutputCollector::loadCategoryByUSR(const std::string& usr) const {
-    auto it = m_categories.find(usr);
-    if (it == m_categories.end()) return nullptr;
-    auto category = it->second;
-    assertNotNull(category);
-    return category;
+    return loadByUSR(m_categories, usr);
 }
