@@ -2,3 +2,4 @@
 !*.xcodeproj/project.pbxproj
 .idea/workspace.xml
 *.out
+out
