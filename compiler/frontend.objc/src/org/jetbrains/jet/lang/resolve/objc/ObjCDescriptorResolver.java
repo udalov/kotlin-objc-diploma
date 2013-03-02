@@ -20,12 +20,30 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCModuleDescriptor;
 import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCNamespaceDescriptor;
+import org.jetbrains.jet.utils.ExceptionUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ObjCDescriptorResolver {
+    static {
+        System.loadLibrary("ObjCDescriptorResolver");
+    }
+
+    private native void buildObjCIndex(@NotNull String header, @NotNull String outputFileName);
+
     @NotNull
     public NamespaceDescriptor resolve(@NotNull /* TODO: List<File> */ File header) {
+        File tmpFile;
+        try {
+            tmpFile = File.createTempFile(System.currentTimeMillis() + "", "kotlin-objc");
+        }
+        catch (IOException e) {
+            throw ExceptionUtils.rethrow(e);
+        }
+
+        buildObjCIndex(header.getAbsolutePath(), tmpFile.getAbsolutePath());
+
         ObjCModuleDescriptor module = new ObjCModuleDescriptor();
         ObjCNamespaceDescriptor namespace = new ObjCNamespaceDescriptor(module);
         return namespace;
