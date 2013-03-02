@@ -1,2 +1,553 @@
 package objc
 
+public open class NSAffineTransform {
+}
+
+public open class NSAppleEventDescriptor {
+}
+
+public open class NSAppleEventManager {
+}
+
+public open class NSAppleScript {
+}
+
+public open class NSArchiver {
+}
+
+public open class NSArray {
+}
+
+public open class NSAssertionHandler {
+}
+
+public open class NSAttributedString {
+}
+
+public open class NSAutoreleasePool {
+}
+
+public open class NSBlockOperation {
+}
+
+public open class NSBundle {
+}
+
+public open class NSCache {
+}
+
+public open class NSCachedURLResponse {
+}
+
+public open class NSCalendar {
+}
+
+public open class NSCalendarDate {
+}
+
+public open class NSCharacterSet {
+}
+
+public open class NSClassDescription {
+}
+
+public open class NSCloneCommand {
+}
+
+public open class NSCloseCommand {
+}
+
+public open class NSCoder {
+}
+
+public open class NSComparisonPredicate {
+}
+
+public open class NSCompoundPredicate {
+}
+
+public open class NSCondition {
+}
+
+public open class NSConditionLock {
+}
+
+public open class NSConnection {
+}
+
+public open class NSConstantString {
+}
+
+public open class NSCountCommand {
+}
+
+public open class NSCountedSet {
+}
+
+public open class NSCreateCommand {
+}
+
+public open class NSData {
+}
+
+public open class NSDataDetector {
+}
+
+public open class NSDate {
+}
+
+public open class NSDateComponents {
+}
+
+public open class NSDateFormatter {
+}
+
+public open class NSDecimalNumber {
+}
+
+public open class NSDecimalNumberHandler {
+}
+
+public open class NSDeleteCommand {
+}
+
+public open class NSDictionary {
+}
+
+public open class NSDirectoryEnumerator {
+}
+
+public open class NSDistantObject {
+}
+
+public open class NSDistantObjectRequest {
+}
+
+public open class NSDistributedLock {
+}
+
+public open class NSDistributedNotificationCenter {
+}
+
+public open class NSEnumerator {
+}
+
+public open class NSError {
+}
+
+public open class NSException {
+}
+
+public open class NSExistsCommand {
+}
+
+public open class NSExpression {
+}
+
+public open class NSFileCoordinator {
+}
+
+public open class NSFileHandle {
+}
+
+public open class NSFileManager {
+}
+
+public open class NSFileSecurity {
+}
+
+public open class NSFileVersion {
+}
+
+public open class NSFileWrapper {
+}
+
+public open class NSFormatter {
+}
+
+public open class NSGarbageCollector {
+}
+
+public open class NSGetCommand {
+}
+
+public open class NSHTTPCookie {
+}
+
+public open class NSHTTPCookieStorage {
+}
+
+public open class NSHTTPURLResponse {
+}
+
+public open class NSHashTable {
+}
+
+public open class NSHost {
+}
+
+public open class NSIndexPath {
+}
+
+public open class NSIndexSet {
+}
+
+public open class NSIndexSpecifier {
+}
+
+public open class NSInputStream {
+}
+
+public open class NSInvocation {
+}
+
+public open class NSInvocationOperation {
+}
+
+public open class NSJSONSerialization {
+}
+
+public open class NSKeyedArchiver {
+}
+
+public open class NSKeyedUnarchiver {
+}
+
+public open class NSLinguisticTagger {
+}
+
+public open class NSLocale {
+}
+
+public open class NSLock {
+}
+
+public open class NSLogicalTest {
+}
+
+public open class NSMachBootstrapServer {
+}
+
+public open class NSMachPort {
+}
+
+public open class NSMapTable {
+}
+
+public open class NSMessagePort {
+}
+
+public open class NSMessagePortNameServer {
+}
+
+public open class NSMetadataItem {
+}
+
+public open class NSMetadataQuery {
+}
+
+public open class NSMetadataQueryAttributeValueTuple {
+}
+
+public open class NSMetadataQueryResultGroup {
+}
+
+public open class NSMethodSignature {
+}
+
+public open class NSMiddleSpecifier {
+}
+
+public open class NSMoveCommand {
+}
+
+public open class NSMutableArray {
+}
+
+public open class NSMutableAttributedString {
+}
+
+public open class NSMutableCharacterSet {
+}
+
+public open class NSMutableData {
+}
+
+public open class NSMutableDictionary {
+}
+
+public open class NSMutableIndexSet {
+}
+
+public open class NSMutableOrderedSet {
+}
+
+public open class NSMutableSet {
+}
+
+public open class NSMutableString {
+}
+
+public open class NSMutableURLRequest {
+}
+
+public open class NSNameSpecifier {
+}
+
+public open class NSNetService {
+}
+
+public open class NSNetServiceBrowser {
+}
+
+public open class NSNotification {
+}
+
+public open class NSNotificationCenter {
+}
+
+public open class NSNotificationQueue {
+}
+
+public open class NSNull {
+}
+
+public open class NSNumber {
+}
+
+public open class NSNumberFormatter {
+}
+
+public open class NSObject {
+}
+
+public open class NSOperation {
+}
+
+public open class NSOperationQueue {
+}
+
+public open class NSOrderedSet {
+}
+
+public open class NSOrthography {
+}
+
+public open class NSOutputStream {
+}
+
+public open class NSPipe {
+}
+
+public open class NSPointerArray {
+}
+
+public open class NSPointerFunctions {
+}
+
+public open class NSPort {
+}
+
+public open class NSPortCoder {
+}
+
+public open class NSPortMessage {
+}
+
+public open class NSPortNameServer {
+}
+
+public open class NSPositionalSpecifier {
+}
+
+public open class NSPredicate {
+}
+
+public open class NSProcessInfo {
+}
+
+public open class NSPropertyListSerialization {
+}
+
+public open class NSPropertySpecifier {
+}
+
+public open class NSProtocolChecker {
+}
+
+public open class NSProxy {
+}
+
+public open class NSPurgeableData {
+}
+
+public open class NSQuitCommand {
+}
+
+public open class NSRandomSpecifier {
+}
+
+public open class NSRangeSpecifier {
+}
+
+public open class NSRecursiveLock {
+}
+
+public open class NSRegularExpression {
+}
+
+public open class NSRelativeSpecifier {
+}
+
+public open class NSRunLoop {
+}
+
+public open class NSScanner {
+}
+
+public open class NSScriptClassDescription {
+}
+
+public open class NSScriptCoercionHandler {
+}
+
+public open class NSScriptCommand {
+}
+
+public open class NSScriptCommandDescription {
+}
+
+public open class NSScriptExecutionContext {
+}
+
+public open class NSScriptObjectSpecifier {
+}
+
+public open class NSScriptSuiteRegistry {
+}
+
+public open class NSScriptWhoseTest {
+}
+
+public open class NSSet {
+}
+
+public open class NSSetCommand {
+}
+
+public open class NSSimpleCString {
+}
+
+public open class NSSocketPort {
+}
+
+public open class NSSocketPortNameServer {
+}
+
+public open class NSSortDescriptor {
+}
+
+public open class NSSpecifierTest {
+}
+
+public open class NSSpellServer {
+}
+
+public open class NSStream {
+}
+
+public open class NSString {
+}
+
+public open class NSTask {
+}
+
+public open class NSTextCheckingResult {
+}
+
+public open class NSThread {
+}
+
+public open class NSTimeZone {
+}
+
+public open class NSTimer {
+}
+
+public open class NSURL {
+}
+
+public open class NSURLAuthenticationChallenge {
+}
+
+public open class NSURLCache {
+}
+
+public open class NSURLConnection {
+}
+
+public open class NSURLCredential {
+}
+
+public open class NSURLCredentialStorage {
+}
+
+public open class NSURLDownload {
+}
+
+public open class NSURLHandle {
+}
+
+public open class NSURLProtectionSpace {
+}
+
+public open class NSURLProtocol {
+}
+
+public open class NSURLRequest {
+}
+
+public open class NSURLResponse {
+}
+
+public open class NSUbiquitousKeyValueStore {
+}
+
+public open class NSUnarchiver {
+}
+
+public open class NSUndoManager {
+}
+
+public open class NSUniqueIDSpecifier {
+}
+
+public open class NSUserDefaults {
+}
+
+public open class NSValue {
+}
+
+public open class NSValueTransformer {
+}
+
+public open class NSWhoseSpecifier {
+}
+
+public open class NSXMLDTD {
+}
+
+public open class NSXMLDTDNode {
+}
+
+public open class NSXMLDocument {
+}
+
+public open class NSXMLElement {
+}
+
+public open class NSXMLNode {
+}
+
+public open class NSXMLParser {
+}

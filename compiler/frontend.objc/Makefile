@@ -5,6 +5,8 @@ CC=c++
 CC_FLAGS=-I$(JAVA_INCLUDE)
 LD_FLAGS=-Llib -lObjCIndex
 
+PROTO=ObjCIndex.proto
+
 SRC_FILES=jni/*.cc
 DYLIB=lib/libObjCDescriptorResolver.dylib
 
@@ -14,3 +16,6 @@ all:
 
 clean:
 	@rm -rf $(DYLIB)
+
+proto:
+	protoc $(PROTO) --java_out=src

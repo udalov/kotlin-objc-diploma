@@ -16,18 +16,23 @@
 
 package org.jetbrains.jet.objc;
 
-import junit.framework.TestCase;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.jet.ConfigurationKind;
+import org.jetbrains.jet.JetTestUtils;
+import org.jetbrains.jet.TestJdkKind;
+import org.jetbrains.jet.cli.jvm.compiler.JetCoreEnvironment;
+import org.jetbrains.jet.config.CompilerConfiguration;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.objc.ObjCDescriptorResolver;
+import org.jetbrains.jet.test.TestCaseWithTmpdir;
 
 import java.io.File;
 
 import static org.jetbrains.jet.test.util.NamespaceComparator.RECURSIVE;
 import static org.jetbrains.jet.test.util.NamespaceComparator.compareNamespaceWithFile;
 
-public class ObjCDescriptorResolverTest extends TestCase {
-    public static void doTest(@NotNull String filename) {
+public class ObjCDescriptorResolverTest extends TestCaseWithTmpdir {
+    public void doTest(@NotNull String filename) {
         String header = "compiler/testData/objc/" + filename;
 
         assert header.endsWith(".h") : header;
@@ -35,6 +40,10 @@ public class ObjCDescriptorResolverTest extends TestCase {
 
         ObjCDescriptorResolver resolver = new ObjCDescriptorResolver();
         NamespaceDescriptor descriptor = resolver.resolve(new File(header));
+
+        CompilerConfiguration configuration = JetTestUtils.compilerConfigurationForTests(ConfigurationKind.JDK_ONLY, TestJdkKind.MOCK_JDK);
+        new JetCoreEnvironment(getTestRootDisposable(), configuration);
+
         compareNamespaceWithFile(descriptor, RECURSIVE, expected);
     }
 

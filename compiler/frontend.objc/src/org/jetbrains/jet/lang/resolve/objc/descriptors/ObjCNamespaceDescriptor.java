@@ -24,11 +24,16 @@ import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
+import org.jetbrains.jet.lang.resolve.scopes.RedeclarationHandler;
+import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
+import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
 
 import java.util.Collections;
 
 public class ObjCNamespaceDescriptor extends AbstractNamespaceDescriptorImpl {
     public static final Name NAME = Name.identifier("objc");
+
+    private final WritableScope scope = new WritableScopeImpl(JetScope.EMPTY, this, RedeclarationHandler.THROW_EXCEPTION, NAME.getName());
 
     public ObjCNamespaceDescriptor(@NotNull NamespaceDescriptorParent containingDeclaration) {
         super(containingDeclaration, Collections.<AnnotationDescriptor>emptyList(), NAME);
@@ -36,8 +41,8 @@ public class ObjCNamespaceDescriptor extends AbstractNamespaceDescriptorImpl {
 
     @NotNull
     @Override
-    public JetScope getMemberScope() {
-        return JetScope.EMPTY;
+    public WritableScope getMemberScope() {
+        return scope;
     }
 
     @NotNull
