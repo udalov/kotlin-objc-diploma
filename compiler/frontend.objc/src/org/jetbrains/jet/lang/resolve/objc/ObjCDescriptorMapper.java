@@ -46,6 +46,12 @@ public class ObjCDescriptorMapper {
         return descriptor;
     }
 
+    @NotNull
+    public ClassDescriptor mapProtocol(@NotNull ObjCProtocol protocol, @NotNull Name name) {
+        TempClassDescriptor descriptor = new TempClassDescriptor(namespace, ClassKind.TRAIT, name);
+        return descriptor;
+    }
+
 
     private static class TempClassDescriptor extends MutableClassDescriptorLite {
         public TempClassDescriptor(@NotNull DeclarationDescriptor containingDeclaration, @NotNull ClassKind kind, @NotNull Name name) {

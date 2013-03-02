@@ -19,6 +19,7 @@ package org.jetbrains.jet.lang.resolve.objc;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
+import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCModuleDescriptor;
 import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCNamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
@@ -31,6 +32,8 @@ import java.io.IOException;
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
 public class ObjCDescriptorResolver {
+    public static final String PROTOCOL_NAME_SUFFIX = "Protocol";
+
     static {
         System.loadLibrary("ObjCDescriptorResolver");
     }
@@ -57,12 +60,25 @@ public class ObjCDescriptorResolver {
         ObjCNamespaceDescriptor namespace = new ObjCNamespaceDescriptor(module);
         ObjCDescriptorMapper mapper = new ObjCDescriptorMapper(namespace);
 
-        WritableScope scope = namespace.getMemberScope().changeLockLevel(WritableScope.LockLevel.WRITING);
+        WritableScope scope = namespace.getMemberScope().changeLockLevel(WritableScope.LockLevel.BOTH);
 
         for (ObjCClass clazz : translationUnit.getClassList()) {
             ClassDescriptor classDescriptor = mapper.mapClass(clazz);
             scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
         }
+
+        for (ObjCProtocol protocol : translationUnit.getProtocolList()) {
+            String protocolName = protocol.getName();
+            Name name = Name.identifier(protocolName);
+            if (scope.getClassifier(name) != null) {
+                // Since Objective-C classes and protocols exist in different namespaces and Kotlin classes and traits don't,
+                // we invent a new name here for the trait when a class with the same name exists already
+                name = Name.identifier(protocolName + PROTOCOL_NAME_SUFFIX);
+            }
+            ClassDescriptor classDescriptor = mapper.mapProtocol(protocol, name);
+            scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
+        }
+
 
         scope.changeLockLevel(WritableScope.LockLevel.READING);
 

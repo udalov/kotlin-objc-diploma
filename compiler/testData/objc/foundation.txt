@@ -36,6 +36,9 @@ public open class NSBundle {
 public open class NSCache {
 }
 
+public open trait NSCacheDelegate {
+}
+
 public open class NSCachedURLResponse {
 }
 
@@ -60,6 +63,9 @@ public open class NSCloseCommand {
 public open class NSCoder {
 }
 
+public open trait NSCoding {
+}
+
 public open class NSComparisonPredicate {
 }
 
@@ -75,7 +81,13 @@ public open class NSConditionLock {
 public open class NSConnection {
 }
 
+public open trait NSConnectionDelegate {
+}
+
 public open class NSConstantString {
+}
+
+public open trait NSCopying {
 }
 
 public open class NSCountCommand {
@@ -105,6 +117,9 @@ public open class NSDateFormatter {
 public open class NSDecimalNumber {
 }
 
+public open trait NSDecimalNumberBehaviors {
+}
+
 public open class NSDecimalNumberHandler {
 }
 
@@ -115,6 +130,9 @@ public open class NSDictionary {
 }
 
 public open class NSDirectoryEnumerator {
+}
+
+public open trait NSDiscardableContent {
 }
 
 public open class NSDistantObject {
@@ -144,6 +162,9 @@ public open class NSExistsCommand {
 public open class NSExpression {
 }
 
+public open trait NSFastEnumeration {
+}
+
 public open class NSFileCoordinator {
 }
 
@@ -151,6 +172,12 @@ public open class NSFileHandle {
 }
 
 public open class NSFileManager {
+}
+
+public open trait NSFileManagerDelegate {
+}
+
+public open trait NSFilePresenter {
 }
 
 public open class NSFileSecurity {
@@ -210,7 +237,13 @@ public open class NSJSONSerialization {
 public open class NSKeyedArchiver {
 }
 
+public open trait NSKeyedArchiverDelegate {
+}
+
 public open class NSKeyedUnarchiver {
+}
+
+public open trait NSKeyedUnarchiverDelegate {
 }
 
 public open class NSLinguisticTagger {
@@ -222,6 +255,9 @@ public open class NSLocale {
 public open class NSLock {
 }
 
+public open trait NSLocking {
+}
+
 public open class NSLogicalTest {
 }
 
@@ -229,6 +265,9 @@ public open class NSMachBootstrapServer {
 }
 
 public open class NSMachPort {
+}
+
+public open trait NSMachPortDelegate {
 }
 
 public open class NSMapTable {
@@ -247,6 +286,9 @@ public open class NSMetadataQuery {
 }
 
 public open class NSMetadataQueryAttributeValueTuple {
+}
+
+public open trait NSMetadataQueryDelegate {
 }
 
 public open class NSMetadataQueryResultGroup {
@@ -268,6 +310,9 @@ public open class NSMutableAttributedString {
 }
 
 public open class NSMutableCharacterSet {
+}
+
+public open trait NSMutableCopying {
 }
 
 public open class NSMutableData {
@@ -300,6 +345,12 @@ public open class NSNetService {
 public open class NSNetServiceBrowser {
 }
 
+public open trait NSNetServiceBrowserDelegate {
+}
+
+public open trait NSNetServiceDelegate {
+}
+
 public open class NSNotification {
 }
 
@@ -319,6 +370,9 @@ public open class NSNumberFormatter {
 }
 
 public open class NSObject {
+}
+
+public open trait NSObjectProtocol {
 }
 
 public open class NSOperation {
@@ -349,6 +403,9 @@ public open class NSPort {
 }
 
 public open class NSPortCoder {
+}
+
+public open trait NSPortDelegate {
 }
 
 public open class NSPortMessage {
@@ -453,7 +510,13 @@ public open class NSSpecifierTest {
 public open class NSSpellServer {
 }
 
+public open trait NSSpellServerDelegate {
+}
+
 public open class NSStream {
+}
+
+public open trait NSStreamDelegate {
 }
 
 public open class NSString {
@@ -480,10 +543,16 @@ public open class NSURL {
 public open class NSURLAuthenticationChallenge {
 }
 
+public open trait NSURLAuthenticationChallengeSender {
+}
+
 public open class NSURLCache {
 }
 
 public open class NSURLConnection {
+}
+
+public open trait NSURLConnectionDelegate {
 }
 
 public open class NSURLCredential {
@@ -495,13 +564,22 @@ public open class NSURLCredentialStorage {
 public open class NSURLDownload {
 }
 
+public open trait NSURLDownloadDelegate {
+}
+
 public open class NSURLHandle {
+}
+
+public open trait NSURLHandleClient {
 }
 
 public open class NSURLProtectionSpace {
 }
 
 public open class NSURLProtocol {
+}
+
+public open trait NSURLProtocolClient {
 }
 
 public open class NSURLRequest {
@@ -550,4 +628,7 @@ public open class NSXMLNode {
 }
 
 public open class NSXMLParser {
+}
+
+public open trait NSXMLParserDelegate {
 }
