@@ -1,0 +1,37 @@
+protocol {
+  name: "A"
+}
+protocol {
+  name: "B"
+  method {
+    function {
+      name: "foo"
+      return_type: "Void"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "bar"
+      return_type: "Int"
+    }
+    class_method: false
+  }
+}
+protocol {
+  name: "C"
+  method {
+    function {
+      name: "foo"
+      return_type: "Void"
+    }
+    class_method: true
+  }
+  method {
+    function {
+      name: "bar"
+      return_type: "Int"
+    }
+    class_method: true
+  }
+}
