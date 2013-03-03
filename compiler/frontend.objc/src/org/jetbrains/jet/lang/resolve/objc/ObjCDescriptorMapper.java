@@ -16,6 +16,7 @@
 
 package org.jetbrains.jet.lang.resolve.objc;
 
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
@@ -31,6 +32,7 @@ import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder.ClassObjectStatus;
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
@@ -150,8 +152,24 @@ public class ObjCDescriptorMapper {
         );
     }
 
+    private static final Map<String, JetType> BUILT_IN_TYPES = new ContainerUtil.ImmutableMapBuilder<String, JetType>()
+            .put("Void", KotlinBuiltIns.getInstance().getUnitType())
+            .put("Bool", KotlinBuiltIns.getInstance().getBooleanType())
+            .put("UShort", KotlinBuiltIns.getInstance().getShortType())
+            .put("UInt", KotlinBuiltIns.getInstance().getIntType())
+            .put("ULong", KotlinBuiltIns.getInstance().getIntType())
+            .put("ULongLong", KotlinBuiltIns.getInstance().getLongType())
+            .put("Short", KotlinBuiltIns.getInstance().getShortType())
+            .put("Int", KotlinBuiltIns.getInstance().getIntType())
+            .put("Long", KotlinBuiltIns.getInstance().getIntType())
+            .put("LongLong", KotlinBuiltIns.getInstance().getLongType())
+            .put("Float", KotlinBuiltIns.getInstance().getFloatType())
+            .put("Double", KotlinBuiltIns.getInstance().getDoubleType())
+            .build();
+
     @NotNull
     private JetType newTempType(@NotNull String name) {
-        return KotlinBuiltIns.getInstance().getNullableAnyType();
+        JetType builtInType = BUILT_IN_TYPES.get(name);
+        return builtInType != null ? builtInType : KotlinBuiltIns.getInstance().getNullableAnyType();
     }
 }
