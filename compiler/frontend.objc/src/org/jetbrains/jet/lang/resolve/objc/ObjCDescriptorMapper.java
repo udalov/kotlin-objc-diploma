@@ -46,24 +46,20 @@ public class ObjCDescriptorMapper {
     public ClassDescriptor mapClass(@NotNull ObjCClass clazz) {
         Name name = Name.identifier(clazz.getName());
         ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name);
-
-        List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
-        List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
-        filterClassAndInstanceMethods(clazz.getMethodList(), classMethods, instanceMethods);
-
-        addMethodsToClassScope(instanceMethods, descriptor);
-        createAndFillClassObjectIfNeeded(classMethods, descriptor);
-
-        descriptor.lockScopes();
-
+        resolveAndAddMethodsToClassOrProtocol(clazz.getMethodList(), descriptor);
         return descriptor;
     }
 
-    private void filterClassAndInstanceMethods(
-            @NotNull List<ObjCMethod> methods,
-            @NotNull List<ObjCMethod> classMethods,
-            @NotNull List<ObjCMethod> instanceMethods
-    ) {
+    @NotNull
+    public ClassDescriptor mapProtocol(@NotNull ObjCProtocol protocol, @NotNull Name name) {
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name);
+        resolveAndAddMethodsToClassOrProtocol(protocol.getMethodList(), descriptor);
+        return descriptor;
+    }
+
+    private void resolveAndAddMethodsToClassOrProtocol(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
+        List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
+        List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
         for (ObjCMethod method : methods) {
             if (method.getClassMethod()) {
                 classMethods.add(method);
@@ -72,6 +68,19 @@ public class ObjCDescriptorMapper {
                 instanceMethods.add(method);
             }
         }
+
+        addMethodsToClassScope(instanceMethods, descriptor);
+
+        if (!classMethods.isEmpty()) {
+            Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
+            ObjCClassDescriptor classObject = new ObjCClassDescriptor(namespace, ClassKind.CLASS_OBJECT, Modality.FINAL, name);
+            addMethodsToClassScope(classMethods, classObject);
+
+            ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
+            assert result == ClassObjectStatus.OK : result;
+        }
+
+        descriptor.lockScopes();
     }
 
     private void addMethodsToClassScope(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
@@ -80,33 +89,6 @@ public class ObjCDescriptorMapper {
             SimpleFunctionDescriptor functionDescriptor = mapMethod(method, descriptor);
             builder.addFunctionDescriptor(functionDescriptor);
         }
-    }
-
-    @NotNull
-    public ClassDescriptor mapProtocol(@NotNull ObjCProtocol protocol, @NotNull Name name) {
-        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name);
-
-        List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
-        List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
-        filterClassAndInstanceMethods(protocol.getMethodList(), classMethods, instanceMethods);
-
-        addMethodsToClassScope(instanceMethods, descriptor);
-        createAndFillClassObjectIfNeeded(classMethods, descriptor);
-
-        descriptor.lockScopes();
-
-        return descriptor;
-    }
-
-    private void createAndFillClassObjectIfNeeded(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
-        if (methods.isEmpty()) return;
-
-        Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
-        ObjCClassDescriptor classObject = new ObjCClassDescriptor(namespace, ClassKind.CLASS_OBJECT, Modality.FINAL, name);
-        addMethodsToClassScope(methods, classObject);
-
-        ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
-        assert result == ClassObjectStatus.OK : result;
     }
 
     @NotNull
