@@ -22,8 +22,16 @@ std::vector<std::string> extractProtocolNames(const CXIdxObjCProtocolRefListInfo
     return result;
 }
 
-std::string getCursorTypeSpelling(const CXType& type) {
+std::string getCursorTypeSpelling(const CXType& cursorType) {
     // TODO: full type serialization
+    auto type = cursorType;
+
+    while (type.kind == CXType_Typedef) {
+        auto declaration = clang_getTypeDeclaration(type);
+        type = clang_getTypedefDeclUnderlyingType(declaration);
+    }
+    assertFalse(type.kind == CXType_Invalid);
+
     AutoCXString spelling = clang_getTypeKindSpelling(type.kind);
     return spelling.str();
 }
