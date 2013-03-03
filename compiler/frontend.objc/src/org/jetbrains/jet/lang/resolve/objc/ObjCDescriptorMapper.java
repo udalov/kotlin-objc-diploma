@@ -17,24 +17,18 @@
 package org.jetbrains.jet.lang.resolve.objc;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
-import org.jetbrains.jet.lang.descriptors.impl.MutableClassDescriptorLite;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder;
 import org.jetbrains.jet.lang.descriptors.impl.SimpleFunctionDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.impl.ValueParameterDescriptorImpl;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCNamespaceDescriptor;
-import org.jetbrains.jet.lang.resolve.scopes.JetScope;
-import org.jetbrains.jet.lang.resolve.scopes.RedeclarationHandler;
-import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,7 +45,7 @@ public class ObjCDescriptorMapper {
     @NotNull
     public ClassDescriptor mapClass(@NotNull ObjCClass clazz) {
         Name name = Name.identifier(clazz.getName());
-        TempClassDescriptor descriptor = new TempClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name);
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name);
 
         List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
         List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
@@ -80,7 +74,7 @@ public class ObjCDescriptorMapper {
         }
     }
 
-    private void addMethodsToClassScope(@NotNull List<ObjCMethod> methods, @NotNull TempClassDescriptor descriptor) {
+    private void addMethodsToClassScope(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
         NamespaceLikeBuilder builder = descriptor.getBuilder();
         for (ObjCMethod method : methods) {
             SimpleFunctionDescriptor functionDescriptor = mapMethod(method, descriptor);
@@ -90,7 +84,7 @@ public class ObjCDescriptorMapper {
 
     @NotNull
     public ClassDescriptor mapProtocol(@NotNull ObjCProtocol protocol, @NotNull Name name) {
-        TempClassDescriptor descriptor = new TempClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name);
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name);
 
         List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
         List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
@@ -104,11 +98,11 @@ public class ObjCDescriptorMapper {
         return descriptor;
     }
 
-    private void createAndFillClassObjectIfNeeded(@NotNull List<ObjCMethod> methods, @NotNull TempClassDescriptor descriptor) {
+    private void createAndFillClassObjectIfNeeded(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
         if (methods.isEmpty()) return;
 
         Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
-        TempClassDescriptor classObject = new TempClassDescriptor(namespace, ClassKind.CLASS_OBJECT, Modality.FINAL, name);
+        ObjCClassDescriptor classObject = new ObjCClassDescriptor(namespace, ClassKind.CLASS_OBJECT, Modality.FINAL, name);
         addMethodsToClassScope(methods, classObject);
 
         ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
@@ -116,7 +110,7 @@ public class ObjCDescriptorMapper {
     }
 
     @NotNull
-    private SimpleFunctionDescriptor mapMethod(@NotNull ObjCMethod method, @NotNull TempClassDescriptor containingClass) {
+    private SimpleFunctionDescriptor mapMethod(@NotNull ObjCMethod method, @NotNull ObjCClassDescriptor containingClass) {
         Function function = method.getFunction();
         Name name = transformMethodName(function.getName());
         SimpleFunctionDescriptorImpl descriptor = new SimpleFunctionDescriptorImpl(containingClass,
@@ -177,38 +171,5 @@ public class ObjCDescriptorMapper {
     @NotNull
     private JetType newTempType(@NotNull String name) {
         return KotlinBuiltIns.getInstance().getNullableAnyType();
-    }
-
-    private static class TempClassDescriptor extends MutableClassDescriptorLite {
-        public TempClassDescriptor(
-                @NotNull DeclarationDescriptor containingDeclaration,
-                @NotNull ClassKind kind,
-                @NotNull Modality modality,
-                @NotNull Name name
-        ) {
-            super(containingDeclaration, kind, false);
-
-            setName(name);
-            setModality(modality);
-            setVisibility(Visibilities.PUBLIC);
-
-            WritableScopeImpl scope = new WritableScopeImpl(JetScope.EMPTY, this, RedeclarationHandler.THROW_EXCEPTION, "Obj-C class");
-            setScopeForMemberLookup(scope);
-            setTypeParameterDescriptors(Collections.<TypeParameterDescriptor>emptyList());
-
-            createTypeConstructor();
-        }
-
-        @NotNull
-        @Override
-        public Collection<ConstructorDescriptor> getConstructors() {
-            return Collections.emptyList();
-        }
-
-        @Nullable
-        @Override
-        public ConstructorDescriptor getUnsubstitutedPrimaryConstructor() {
-            return null;
-        }
     }
 }
