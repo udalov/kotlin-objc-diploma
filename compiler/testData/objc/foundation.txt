@@ -1,426 +1,1724 @@
 package objc
 
 public open class NSAffineTransform {
+    public open fun appendTransform(/*0*/ transform : jet.Any?) : jet.Any?
+    public open fun initWithTransform(/*0*/ transform : jet.Any?) : jet.Any?
+    public open fun invert() : jet.Any?
+    public open fun prependTransform(/*0*/ transform : jet.Any?) : jet.Any?
+    public open fun rotateByDegrees(/*0*/ angle : jet.Any?) : jet.Any?
+    public open fun rotateByRadians(/*0*/ angle : jet.Any?) : jet.Any?
+    public open fun scaleBy(/*0*/ scale : jet.Any?) : jet.Any?
+    public open fun scaleXBy(/*0*/ scaleX : jet.Any?, /*1*/ scaleY : jet.Any?) : jet.Any?
+    public open fun setTransformStruct(/*0*/ transformStruct : jet.Any?) : jet.Any?
+    public open fun transformPoint(/*0*/ aPoint : jet.Any?) : jet.Any?
+    public open fun transformSize(/*0*/ aSize : jet.Any?) : jet.Any?
+    public open fun transformStruct() : jet.Any?
+    public open fun translateXBy(/*0*/ deltaX : jet.Any?, /*1*/ deltaY : jet.Any?) : jet.Any?
 }
 
 public open class NSAppleEventDescriptor {
+    public open fun aeDesc() : jet.Any?
+    public open fun attributeDescriptorForKeyword(/*0*/ keyword : jet.Any?) : jet.Any?
+    public open fun booleanValue() : jet.Any?
+    public open fun coerceToDescriptorType(/*0*/ descriptorType : jet.Any?) : jet.Any?
+    public open fun data() : jet.Any?
+    public open fun descriptorAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun descriptorForKeyword(/*0*/ keyword : jet.Any?) : jet.Any?
+    public open fun descriptorType() : jet.Any?
+    public open fun enumCodeValue() : jet.Any?
+    public open fun eventClass() : jet.Any?
+    public open fun eventID() : jet.Any?
+    public open fun initListDescriptor() : jet.Any?
+    public open fun initRecordDescriptor() : jet.Any?
+    public open fun initWithAEDescNoCopy(/*0*/ aeDesc : jet.Any?) : jet.Any?
+    public open fun initWithDescriptorType(/*0*/ descriptorType : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
+    public open fun initWithDescriptorType(/*0*/ descriptorType : jet.Any?, /*1*/ bytes : jet.Any?, /*2*/ byteCount : jet.Any?) : jet.Any?
+    public open fun initWithEventClass(/*0*/ eventClass : jet.Any?, /*1*/ eventID : jet.Any?, /*2*/ targetDescriptor : jet.Any?, /*3*/ returnID : jet.Any?, /*4*/ transactionID : jet.Any?) : jet.Any?
+    public open fun insertDescriptor(/*0*/ descriptor : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun int32Value() : jet.Any?
+    public open fun keywordForDescriptorAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun numberOfItems() : jet.Any?
+    public open fun paramDescriptorForKeyword(/*0*/ keyword : jet.Any?) : jet.Any?
+    public open fun removeDescriptorAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun removeDescriptorWithKeyword(/*0*/ keyword : jet.Any?) : jet.Any?
+    public open fun removeParamDescriptorWithKeyword(/*0*/ keyword : jet.Any?) : jet.Any?
+    public open fun returnID() : jet.Any?
+    public open fun setAttributeDescriptor(/*0*/ descriptor : jet.Any?, /*1*/ keyword : jet.Any?) : jet.Any?
+    public open fun setDescriptor(/*0*/ descriptor : jet.Any?, /*1*/ keyword : jet.Any?) : jet.Any?
+    public open fun setParamDescriptor(/*0*/ descriptor : jet.Any?, /*1*/ keyword : jet.Any?) : jet.Any?
+    public open fun stringValue() : jet.Any?
+    public open fun transactionID() : jet.Any?
+    public open fun typeCodeValue() : jet.Any?
 }
 
 public open class NSAppleEventManager {
+    public open fun appleEventForSuspensionID(/*0*/ suspensionID : jet.Any?) : jet.Any?
+    public open fun currentAppleEvent() : jet.Any?
+    public open fun currentReplyAppleEvent() : jet.Any?
+    public open fun dispatchRawAppleEvent(/*0*/ theAppleEvent : jet.Any?, /*1*/ theReply : jet.Any?, /*2*/ handlerRefCon : jet.Any?) : jet.Any?
+    public open fun removeEventHandlerForEventClass(/*0*/ eventClass : jet.Any?, /*1*/ eventID : jet.Any?) : jet.Any?
+    public open fun replyAppleEventForSuspensionID(/*0*/ suspensionID : jet.Any?) : jet.Any?
+    public open fun resumeWithSuspensionID(/*0*/ suspensionID : jet.Any?) : jet.Any?
+    public open fun setCurrentAppleEventAndReplyEventWithSuspensionID(/*0*/ suspensionID : jet.Any?) : jet.Any?
+    public open fun setEventHandler(/*0*/ handler : jet.Any?, /*1*/ handleEventSelector : jet.Any?, /*2*/ eventClass : jet.Any?, /*3*/ eventID : jet.Any?) : jet.Any?
+    public open fun suspendCurrentAppleEvent() : jet.Any?
 }
 
 public open class NSAppleScript {
+    public open fun compileAndReturnError(/*0*/ errorInfo : jet.Any?) : jet.Any?
+    public open fun executeAndReturnError(/*0*/ errorInfo : jet.Any?) : jet.Any?
+    public open fun executeAppleEvent(/*0*/ event : jet.Any?, /*1*/ errorInfo : jet.Any?) : jet.Any?
+    public open fun initWithContentsOfURL(/*0*/ url : jet.Any?, /*1*/ errorInfo : jet.Any?) : jet.Any?
+    public open fun initWithSource(/*0*/ source : jet.Any?) : jet.Any?
+    public open fun isCompiled() : jet.Any?
+    public open fun source() : jet.Any?
 }
 
 public open class NSArchiver {
+    public open fun archiverData() : jet.Any?
+    public open fun classNameEncodedForTrueClassName(/*0*/ trueName : jet.Any?) : jet.Any?
+    public open fun encodeClassName(/*0*/ trueName : jet.Any?, /*1*/ inArchiveName : jet.Any?) : jet.Any?
+    public open fun encodeConditionalObject(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun encodeRootObject(/*0*/ rootObject : jet.Any?) : jet.Any?
+    public open fun initForWritingWithMutableData(/*0*/ mdata : jet.Any?) : jet.Any?
+    public open fun replaceObject(/*0*/ `object` : jet.Any?, /*1*/ newObject : jet.Any?) : jet.Any?
 }
 
 public open class NSArray {
+    public open fun count() : jet.Any?
+    public open fun objectAtIndex(/*0*/ index : jet.Any?) : jet.Any?
 }
 
 public open class NSAssertionHandler {
+    public open fun handleFailureInFunction(/*0*/ functionName : jet.Any?, /*1*/ fileName : jet.Any?, /*2*/ line : jet.Any?, /*3*/ format : jet.Any?) : jet.Any?
+    public open fun handleFailureInMethod(/*0*/ selector : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ fileName : jet.Any?, /*3*/ line : jet.Any?, /*4*/ format : jet.Any?) : jet.Any?
 }
 
 public open class NSAttributedString {
+    public open fun attributesAtIndex(/*0*/ location : jet.Any?, /*1*/ range : jet.Any?) : jet.Any?
+    public open fun string() : jet.Any?
 }
 
 public open class NSAutoreleasePool {
+    public open fun addObject(/*0*/ anObject : jet.Any?) : jet.Any?
+    public open fun drain() : jet.Any?
 }
 
 public open class NSBlockOperation {
+    public open fun addExecutionBlock(/*0*/ block : jet.Any?) : jet.Any?
+    public open fun executionBlocks() : jet.Any?
 }
 
 public open class NSBundle {
+    public open fun URLForAuxiliaryExecutable(/*0*/ executableName : jet.Any?) : jet.Any?
+    public open fun URLForResource(/*0*/ name : jet.Any?, /*1*/ ext : jet.Any?) : jet.Any?
+    public open fun URLForResource(/*0*/ name : jet.Any?, /*1*/ ext : jet.Any?, /*2*/ subpath : jet.Any?) : jet.Any?
+    public open fun URLForResource(/*0*/ name : jet.Any?, /*1*/ ext : jet.Any?, /*2*/ subpath : jet.Any?, /*3*/ localizationName : jet.Any?) : jet.Any?
+    public open fun URLsForResourcesWithExtension(/*0*/ ext : jet.Any?, /*1*/ subpath : jet.Any?) : jet.Any?
+    public open fun URLsForResourcesWithExtension(/*0*/ ext : jet.Any?, /*1*/ subpath : jet.Any?, /*2*/ localizationName : jet.Any?) : jet.Any?
+    public open fun appStoreReceiptURL() : jet.Any?
+    public open fun builtInPlugInsPath() : jet.Any?
+    public open fun builtInPlugInsURL() : jet.Any?
+    public open fun bundleIdentifier() : jet.Any?
+    public open fun bundlePath() : jet.Any?
+    public open fun bundleURL() : jet.Any?
+    public open fun classNamed(/*0*/ className : jet.Any?) : jet.Any?
+    public open fun developmentLocalization() : jet.Any?
+    public open fun executableArchitectures() : jet.Any?
+    public open fun executablePath() : jet.Any?
+    public open fun executableURL() : jet.Any?
+    public open fun infoDictionary() : jet.Any?
+    public open fun initWithPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun initWithURL(/*0*/ url : jet.Any?) : jet.Any?
+    public open fun isLoaded() : jet.Any?
+    public open fun load() : jet.Any?
+    public open fun loadAndReturnError(/*0*/ error : jet.Any?) : jet.Any?
+    public open fun localizations() : jet.Any?
+    public open fun localizedInfoDictionary() : jet.Any?
+    public open fun localizedStringForKey(/*0*/ key : jet.Any?, /*1*/ value : jet.Any?, /*2*/ tableName : jet.Any?) : jet.Any?
+    public open fun objectForInfoDictionaryKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun pathForAuxiliaryExecutable(/*0*/ executableName : jet.Any?) : jet.Any?
+    public open fun pathForResource(/*0*/ name : jet.Any?, /*1*/ ext : jet.Any?) : jet.Any?
+    public open fun pathForResource(/*0*/ name : jet.Any?, /*1*/ ext : jet.Any?, /*2*/ subpath : jet.Any?) : jet.Any?
+    public open fun pathForResource(/*0*/ name : jet.Any?, /*1*/ ext : jet.Any?, /*2*/ subpath : jet.Any?, /*3*/ localizationName : jet.Any?) : jet.Any?
+    public open fun pathsForResourcesOfType(/*0*/ ext : jet.Any?, /*1*/ subpath : jet.Any?) : jet.Any?
+    public open fun pathsForResourcesOfType(/*0*/ ext : jet.Any?, /*1*/ subpath : jet.Any?, /*2*/ localizationName : jet.Any?) : jet.Any?
+    public open fun preferredLocalizations() : jet.Any?
+    public open fun preflightAndReturnError(/*0*/ error : jet.Any?) : jet.Any?
+    public open fun principalClass() : jet.Any?
+    public open fun privateFrameworksPath() : jet.Any?
+    public open fun privateFrameworksURL() : jet.Any?
+    public open fun resourcePath() : jet.Any?
+    public open fun resourceURL() : jet.Any?
+    public open fun sharedFrameworksPath() : jet.Any?
+    public open fun sharedFrameworksURL() : jet.Any?
+    public open fun sharedSupportPath() : jet.Any?
+    public open fun sharedSupportURL() : jet.Any?
+    public open fun unload() : jet.Any?
 }
 
 public open class NSCache {
+    public open fun countLimit() : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun evictsObjectsWithDiscardedContent() : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun objectForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun removeAllObjects() : jet.Any?
+    public open fun removeObjectForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun setCountLimit(/*0*/ lim : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ d : jet.Any?) : jet.Any?
+    public open fun setEvictsObjectsWithDiscardedContent(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setName(/*0*/ n : jet.Any?) : jet.Any?
+    public open fun setObject(/*0*/ obj : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun setObject(/*0*/ obj : jet.Any?, /*1*/ key : jet.Any?, /*2*/ g : jet.Any?) : jet.Any?
+    public open fun setTotalCostLimit(/*0*/ lim : jet.Any?) : jet.Any?
+    public open fun totalCostLimit() : jet.Any?
 }
 
 public open trait NSCacheDelegate {
+    public open fun cache(/*0*/ cache : jet.Any?, /*1*/ obj : jet.Any?) : jet.Any?
 }
 
 public open class NSCachedURLResponse {
+    public open fun data() : jet.Any?
+    public open fun initWithResponse(/*0*/ response : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
+    public open fun initWithResponse(/*0*/ response : jet.Any?, /*1*/ data : jet.Any?, /*2*/ userInfo : jet.Any?, /*3*/ storagePolicy : jet.Any?) : jet.Any?
+    public open fun response() : jet.Any?
+    public open fun storagePolicy() : jet.Any?
+    public open fun userInfo() : jet.Any?
 }
 
 public open class NSCalendar {
+    public open fun calendarIdentifier() : jet.Any?
+    public open fun components(/*0*/ unitFlags : jet.Any?, /*1*/ date : jet.Any?) : jet.Any?
+    public open fun components(/*0*/ unitFlags : jet.Any?, /*1*/ startingDate : jet.Any?, /*2*/ resultDate : jet.Any?, /*3*/ opts : jet.Any?) : jet.Any?
+    public open fun dateByAddingComponents(/*0*/ comps : jet.Any?, /*1*/ date : jet.Any?, /*2*/ opts : jet.Any?) : jet.Any?
+    public open fun dateFromComponents(/*0*/ comps : jet.Any?) : jet.Any?
+    public open fun firstWeekday() : jet.Any?
+    public open fun initWithCalendarIdentifier(/*0*/ ident : jet.Any?) : jet.Any?
+    public open fun locale() : jet.Any?
+    public open fun maximumRangeOfUnit(/*0*/ unit : jet.Any?) : jet.Any?
+    public open fun minimumDaysInFirstWeek() : jet.Any?
+    public open fun minimumRangeOfUnit(/*0*/ unit : jet.Any?) : jet.Any?
+    public open fun ordinalityOfUnit(/*0*/ smaller : jet.Any?, /*1*/ larger : jet.Any?, /*2*/ date : jet.Any?) : jet.Any?
+    public open fun rangeOfUnit(/*0*/ smaller : jet.Any?, /*1*/ larger : jet.Any?, /*2*/ date : jet.Any?) : jet.Any?
+    public open fun rangeOfUnit(/*0*/ unit : jet.Any?, /*1*/ datep : jet.Any?, /*2*/ tip : jet.Any?, /*3*/ date : jet.Any?) : jet.Any?
+    public open fun setFirstWeekday(/*0*/ weekday : jet.Any?) : jet.Any?
+    public open fun setLocale(/*0*/ locale : jet.Any?) : jet.Any?
+    public open fun setMinimumDaysInFirstWeek(/*0*/ mdw : jet.Any?) : jet.Any?
+    public open fun setTimeZone(/*0*/ tz : jet.Any?) : jet.Any?
+    public open fun timeZone() : jet.Any?
 }
 
 public open class NSCalendarDate {
+    public open fun calendarFormat() : jet.Any?
+    public open fun dateByAddingYears(/*0*/ year : jet.Any?, /*1*/ month : jet.Any?, /*2*/ day : jet.Any?, /*3*/ hour : jet.Any?, /*4*/ minute : jet.Any?, /*5*/ second : jet.Any?) : jet.Any?
+    public open fun dayOfCommonEra() : jet.Any?
+    public open fun dayOfMonth() : jet.Any?
+    public open fun dayOfWeek() : jet.Any?
+    public open fun dayOfYear() : jet.Any?
+    public open fun descriptionWithCalendarFormat(/*0*/ format : jet.Any?) : jet.Any?
+    public open fun descriptionWithCalendarFormat(/*0*/ format : jet.Any?, /*1*/ locale : jet.Any?) : jet.Any?
+    public open fun descriptionWithLocale(/*0*/ locale : jet.Any?) : jet.Any?
+    public open fun hourOfDay() : jet.Any?
+    public open fun initWithString(/*0*/ description : jet.Any?) : jet.Any?
+    public open fun initWithString(/*0*/ description : jet.Any?, /*1*/ format : jet.Any?) : jet.Any?
+    public open fun initWithString(/*0*/ description : jet.Any?, /*1*/ format : jet.Any?, /*2*/ locale : jet.Any?) : jet.Any?
+    public open fun initWithYear(/*0*/ year : jet.Any?, /*1*/ month : jet.Any?, /*2*/ day : jet.Any?, /*3*/ hour : jet.Any?, /*4*/ minute : jet.Any?, /*5*/ second : jet.Any?, /*6*/ aTimeZone : jet.Any?) : jet.Any?
+    public open fun minuteOfHour() : jet.Any?
+    public open fun monthOfYear() : jet.Any?
+    public open fun secondOfMinute() : jet.Any?
+    public open fun setCalendarFormat(/*0*/ format : jet.Any?) : jet.Any?
+    public open fun setTimeZone(/*0*/ aTimeZone : jet.Any?) : jet.Any?
+    public open fun timeZone() : jet.Any?
+    public open fun yearOfCommonEra() : jet.Any?
+    public open fun years(/*0*/ yp : jet.Any?, /*1*/ mop : jet.Any?, /*2*/ dp : jet.Any?, /*3*/ hp : jet.Any?, /*4*/ mip : jet.Any?, /*5*/ sp : jet.Any?, /*6*/ date : jet.Any?) : jet.Any?
 }
 
 public open class NSCharacterSet {
+    public open fun bitmapRepresentation() : jet.Any?
+    public open fun characterIsMember(/*0*/ aCharacter : jet.Any?) : jet.Any?
+    public open fun hasMemberInPlane(/*0*/ thePlane : jet.Any?) : jet.Any?
+    public open fun invertedSet() : jet.Any?
+    public open fun isSupersetOfSet(/*0*/ theOtherSet : jet.Any?) : jet.Any?
+    public open fun longCharacterIsMember(/*0*/ theLongChar : jet.Any?) : jet.Any?
 }
 
 public open class NSClassDescription {
+    public open fun attributeKeys() : jet.Any?
+    public open fun inverseForRelationshipKey(/*0*/ relationshipKey : jet.Any?) : jet.Any?
+    public open fun toManyRelationshipKeys() : jet.Any?
+    public open fun toOneRelationshipKeys() : jet.Any?
 }
 
 public open class NSCloneCommand {
+    public open fun keySpecifier() : jet.Any?
+    public open fun setReceiversSpecifier(/*0*/ receiversRef : jet.Any?) : jet.Any?
 }
 
 public open class NSCloseCommand {
+    public open fun saveOptions() : jet.Any?
 }
 
 public open class NSCoder {
+    public open fun decodeDataObject() : jet.Any?
+    public open fun decodeValueOfObjCType(/*0*/ `type` : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
+    public open fun encodeDataObject(/*0*/ data : jet.Any?) : jet.Any?
+    public open fun encodeValueOfObjCType(/*0*/ `type` : jet.Any?, /*1*/ addr : jet.Any?) : jet.Any?
+    public open fun versionForClassName(/*0*/ className : jet.Any?) : jet.Any?
 }
 
 public open trait NSCoding {
+    public open fun encodeWithCoder(/*0*/ aCoder : jet.Any?) : jet.Any?
+    public open fun initWithCoder(/*0*/ aDecoder : jet.Any?) : jet.Any?
 }
 
 public open class NSComparisonPredicate {
+    public open fun comparisonPredicateModifier() : jet.Any?
+    public open fun customSelector() : jet.Any?
+    public open fun initWithLeftExpression(/*0*/ lhs : jet.Any?, /*1*/ rhs : jet.Any?, /*2*/ selector : jet.Any?) : jet.Any?
+    public open fun initWithLeftExpression(/*0*/ lhs : jet.Any?, /*1*/ rhs : jet.Any?, /*2*/ modifier : jet.Any?, /*3*/ `type` : jet.Any?, /*4*/ options : jet.Any?) : jet.Any?
+    public open fun leftExpression() : jet.Any?
+    public open fun options() : jet.Any?
+    public open fun predicateOperatorType() : jet.Any?
+    public open fun rightExpression() : jet.Any?
 }
 
 public open class NSCompoundPredicate {
+    public open fun compoundPredicateType() : jet.Any?
+    public open fun initWithType(/*0*/ `type` : jet.Any?, /*1*/ subpredicates : jet.Any?) : jet.Any?
+    public open fun subpredicates() : jet.Any?
 }
 
 public open class NSCondition {
+    public open fun broadcast() : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun setName(/*0*/ n : jet.Any?) : jet.Any?
+    public open fun signal() : jet.Any?
+    public open fun wait() : jet.Any?
+    public open fun waitUntilDate(/*0*/ limit : jet.Any?) : jet.Any?
 }
 
 public open class NSConditionLock {
+    public open fun condition() : jet.Any?
+    public open fun initWithCondition(/*0*/ condition : jet.Any?) : jet.Any?
+    public open fun lockBeforeDate(/*0*/ limit : jet.Any?) : jet.Any?
+    public open fun lockWhenCondition(/*0*/ condition : jet.Any?) : jet.Any?
+    public open fun lockWhenCondition(/*0*/ condition : jet.Any?, /*1*/ limit : jet.Any?) : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun setName(/*0*/ n : jet.Any?) : jet.Any?
+    public open fun tryLock() : jet.Any?
+    public open fun tryLockWhenCondition(/*0*/ condition : jet.Any?) : jet.Any?
+    public open fun unlockWithCondition(/*0*/ condition : jet.Any?) : jet.Any?
 }
 
 public open class NSConnection {
+    public open fun addRequestMode(/*0*/ rmode : jet.Any?) : jet.Any?
+    public open fun addRunLoop(/*0*/ runloop : jet.Any?) : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun dispatchWithComponents(/*0*/ components : jet.Any?) : jet.Any?
+    public open fun enableMultipleThreads() : jet.Any?
+    public open fun independentConversationQueueing() : jet.Any?
+    public open fun initWithReceivePort(/*0*/ receivePort : jet.Any?, /*1*/ sendPort : jet.Any?) : jet.Any?
+    public open fun invalidate() : jet.Any?
+    public open fun isValid() : jet.Any?
+    public open fun localObjects() : jet.Any?
+    public open fun multipleThreadsEnabled() : jet.Any?
+    public open fun receivePort() : jet.Any?
+    public open fun registerName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun registerName(/*0*/ name : jet.Any?, /*1*/ server : jet.Any?) : jet.Any?
+    public open fun remoteObjects() : jet.Any?
+    public open fun removeRequestMode(/*0*/ rmode : jet.Any?) : jet.Any?
+    public open fun removeRunLoop(/*0*/ runloop : jet.Any?) : jet.Any?
+    public open fun replyTimeout() : jet.Any?
+    public open fun requestModes() : jet.Any?
+    public open fun requestTimeout() : jet.Any?
+    public open fun rootObject() : jet.Any?
+    public open fun rootProxy() : jet.Any?
+    public open fun runInNewThread() : jet.Any?
+    public open fun sendPort() : jet.Any?
+    public open fun setDelegate(/*0*/ anObject : jet.Any?) : jet.Any?
+    public open fun setIndependentConversationQueueing(/*0*/ yorn : jet.Any?) : jet.Any?
+    public open fun setReplyTimeout(/*0*/ ti : jet.Any?) : jet.Any?
+    public open fun setRequestTimeout(/*0*/ ti : jet.Any?) : jet.Any?
+    public open fun setRootObject(/*0*/ anObject : jet.Any?) : jet.Any?
+    public open fun statistics() : jet.Any?
 }
 
 public open trait NSConnectionDelegate {
+    public open fun authenticateComponents(/*0*/ components : jet.Any?, /*1*/ signature : jet.Any?) : jet.Any?
+    public open fun authenticationDataForComponents(/*0*/ components : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ ancestor : jet.Any?, /*1*/ conn : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ doreq : jet.Any?) : jet.Any?
+    public open fun createConversationForConnection(/*0*/ conn : jet.Any?) : jet.Any?
+    public open fun makeNewConnection(/*0*/ conn : jet.Any?, /*1*/ ancestor : jet.Any?) : jet.Any?
 }
 
 public open class NSConstantString {
 }
 
 public open trait NSCopying {
+    public open fun copyWithZone(/*0*/ zone : jet.Any?) : jet.Any?
 }
 
 public open class NSCountCommand {
 }
 
 public open class NSCountedSet {
+    public open fun addObject(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun countForObject(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun initWithArray(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun initWithCapacity(/*0*/ numItems : jet.Any?) : jet.Any?
+    public open fun initWithSet(/*0*/ set : jet.Any?) : jet.Any?
+    public open fun objectEnumerator() : jet.Any?
+    public open fun removeObject(/*0*/ `object` : jet.Any?) : jet.Any?
 }
 
 public open class NSCreateCommand {
+    public open fun createClassDescription() : jet.Any?
+    public open fun resolvedKeyDictionary() : jet.Any?
 }
 
 public open class NSData {
+    public open fun bytes() : jet.Any?
+    public open fun length() : jet.Any?
 }
 
 public open class NSDataDetector {
+    public open fun checkingTypes() : jet.Any?
+    public open fun initWithTypes(/*0*/ checkingTypes : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
 }
 
 public open class NSDate {
+    public open fun timeIntervalSinceReferenceDate() : jet.Any?
 }
 
 public open class NSDateComponents {
+    public open fun calendar() : jet.Any?
+    public open fun date() : jet.Any?
+    public open fun day() : jet.Any?
+    public open fun era() : jet.Any?
+    public open fun hour() : jet.Any?
+    public open fun minute() : jet.Any?
+    public open fun month() : jet.Any?
+    public open fun quarter() : jet.Any?
+    public open fun second() : jet.Any?
+    public open fun setCalendar(/*0*/ cal : jet.Any?) : jet.Any?
+    public open fun setDay(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setEra(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setHour(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setMinute(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setMonth(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setQuarter(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setSecond(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setTimeZone(/*0*/ tz : jet.Any?) : jet.Any?
+    public open fun setWeek(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setWeekOfMonth(/*0*/ w : jet.Any?) : jet.Any?
+    public open fun setWeekOfYear(/*0*/ w : jet.Any?) : jet.Any?
+    public open fun setWeekday(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setWeekdayOrdinal(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setYear(/*0*/ v : jet.Any?) : jet.Any?
+    public open fun setYearForWeekOfYear(/*0*/ y : jet.Any?) : jet.Any?
+    public open fun timeZone() : jet.Any?
+    public open fun week() : jet.Any?
+    public open fun weekOfMonth() : jet.Any?
+    public open fun weekOfYear() : jet.Any?
+    public open fun weekday() : jet.Any?
+    public open fun weekdayOrdinal() : jet.Any?
+    public open fun year() : jet.Any?
+    public open fun yearForWeekOfYear() : jet.Any?
 }
 
 public open class NSDateFormatter {
+    public open fun AMSymbol() : jet.Any?
+    public open fun PMSymbol() : jet.Any?
+    public open fun calendar() : jet.Any?
+    public open fun dateFormat() : jet.Any?
+    public open fun dateFromString(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun dateStyle() : jet.Any?
+    public open fun defaultDate() : jet.Any?
+    public open fun doesRelativeDateFormatting() : jet.Any?
+    public open fun eraSymbols() : jet.Any?
+    public open fun formatterBehavior() : jet.Any?
+    public open fun generatesCalendarDates() : jet.Any?
+    public open fun getObjectValue(/*0*/ obj : jet.Any?, /*1*/ string : jet.Any?, /*2*/ rangep : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    public open fun gregorianStartDate() : jet.Any?
+    public open fun isLenient() : jet.Any?
+    public open fun locale() : jet.Any?
+    public open fun longEraSymbols() : jet.Any?
+    public open fun monthSymbols() : jet.Any?
+    public open fun quarterSymbols() : jet.Any?
+    public open fun setAMSymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setCalendar(/*0*/ calendar : jet.Any?) : jet.Any?
+    public open fun setDateFormat(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setDateStyle(/*0*/ style : jet.Any?) : jet.Any?
+    public open fun setDefaultDate(/*0*/ date : jet.Any?) : jet.Any?
+    public open fun setDoesRelativeDateFormatting(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setEraSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setFormatterBehavior(/*0*/ behavior : jet.Any?) : jet.Any?
+    public open fun setGeneratesCalendarDates(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setGregorianStartDate(/*0*/ date : jet.Any?) : jet.Any?
+    public open fun setLenient(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setLocale(/*0*/ locale : jet.Any?) : jet.Any?
+    public open fun setLongEraSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setMonthSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setPMSymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setQuarterSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setShortMonthSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setShortQuarterSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setShortStandaloneMonthSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setShortStandaloneQuarterSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setShortStandaloneWeekdaySymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setShortWeekdaySymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setStandaloneMonthSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setStandaloneQuarterSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setStandaloneWeekdaySymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setTimeStyle(/*0*/ style : jet.Any?) : jet.Any?
+    public open fun setTimeZone(/*0*/ tz : jet.Any?) : jet.Any?
+    public open fun setTwoDigitStartDate(/*0*/ date : jet.Any?) : jet.Any?
+    public open fun setVeryShortMonthSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setVeryShortStandaloneMonthSymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setVeryShortStandaloneWeekdaySymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setVeryShortWeekdaySymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun setWeekdaySymbols(/*0*/ array : jet.Any?) : jet.Any?
+    public open fun shortMonthSymbols() : jet.Any?
+    public open fun shortQuarterSymbols() : jet.Any?
+    public open fun shortStandaloneMonthSymbols() : jet.Any?
+    public open fun shortStandaloneQuarterSymbols() : jet.Any?
+    public open fun shortStandaloneWeekdaySymbols() : jet.Any?
+    public open fun shortWeekdaySymbols() : jet.Any?
+    public open fun standaloneMonthSymbols() : jet.Any?
+    public open fun standaloneQuarterSymbols() : jet.Any?
+    public open fun standaloneWeekdaySymbols() : jet.Any?
+    public open fun stringFromDate(/*0*/ date : jet.Any?) : jet.Any?
+    public open fun timeStyle() : jet.Any?
+    public open fun timeZone() : jet.Any?
+    public open fun twoDigitStartDate() : jet.Any?
+    public open fun veryShortMonthSymbols() : jet.Any?
+    public open fun veryShortStandaloneMonthSymbols() : jet.Any?
+    public open fun veryShortStandaloneWeekdaySymbols() : jet.Any?
+    public open fun veryShortWeekdaySymbols() : jet.Any?
+    public open fun weekdaySymbols() : jet.Any?
 }
 
 public open class NSDecimalNumber {
+    public open fun compare(/*0*/ decimalNumber : jet.Any?) : jet.Any?
+    public open fun decimalNumberByAdding(/*0*/ decimalNumber : jet.Any?) : jet.Any?
+    public open fun decimalNumberByAdding(/*0*/ decimalNumber : jet.Any?, /*1*/ behavior : jet.Any?) : jet.Any?
+    public open fun decimalNumberByDividingBy(/*0*/ decimalNumber : jet.Any?) : jet.Any?
+    public open fun decimalNumberByDividingBy(/*0*/ decimalNumber : jet.Any?, /*1*/ behavior : jet.Any?) : jet.Any?
+    public open fun decimalNumberByMultiplyingBy(/*0*/ decimalNumber : jet.Any?) : jet.Any?
+    public open fun decimalNumberByMultiplyingBy(/*0*/ decimalNumber : jet.Any?, /*1*/ behavior : jet.Any?) : jet.Any?
+    public open fun decimalNumberByMultiplyingByPowerOf10(/*0*/ power : jet.Any?) : jet.Any?
+    public open fun decimalNumberByMultiplyingByPowerOf10(/*0*/ power : jet.Any?, /*1*/ behavior : jet.Any?) : jet.Any?
+    public open fun decimalNumberByRaisingToPower(/*0*/ power : jet.Any?) : jet.Any?
+    public open fun decimalNumberByRaisingToPower(/*0*/ power : jet.Any?, /*1*/ behavior : jet.Any?) : jet.Any?
+    public open fun decimalNumberByRoundingAccordingToBehavior(/*0*/ behavior : jet.Any?) : jet.Any?
+    public open fun decimalNumberBySubtracting(/*0*/ decimalNumber : jet.Any?) : jet.Any?
+    public open fun decimalNumberBySubtracting(/*0*/ decimalNumber : jet.Any?, /*1*/ behavior : jet.Any?) : jet.Any?
+    public open fun decimalValue() : jet.Any?
+    public open fun descriptionWithLocale(/*0*/ locale : jet.Any?) : jet.Any?
+    public open fun doubleValue() : jet.Any?
+    public open fun initWithDecimal(/*0*/ dcm : jet.Any?) : jet.Any?
+    public open fun initWithMantissa(/*0*/ mantissa : jet.Any?, /*1*/ exponent : jet.Any?, /*2*/ flag : jet.Any?) : jet.Any?
+    public open fun initWithString(/*0*/ numberValue : jet.Any?) : jet.Any?
+    public open fun initWithString(/*0*/ numberValue : jet.Any?, /*1*/ locale : jet.Any?) : jet.Any?
+    public open fun objCType() : jet.Any?
 }
 
 public open trait NSDecimalNumberBehaviors {
+    public open fun exceptionDuringOperation(/*0*/ operation : jet.Any?, /*1*/ error : jet.Any?, /*2*/ leftOperand : jet.Any?, /*3*/ rightOperand : jet.Any?) : jet.Any?
+    public open fun roundingMode() : jet.Any?
+    public open fun scale() : jet.Any?
 }
 
 public open class NSDecimalNumberHandler {
+    public open fun initWithRoundingMode(/*0*/ roundingMode : jet.Any?, /*1*/ scale : jet.Any?, /*2*/ exact : jet.Any?, /*3*/ overflow : jet.Any?, /*4*/ underflow : jet.Any?, /*5*/ divideByZero : jet.Any?) : jet.Any?
 }
 
 public open class NSDeleteCommand {
+    public open fun keySpecifier() : jet.Any?
+    public open fun setReceiversSpecifier(/*0*/ receiversRef : jet.Any?) : jet.Any?
 }
 
 public open class NSDictionary {
+    public open fun count() : jet.Any?
+    public open fun keyEnumerator() : jet.Any?
+    public open fun objectForKey(/*0*/ aKey : jet.Any?) : jet.Any?
 }
 
 public open class NSDirectoryEnumerator {
+    public open fun directoryAttributes() : jet.Any?
+    public open fun fileAttributes() : jet.Any?
+    public open fun level() : jet.Any?
+    public open fun skipDescendants() : jet.Any?
+    public open fun skipDescendents() : jet.Any?
 }
 
 public open trait NSDiscardableContent {
+    public open fun beginContentAccess() : jet.Any?
+    public open fun discardContentIfPossible() : jet.Any?
+    public open fun endContentAccess() : jet.Any?
+    public open fun isContentDiscarded() : jet.Any?
 }
 
 public open class NSDistantObject {
+    public open fun connectionForProxy() : jet.Any?
+    public open fun initWithLocal(/*0*/ target : jet.Any?, /*1*/ connection : jet.Any?) : jet.Any?
+    public open fun initWithTarget(/*0*/ target : jet.Any?, /*1*/ connection : jet.Any?) : jet.Any?
+    public open fun setProtocolForProxy(/*0*/ proto : jet.Any?) : jet.Any?
 }
 
 public open class NSDistantObjectRequest {
+    public open fun connection() : jet.Any?
+    public open fun conversation() : jet.Any?
+    public open fun invocation() : jet.Any?
+    public open fun replyWithException(/*0*/ exception : jet.Any?) : jet.Any?
 }
 
 public open class NSDistributedLock {
+    public open fun breakLock() : jet.Any?
+    public open fun initWithPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun lockDate() : jet.Any?
+    public open fun tryLock() : jet.Any?
+    public open fun unlock() : jet.Any?
 }
 
 public open class NSDistributedNotificationCenter {
+    public open fun addObserver(/*0*/ observer : jet.Any?, /*1*/ aSelector : jet.Any?, /*2*/ aName : jet.Any?, /*3*/ anObject : jet.Any?) : jet.Any?
+    public open fun addObserver(/*0*/ observer : jet.Any?, /*1*/ selector : jet.Any?, /*2*/ name : jet.Any?, /*3*/ `object` : jet.Any?, /*4*/ suspensionBehavior : jet.Any?) : jet.Any?
+    public open fun postNotificationName(/*0*/ aName : jet.Any?, /*1*/ anObject : jet.Any?) : jet.Any?
+    public open fun postNotificationName(/*0*/ aName : jet.Any?, /*1*/ anObject : jet.Any?, /*2*/ aUserInfo : jet.Any?) : jet.Any?
+    public open fun postNotificationName(/*0*/ name : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ userInfo : jet.Any?, /*3*/ deliverImmediately : jet.Any?) : jet.Any?
+    public open fun postNotificationName(/*0*/ name : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ userInfo : jet.Any?, /*3*/ options : jet.Any?) : jet.Any?
+    public open fun removeObserver(/*0*/ observer : jet.Any?, /*1*/ aName : jet.Any?, /*2*/ anObject : jet.Any?) : jet.Any?
+    public open fun setSuspended(/*0*/ suspended : jet.Any?) : jet.Any?
+    public open fun suspended() : jet.Any?
 }
 
 public open class NSEnumerator {
+    public open fun nextObject() : jet.Any?
 }
 
 public open class NSError {
+    public open fun code() : jet.Any?
+    public open fun domain() : jet.Any?
+    public open fun helpAnchor() : jet.Any?
+    public open fun initWithDomain(/*0*/ domain : jet.Any?, /*1*/ code : jet.Any?, /*2*/ dict : jet.Any?) : jet.Any?
+    public open fun localizedDescription() : jet.Any?
+    public open fun localizedFailureReason() : jet.Any?
+    public open fun localizedRecoveryOptions() : jet.Any?
+    public open fun localizedRecoverySuggestion() : jet.Any?
+    public open fun recoveryAttempter() : jet.Any?
+    public open fun userInfo() : jet.Any?
 }
 
 public open class NSException {
+    public open fun callStackReturnAddresses() : jet.Any?
+    public open fun callStackSymbols() : jet.Any?
+    public open fun initWithName(/*0*/ aName : jet.Any?, /*1*/ aReason : jet.Any?, /*2*/ aUserInfo : jet.Any?) : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun raise() : jet.Any?
+    public open fun reason() : jet.Any?
+    public open fun userInfo() : jet.Any?
 }
 
 public open class NSExistsCommand {
 }
 
 public open class NSExpression {
+    public open fun arguments() : jet.Any?
+    public open fun collection() : jet.Any?
+    public open fun constantValue() : jet.Any?
+    public open fun expressionBlock() : jet.Any?
+    public open fun expressionType() : jet.Any?
+    public open fun expressionValueWithObject(/*0*/ `object` : jet.Any?, /*1*/ context : jet.Any?) : jet.Any?
+    public open fun function() : jet.Any?
+    public open fun initWithExpressionType(/*0*/ `type` : jet.Any?) : jet.Any?
+    public open fun keyPath() : jet.Any?
+    public open fun leftExpression() : jet.Any?
+    public open fun operand() : jet.Any?
+    public open fun predicate() : jet.Any?
+    public open fun rightExpression() : jet.Any?
+    public open fun variable() : jet.Any?
 }
 
 public open trait NSFastEnumeration {
+    public open fun countByEnumeratingWithState(/*0*/ state : jet.Any?, /*1*/ buffer : jet.Any?, /*2*/ len : jet.Any?) : jet.Any?
 }
 
 public open class NSFileCoordinator {
+    public open fun cancel() : jet.Any?
+    public open fun coordinateReadingItemAtURL(/*0*/ url : jet.Any?, /*1*/ options : jet.Any?, /*2*/ outError : jet.Any?, /*3*/ reader : jet.Any?) : jet.Any?
+    public open fun coordinateReadingItemAtURL(/*0*/ readingURL : jet.Any?, /*1*/ readingOptions : jet.Any?, /*2*/ writingURL : jet.Any?, /*3*/ writingOptions : jet.Any?, /*4*/ outError : jet.Any?, /*5*/ readerWriter : jet.Any?) : jet.Any?
+    public open fun coordinateWritingItemAtURL(/*0*/ url : jet.Any?, /*1*/ options : jet.Any?, /*2*/ outError : jet.Any?, /*3*/ writer : jet.Any?) : jet.Any?
+    public open fun coordinateWritingItemAtURL(/*0*/ url1 : jet.Any?, /*1*/ options1 : jet.Any?, /*2*/ url2 : jet.Any?, /*3*/ options2 : jet.Any?, /*4*/ outError : jet.Any?, /*5*/ writer : jet.Any?) : jet.Any?
+    public open fun initWithFilePresenter(/*0*/ filePresenterOrNil : jet.Any?) : jet.Any?
+    public open fun itemAtURL(/*0*/ oldURL : jet.Any?, /*1*/ newURL : jet.Any?) : jet.Any?
+    public open fun prepareForReadingItemsAtURLs(/*0*/ readingURLs : jet.Any?, /*1*/ readingOptions : jet.Any?, /*2*/ writingURLs : jet.Any?, /*3*/ writingOptions : jet.Any?, /*4*/ outError : jet.Any?, /*5*/ batchAccessor : jet.Any?) : jet.Any?
 }
 
 public open class NSFileHandle {
+    public open fun availableData() : jet.Any?
+    public open fun closeFile() : jet.Any?
+    public open fun offsetInFile() : jet.Any?
+    public open fun readDataOfLength(/*0*/ length : jet.Any?) : jet.Any?
+    public open fun readDataToEndOfFile() : jet.Any?
+    public open fun seekToEndOfFile() : jet.Any?
+    public open fun seekToFileOffset(/*0*/ offset : jet.Any?) : jet.Any?
+    public open fun synchronizeFile() : jet.Any?
+    public open fun truncateFileAtOffset(/*0*/ offset : jet.Any?) : jet.Any?
+    public open fun writeData(/*0*/ data : jet.Any?) : jet.Any?
 }
 
 public open class NSFileManager {
+    public open fun URLForDirectory(/*0*/ directory : jet.Any?, /*1*/ domain : jet.Any?, /*2*/ url : jet.Any?, /*3*/ shouldCreate : jet.Any?, /*4*/ error : jet.Any?) : jet.Any?
+    public open fun URLForPublishingUbiquitousItemAtURL(/*0*/ url : jet.Any?, /*1*/ outDate : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun URLForUbiquityContainerIdentifier(/*0*/ containerIdentifier : jet.Any?) : jet.Any?
+    public open fun URLsForDirectory(/*0*/ directory : jet.Any?, /*1*/ domainMask : jet.Any?) : jet.Any?
+    public open fun attributesOfFileSystemForPath(/*0*/ path : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun attributesOfItemAtPath(/*0*/ path : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun changeCurrentDirectoryPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun changeFileAttributes(/*0*/ attributes : jet.Any?, /*1*/ path : jet.Any?) : jet.Any?
+    public open fun componentsToDisplayForPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun contentsAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun contentsEqualAtPath(/*0*/ path1 : jet.Any?, /*1*/ path2 : jet.Any?) : jet.Any?
+    public open fun contentsOfDirectoryAtPath(/*0*/ path : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun contentsOfDirectoryAtURL(/*0*/ url : jet.Any?, /*1*/ keys : jet.Any?, /*2*/ mask : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    public open fun copyItemAtPath(/*0*/ srcPath : jet.Any?, /*1*/ dstPath : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun copyItemAtURL(/*0*/ srcURL : jet.Any?, /*1*/ dstURL : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun copyPath(/*0*/ src : jet.Any?, /*1*/ dest : jet.Any?, /*2*/ handler : jet.Any?) : jet.Any?
+    public open fun createDirectoryAtPath(/*0*/ path : jet.Any?, /*1*/ attributes : jet.Any?) : jet.Any?
+    public open fun createDirectoryAtPath(/*0*/ path : jet.Any?, /*1*/ createIntermediates : jet.Any?, /*2*/ attributes : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    public open fun createDirectoryAtURL(/*0*/ url : jet.Any?, /*1*/ createIntermediates : jet.Any?, /*2*/ attributes : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    public open fun createFileAtPath(/*0*/ path : jet.Any?, /*1*/ data : jet.Any?, /*2*/ attr : jet.Any?) : jet.Any?
+    public open fun createSymbolicLinkAtPath(/*0*/ path : jet.Any?, /*1*/ otherpath : jet.Any?) : jet.Any?
+    public open fun createSymbolicLinkAtPath(/*0*/ path : jet.Any?, /*1*/ destPath : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun createSymbolicLinkAtURL(/*0*/ url : jet.Any?, /*1*/ destURL : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun currentDirectoryPath() : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun destinationOfSymbolicLinkAtPath(/*0*/ path : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun directoryContentsAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun displayNameAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun enumeratorAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun enumeratorAtURL(/*0*/ url : jet.Any?, /*1*/ keys : jet.Any?, /*2*/ mask : jet.Any?, /*3*/ handler : jet.Any?) : jet.Any?
+    public open fun evictUbiquitousItemAtURL(/*0*/ url : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun fileAttributesAtPath(/*0*/ path : jet.Any?, /*1*/ yorn : jet.Any?) : jet.Any?
+    public open fun fileExistsAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun fileExistsAtPath(/*0*/ path : jet.Any?, /*1*/ isDirectory : jet.Any?) : jet.Any?
+    public open fun fileSystemAttributesAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun fileSystemRepresentationWithPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun isDeletableFileAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun isExecutableFileAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun isReadableFileAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun isUbiquitousItemAtURL(/*0*/ url : jet.Any?) : jet.Any?
+    public open fun isWritableFileAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun linkItemAtPath(/*0*/ srcPath : jet.Any?, /*1*/ dstPath : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun linkItemAtURL(/*0*/ srcURL : jet.Any?, /*1*/ dstURL : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun linkPath(/*0*/ src : jet.Any?, /*1*/ dest : jet.Any?, /*2*/ handler : jet.Any?) : jet.Any?
+    public open fun mountedVolumeURLsIncludingResourceValuesForKeys(/*0*/ propertyKeys : jet.Any?, /*1*/ options : jet.Any?) : jet.Any?
+    public open fun moveItemAtPath(/*0*/ srcPath : jet.Any?, /*1*/ dstPath : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun moveItemAtURL(/*0*/ srcURL : jet.Any?, /*1*/ dstURL : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun movePath(/*0*/ src : jet.Any?, /*1*/ dest : jet.Any?, /*2*/ handler : jet.Any?) : jet.Any?
+    public open fun pathContentOfSymbolicLinkAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun removeFileAtPath(/*0*/ path : jet.Any?, /*1*/ handler : jet.Any?) : jet.Any?
+    public open fun removeItemAtPath(/*0*/ path : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun removeItemAtURL(/*0*/ URL : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun replaceItemAtURL(/*0*/ originalItemURL : jet.Any?, /*1*/ newItemURL : jet.Any?, /*2*/ backupItemName : jet.Any?, /*3*/ options : jet.Any?, /*4*/ resultingURL : jet.Any?, /*5*/ error : jet.Any?) : jet.Any?
+    public open fun setAttributes(/*0*/ attributes : jet.Any?, /*1*/ path : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
+    public open fun setUbiquitous(/*0*/ flag : jet.Any?, /*1*/ url : jet.Any?, /*2*/ destinationURL : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    public open fun startDownloadingUbiquitousItemAtURL(/*0*/ url : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun stringWithFileSystemRepresentation(/*0*/ str : jet.Any?, /*1*/ len : jet.Any?) : jet.Any?
+    public open fun subpathsAtPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun subpathsOfDirectoryAtPath(/*0*/ path : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
 }
 
 public open trait NSFileManagerDelegate {
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ path : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ URL : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ srcPath : jet.Any?, /*2*/ dstPath : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ srcURL : jet.Any?, /*2*/ dstURL : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ srcPath : jet.Any?, /*2*/ dstPath : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ srcURL : jet.Any?, /*2*/ dstURL : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ srcPath : jet.Any?, /*2*/ dstPath : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ srcURL : jet.Any?, /*2*/ dstURL : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ path : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ URL : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ srcPath : jet.Any?, /*3*/ dstPath : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ srcURL : jet.Any?, /*3*/ dstURL : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ srcPath : jet.Any?, /*3*/ dstPath : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ srcURL : jet.Any?, /*3*/ dstURL : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ srcPath : jet.Any?, /*3*/ dstPath : jet.Any?) : jet.Any?
+    public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ srcURL : jet.Any?, /*3*/ dstURL : jet.Any?) : jet.Any?
 }
 
 public open trait NSFilePresenter {
+    public open fun accommodatePresentedItemDeletionWithCompletionHandler(/*0*/ completionHandler : jet.Any?) : jet.Any?
+    public open fun accommodatePresentedSubitemDeletionAtURL(/*0*/ url : jet.Any?, /*1*/ completionHandler : jet.Any?) : jet.Any?
+    public open fun presentedItemDidChange() : jet.Any?
+    public open fun presentedItemDidGainVersion(/*0*/ version : jet.Any?) : jet.Any?
+    public open fun presentedItemDidLoseVersion(/*0*/ version : jet.Any?) : jet.Any?
+    public open fun presentedItemDidMoveToURL(/*0*/ newURL : jet.Any?) : jet.Any?
+    public open fun presentedItemDidResolveConflictVersion(/*0*/ version : jet.Any?) : jet.Any?
+    public open fun presentedItemOperationQueue() : jet.Any?
+    public open fun presentedItemURL() : jet.Any?
+    public open fun presentedSubitemAtURL(/*0*/ oldURL : jet.Any?, /*1*/ newURL : jet.Any?) : jet.Any?
+    public open fun presentedSubitemAtURL(/*0*/ url : jet.Any?, /*1*/ version : jet.Any?) : jet.Any?
+    public open fun presentedSubitemAtURL(/*0*/ url : jet.Any?, /*1*/ version : jet.Any?) : jet.Any?
+    public open fun presentedSubitemAtURL(/*0*/ url : jet.Any?, /*1*/ version : jet.Any?) : jet.Any?
+    public open fun presentedSubitemDidAppearAtURL(/*0*/ url : jet.Any?) : jet.Any?
+    public open fun presentedSubitemDidChangeAtURL(/*0*/ url : jet.Any?) : jet.Any?
+    public open fun relinquishPresentedItemToReader(/*0*/ reader : jet.Any?) : jet.Any?
+    public open fun relinquishPresentedItemToWriter(/*0*/ writer : jet.Any?) : jet.Any?
+    public open fun savePresentedItemChangesWithCompletionHandler(/*0*/ completionHandler : jet.Any?) : jet.Any?
 }
 
 public open class NSFileSecurity {
 }
 
 public open class NSFileVersion {
+    public open fun URL() : jet.Any?
+    public open fun isConflict() : jet.Any?
+    public open fun isDiscardable() : jet.Any?
+    public open fun isResolved() : jet.Any?
+    public open fun localizedName() : jet.Any?
+    public open fun localizedNameOfSavingComputer() : jet.Any?
+    public open fun modificationDate() : jet.Any?
+    public open fun persistentIdentifier() : jet.Any?
+    public open fun removeAndReturnError(/*0*/ outError : jet.Any?) : jet.Any?
+    public open fun replaceItemAtURL(/*0*/ url : jet.Any?, /*1*/ options : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun setDiscardable(/*0*/ discardable : jet.Any?) : jet.Any?
+    public open fun setResolved(/*0*/ resolved : jet.Any?) : jet.Any?
 }
 
 public open class NSFileWrapper {
+    public open fun addFileWrapper(/*0*/ child : jet.Any?) : jet.Any?
+    public open fun addRegularFileWithContents(/*0*/ data : jet.Any?, /*1*/ fileName : jet.Any?) : jet.Any?
+    public open fun fileAttributes() : jet.Any?
+    public open fun fileWrappers() : jet.Any?
+    public open fun filename() : jet.Any?
+    public open fun initDirectoryWithFileWrappers(/*0*/ childrenByPreferredName : jet.Any?) : jet.Any?
+    public open fun initRegularFileWithContents(/*0*/ contents : jet.Any?) : jet.Any?
+    public open fun initSymbolicLinkWithDestinationURL(/*0*/ url : jet.Any?) : jet.Any?
+    public open fun initWithSerializedRepresentation(/*0*/ serializeRepresentation : jet.Any?) : jet.Any?
+    public open fun initWithURL(/*0*/ url : jet.Any?, /*1*/ options : jet.Any?, /*2*/ outError : jet.Any?) : jet.Any?
+    public open fun isDirectory() : jet.Any?
+    public open fun isRegularFile() : jet.Any?
+    public open fun isSymbolicLink() : jet.Any?
+    public open fun keyForFileWrapper(/*0*/ child : jet.Any?) : jet.Any?
+    public open fun matchesContentsOfURL(/*0*/ url : jet.Any?) : jet.Any?
+    public open fun preferredFilename() : jet.Any?
+    public open fun readFromURL(/*0*/ url : jet.Any?, /*1*/ options : jet.Any?, /*2*/ outError : jet.Any?) : jet.Any?
+    public open fun regularFileContents() : jet.Any?
+    public open fun removeFileWrapper(/*0*/ child : jet.Any?) : jet.Any?
+    public open fun serializedRepresentation() : jet.Any?
+    public open fun setFileAttributes(/*0*/ fileAttributes : jet.Any?) : jet.Any?
+    public open fun setFilename(/*0*/ fileName : jet.Any?) : jet.Any?
+    public open fun setPreferredFilename(/*0*/ fileName : jet.Any?) : jet.Any?
+    public open fun symbolicLinkDestinationURL() : jet.Any?
+    public open fun writeToURL(/*0*/ url : jet.Any?, /*1*/ options : jet.Any?, /*2*/ originalContentsURL : jet.Any?, /*3*/ outError : jet.Any?) : jet.Any?
 }
 
 public open class NSFormatter {
+    public open fun attributedStringForObjectValue(/*0*/ obj : jet.Any?, /*1*/ attrs : jet.Any?) : jet.Any?
+    public open fun editingStringForObjectValue(/*0*/ obj : jet.Any?) : jet.Any?
+    public open fun getObjectValue(/*0*/ obj : jet.Any?, /*1*/ string : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun isPartialStringValid(/*0*/ partialString : jet.Any?, /*1*/ newString : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun isPartialStringValid(/*0*/ partialStringPtr : jet.Any?, /*1*/ proposedSelRangePtr : jet.Any?, /*2*/ origString : jet.Any?, /*3*/ origSelRange : jet.Any?, /*4*/ error : jet.Any?) : jet.Any?
+    public open fun stringForObjectValue(/*0*/ obj : jet.Any?) : jet.Any?
 }
 
 public open class NSGarbageCollector {
+    public open fun collectExhaustively() : jet.Any?
+    public open fun collectIfNeeded() : jet.Any?
+    public open fun disable() : jet.Any?
+    public open fun disableCollectorForPointer(/*0*/ ptr : jet.Any?) : jet.Any?
+    public open fun enable() : jet.Any?
+    public open fun enableCollectorForPointer(/*0*/ ptr : jet.Any?) : jet.Any?
+    public open fun isCollecting() : jet.Any?
+    public open fun isEnabled() : jet.Any?
+    public open fun zone() : jet.Any?
 }
 
 public open class NSGetCommand {
 }
 
 public open class NSHTTPCookie {
+    public open fun comment() : jet.Any?
+    public open fun commentURL() : jet.Any?
+    public open fun domain() : jet.Any?
+    public open fun expiresDate() : jet.Any?
+    public open fun initWithProperties(/*0*/ properties : jet.Any?) : jet.Any?
+    public open fun isHTTPOnly() : jet.Any?
+    public open fun isSecure() : jet.Any?
+    public open fun isSessionOnly() : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun path() : jet.Any?
+    public open fun portList() : jet.Any?
+    public open fun properties() : jet.Any?
+    public open fun value() : jet.Any?
+    public open fun version() : jet.Any?
 }
 
 public open class NSHTTPCookieStorage {
+    public open fun cookieAcceptPolicy() : jet.Any?
+    public open fun cookies() : jet.Any?
+    public open fun cookiesForURL(/*0*/ URL : jet.Any?) : jet.Any?
+    public open fun deleteCookie(/*0*/ cookie : jet.Any?) : jet.Any?
+    public open fun setCookie(/*0*/ cookie : jet.Any?) : jet.Any?
+    public open fun setCookieAcceptPolicy(/*0*/ cookieAcceptPolicy : jet.Any?) : jet.Any?
+    public open fun setCookies(/*0*/ cookies : jet.Any?, /*1*/ URL : jet.Any?, /*2*/ mainDocumentURL : jet.Any?) : jet.Any?
+    public open fun sortedCookiesUsingDescriptors(/*0*/ sortOrder : jet.Any?) : jet.Any?
 }
 
 public open class NSHTTPURLResponse {
+    public open fun allHeaderFields() : jet.Any?
+    public open fun initWithURL(/*0*/ url : jet.Any?, /*1*/ statusCode : jet.Any?, /*2*/ HTTPVersion : jet.Any?, /*3*/ headerFields : jet.Any?) : jet.Any?
+    public open fun statusCode() : jet.Any?
 }
 
 public open class NSHashTable {
+    public open fun addObject(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun allObjects() : jet.Any?
+    public open fun anyObject() : jet.Any?
+    public open fun containsObject(/*0*/ anObject : jet.Any?) : jet.Any?
+    public open fun count() : jet.Any?
+    public open fun initWithOptions(/*0*/ options : jet.Any?, /*1*/ initialCapacity : jet.Any?) : jet.Any?
+    public open fun initWithPointerFunctions(/*0*/ functions : jet.Any?, /*1*/ initialCapacity : jet.Any?) : jet.Any?
+    public open fun intersectHashTable(/*0*/ other : jet.Any?) : jet.Any?
+    public open fun intersectsHashTable(/*0*/ other : jet.Any?) : jet.Any?
+    public open fun isEqualToHashTable(/*0*/ other : jet.Any?) : jet.Any?
+    public open fun isSubsetOfHashTable(/*0*/ other : jet.Any?) : jet.Any?
+    public open fun member(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun minusHashTable(/*0*/ other : jet.Any?) : jet.Any?
+    public open fun objectEnumerator() : jet.Any?
+    public open fun pointerFunctions() : jet.Any?
+    public open fun removeAllObjects() : jet.Any?
+    public open fun removeObject(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun setRepresentation() : jet.Any?
+    public open fun unionHashTable(/*0*/ other : jet.Any?) : jet.Any?
 }
 
 public open class NSHost {
+    public open fun address() : jet.Any?
+    public open fun addresses() : jet.Any?
+    public open fun isEqualToHost(/*0*/ aHost : jet.Any?) : jet.Any?
+    public open fun localizedName() : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun names() : jet.Any?
 }
 
 public open class NSIndexPath {
+    public open fun compare(/*0*/ otherObject : jet.Any?) : jet.Any?
+    public open fun getIndexes(/*0*/ indexes : jet.Any?) : jet.Any?
+    public open fun indexAtPosition(/*0*/ position : jet.Any?) : jet.Any?
+    public open fun indexPathByAddingIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun indexPathByRemovingLastIndex() : jet.Any?
+    public open fun initWithIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun initWithIndexes(/*0*/ indexes : jet.Any?, /*1*/ length : jet.Any?) : jet.Any?
+    public open fun length() : jet.Any?
 }
 
 public open class NSIndexSet {
+    public open fun containsIndex(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun containsIndexes(/*0*/ indexSet : jet.Any?) : jet.Any?
+    public open fun containsIndexesInRange(/*0*/ range : jet.Any?) : jet.Any?
+    public open fun count() : jet.Any?
+    public open fun countOfIndexesInRange(/*0*/ range : jet.Any?) : jet.Any?
+    public open fun enumerateIndexesInRange(/*0*/ range : jet.Any?, /*1*/ opts : jet.Any?, /*2*/ block : jet.Any?) : jet.Any?
+    public open fun enumerateIndexesUsingBlock(/*0*/ block : jet.Any?) : jet.Any?
+    public open fun enumerateIndexesWithOptions(/*0*/ opts : jet.Any?, /*1*/ block : jet.Any?) : jet.Any?
+    public open fun enumerateRangesInRange(/*0*/ range : jet.Any?, /*1*/ opts : jet.Any?, /*2*/ block : jet.Any?) : jet.Any?
+    public open fun enumerateRangesUsingBlock(/*0*/ block : jet.Any?) : jet.Any?
+    public open fun enumerateRangesWithOptions(/*0*/ opts : jet.Any?, /*1*/ block : jet.Any?) : jet.Any?
+    public open fun firstIndex() : jet.Any?
+    public open fun getIndexes(/*0*/ indexBuffer : jet.Any?, /*1*/ bufferSize : jet.Any?, /*2*/ range : jet.Any?) : jet.Any?
+    public open fun indexGreaterThanIndex(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun indexGreaterThanOrEqualToIndex(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun indexInRange(/*0*/ range : jet.Any?, /*1*/ opts : jet.Any?, /*2*/ predicate : jet.Any?) : jet.Any?
+    public open fun indexLessThanIndex(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun indexLessThanOrEqualToIndex(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun indexPassingTest(/*0*/ predicate : jet.Any?) : jet.Any?
+    public open fun indexWithOptions(/*0*/ opts : jet.Any?, /*1*/ predicate : jet.Any?) : jet.Any?
+    public open fun indexesInRange(/*0*/ range : jet.Any?, /*1*/ opts : jet.Any?, /*2*/ predicate : jet.Any?) : jet.Any?
+    public open fun indexesPassingTest(/*0*/ predicate : jet.Any?) : jet.Any?
+    public open fun indexesWithOptions(/*0*/ opts : jet.Any?, /*1*/ predicate : jet.Any?) : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun initWithIndex(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun initWithIndexSet(/*0*/ indexSet : jet.Any?) : jet.Any?
+    public open fun initWithIndexesInRange(/*0*/ range : jet.Any?) : jet.Any?
+    public open fun intersectsIndexesInRange(/*0*/ range : jet.Any?) : jet.Any?
+    public open fun isEqualToIndexSet(/*0*/ indexSet : jet.Any?) : jet.Any?
+    public open fun lastIndex() : jet.Any?
 }
 
 public open class NSIndexSpecifier {
+    public open fun index() : jet.Any?
+    public open fun initWithContainerClassDescription(/*0*/ classDesc : jet.Any?, /*1*/ container : jet.Any?, /*2*/ property : jet.Any?, /*3*/ index : jet.Any?) : jet.Any?
+    public open fun setIndex(/*0*/ index : jet.Any?) : jet.Any?
 }
 
 public open class NSInputStream {
+    public open fun getBuffer(/*0*/ buffer : jet.Any?, /*1*/ len : jet.Any?) : jet.Any?
+    public open fun hasBytesAvailable() : jet.Any?
+    public open fun read(/*0*/ buffer : jet.Any?, /*1*/ len : jet.Any?) : jet.Any?
 }
 
 public open class NSInvocation {
+    public open fun argumentsRetained() : jet.Any?
+    public open fun getArgument(/*0*/ argumentLocation : jet.Any?, /*1*/ idx : jet.Any?) : jet.Any?
+    public open fun getReturnValue(/*0*/ retLoc : jet.Any?) : jet.Any?
+    public open fun invoke() : jet.Any?
+    public open fun invokeWithTarget(/*0*/ target : jet.Any?) : jet.Any?
+    public open fun methodSignature() : jet.Any?
+    public open fun retainArguments() : jet.Any?
+    public open fun selector() : jet.Any?
+    public open fun setArgument(/*0*/ argumentLocation : jet.Any?, /*1*/ idx : jet.Any?) : jet.Any?
+    public open fun setReturnValue(/*0*/ retLoc : jet.Any?) : jet.Any?
+    public open fun setSelector(/*0*/ selector : jet.Any?) : jet.Any?
+    public open fun setTarget(/*0*/ target : jet.Any?) : jet.Any?
+    public open fun target() : jet.Any?
 }
 
 public open class NSInvocationOperation {
+    public open fun initWithInvocation(/*0*/ inv : jet.Any?) : jet.Any?
+    public open fun initWithTarget(/*0*/ target : jet.Any?, /*1*/ sel : jet.Any?, /*2*/ arg : jet.Any?) : jet.Any?
+    public open fun invocation() : jet.Any?
+    public open fun result() : jet.Any?
 }
 
 public open class NSJSONSerialization {
 }
 
 public open class NSKeyedArchiver {
+    public open fun classNameForClass(/*0*/ cls : jet.Any?) : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun encodeBool(/*0*/ boolv : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun encodeBytes(/*0*/ bytesp : jet.Any?, /*1*/ lenv : jet.Any?, /*2*/ key : jet.Any?) : jet.Any?
+    public open fun encodeConditionalObject(/*0*/ objv : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun encodeDouble(/*0*/ realv : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun encodeFloat(/*0*/ realv : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun encodeInt(/*0*/ intv : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun encodeInt32(/*0*/ intv : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun encodeInt64(/*0*/ intv : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun encodeObject(/*0*/ objv : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun finishEncoding() : jet.Any?
+    public open fun initForWritingWithMutableData(/*0*/ data : jet.Any?) : jet.Any?
+    public open fun outputFormat() : jet.Any?
+    public open fun setClassName(/*0*/ codedName : jet.Any?, /*1*/ cls : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
+    public open fun setOutputFormat(/*0*/ format : jet.Any?) : jet.Any?
 }
 
 public open trait NSKeyedArchiverDelegate {
+    public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
+    public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
+    public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ newObject : jet.Any?) : jet.Any?
+    public open fun archiverDidFinish(/*0*/ archiver : jet.Any?) : jet.Any?
+    public open fun archiverWillFinish(/*0*/ archiver : jet.Any?) : jet.Any?
 }
 
 public open class NSKeyedUnarchiver {
+    public open fun classForClassName(/*0*/ codedName : jet.Any?) : jet.Any?
+    public open fun containsValueForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun decodeBoolForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun decodeBytesForKey(/*0*/ key : jet.Any?, /*1*/ lengthp : jet.Any?) : jet.Any?
+    public open fun decodeDoubleForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun decodeFloatForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun decodeInt32ForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun decodeInt64ForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun decodeIntForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun decodeObjectForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun finishDecoding() : jet.Any?
+    public open fun initForReadingWithData(/*0*/ data : jet.Any?) : jet.Any?
+    public open fun setClass(/*0*/ cls : jet.Any?, /*1*/ codedName : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
 }
 
 public open trait NSKeyedUnarchiverDelegate {
+    public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
+    public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ name : jet.Any?, /*2*/ classNames : jet.Any?) : jet.Any?
+    public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ newObject : jet.Any?) : jet.Any?
+    public open fun unarchiverDidFinish(/*0*/ unarchiver : jet.Any?) : jet.Any?
+    public open fun unarchiverWillFinish(/*0*/ unarchiver : jet.Any?) : jet.Any?
 }
 
 public open class NSLinguisticTagger {
+    public open fun enumerateTagsInRange(/*0*/ range : jet.Any?, /*1*/ tagScheme : jet.Any?, /*2*/ opts : jet.Any?, /*3*/ block : jet.Any?) : jet.Any?
+    public open fun initWithTagSchemes(/*0*/ tagSchemes : jet.Any?, /*1*/ opts : jet.Any?) : jet.Any?
+    public open fun orthographyAtIndex(/*0*/ charIndex : jet.Any?, /*1*/ effectiveRange : jet.Any?) : jet.Any?
+    public open fun possibleTagsAtIndex(/*0*/ charIndex : jet.Any?, /*1*/ tagScheme : jet.Any?, /*2*/ tokenRange : jet.Any?, /*3*/ sentenceRange : jet.Any?, /*4*/ scores : jet.Any?) : jet.Any?
+    public open fun sentenceRangeForRange(/*0*/ range : jet.Any?) : jet.Any?
+    public open fun setOrthography(/*0*/ orthography : jet.Any?, /*1*/ range : jet.Any?) : jet.Any?
+    public open fun setString(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun string() : jet.Any?
+    public open fun stringEditedInRange(/*0*/ newRange : jet.Any?, /*1*/ delta : jet.Any?) : jet.Any?
+    public open fun tagAtIndex(/*0*/ charIndex : jet.Any?, /*1*/ tagScheme : jet.Any?, /*2*/ tokenRange : jet.Any?, /*3*/ sentenceRange : jet.Any?) : jet.Any?
+    public open fun tagSchemes() : jet.Any?
+    public open fun tagsInRange(/*0*/ range : jet.Any?, /*1*/ tagScheme : jet.Any?, /*2*/ opts : jet.Any?, /*3*/ tokenRanges : jet.Any?) : jet.Any?
 }
 
 public open class NSLocale {
+    public open fun displayNameForKey(/*0*/ key : jet.Any?, /*1*/ value : jet.Any?) : jet.Any?
+    public open fun objectForKey(/*0*/ key : jet.Any?) : jet.Any?
 }
 
 public open class NSLock {
+    public open fun lockBeforeDate(/*0*/ limit : jet.Any?) : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun setName(/*0*/ n : jet.Any?) : jet.Any?
+    public open fun tryLock() : jet.Any?
 }
 
 public open trait NSLocking {
+    public open fun lock() : jet.Any?
+    public open fun unlock() : jet.Any?
 }
 
 public open class NSLogicalTest {
+    public open fun initAndTestWithTests(/*0*/ subTests : jet.Any?) : jet.Any?
+    public open fun initNotTestWithTest(/*0*/ subTest : jet.Any?) : jet.Any?
+    public open fun initOrTestWithTests(/*0*/ subTests : jet.Any?) : jet.Any?
 }
 
 public open class NSMachBootstrapServer {
+    public open fun portForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun portForName(/*0*/ name : jet.Any?, /*1*/ host : jet.Any?) : jet.Any?
+    public open fun registerPort(/*0*/ port : jet.Any?, /*1*/ name : jet.Any?) : jet.Any?
+    public open fun servicePortWithName(/*0*/ name : jet.Any?) : jet.Any?
 }
 
 public open class NSMachPort {
+    public open fun delegate() : jet.Any?
+    public open fun initWithMachPort(/*0*/ machPort : jet.Any?) : jet.Any?
+    public open fun initWithMachPort(/*0*/ machPort : jet.Any?, /*1*/ f : jet.Any?) : jet.Any?
+    public open fun machPort() : jet.Any?
+    public open fun removeFromRunLoop(/*0*/ runLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun scheduleInRunLoop(/*0*/ runLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ anObject : jet.Any?) : jet.Any?
 }
 
 public open trait NSMachPortDelegate {
+    public open fun handleMachMessage(/*0*/ msg : jet.Any?) : jet.Any?
 }
 
 public open class NSMapTable {
+    public open fun count() : jet.Any?
+    public open fun dictionaryRepresentation() : jet.Any?
+    public open fun initWithKeyOptions(/*0*/ keyOptions : jet.Any?, /*1*/ valueOptions : jet.Any?, /*2*/ initialCapacity : jet.Any?) : jet.Any?
+    public open fun initWithKeyPointerFunctions(/*0*/ keyFunctions : jet.Any?, /*1*/ valueFunctions : jet.Any?, /*2*/ initialCapacity : jet.Any?) : jet.Any?
+    public open fun keyEnumerator() : jet.Any?
+    public open fun keyPointerFunctions() : jet.Any?
+    public open fun objectEnumerator() : jet.Any?
+    public open fun objectForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun removeAllObjects() : jet.Any?
+    public open fun removeObjectForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun setObject(/*0*/ anObject : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun valuePointerFunctions() : jet.Any?
 }
 
 public open class NSMessagePort {
 }
 
 public open class NSMessagePortNameServer {
+    public open fun portForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun portForName(/*0*/ name : jet.Any?, /*1*/ host : jet.Any?) : jet.Any?
 }
 
 public open class NSMetadataItem {
+    public open fun attributes() : jet.Any?
+    public open fun valueForAttribute(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun valuesForAttributes(/*0*/ keys : jet.Any?) : jet.Any?
 }
 
 public open class NSMetadataQuery {
+    public open fun delegate() : jet.Any?
+    public open fun disableUpdates() : jet.Any?
+    public open fun enableUpdates() : jet.Any?
+    public open fun groupedResults() : jet.Any?
+    public open fun groupingAttributes() : jet.Any?
+    public open fun indexOfResult(/*0*/ result : jet.Any?) : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun isGathering() : jet.Any?
+    public open fun isStarted() : jet.Any?
+    public open fun isStopped() : jet.Any?
+    public open fun notificationBatchingInterval() : jet.Any?
+    public open fun predicate() : jet.Any?
+    public open fun resultAtIndex(/*0*/ idx : jet.Any?) : jet.Any?
+    public open fun resultCount() : jet.Any?
+    public open fun results() : jet.Any?
+    public open fun searchScopes() : jet.Any?
+    public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
+    public open fun setGroupingAttributes(/*0*/ attrs : jet.Any?) : jet.Any?
+    public open fun setNotificationBatchingInterval(/*0*/ ti : jet.Any?) : jet.Any?
+    public open fun setPredicate(/*0*/ predicate : jet.Any?) : jet.Any?
+    public open fun setSearchScopes(/*0*/ scopes : jet.Any?) : jet.Any?
+    public open fun setSortDescriptors(/*0*/ descriptors : jet.Any?) : jet.Any?
+    public open fun setValueListAttributes(/*0*/ attrs : jet.Any?) : jet.Any?
+    public open fun sortDescriptors() : jet.Any?
+    public open fun startQuery() : jet.Any?
+    public open fun stopQuery() : jet.Any?
+    public open fun valueListAttributes() : jet.Any?
+    public open fun valueLists() : jet.Any?
+    public open fun valueOfAttribute(/*0*/ attrName : jet.Any?, /*1*/ idx : jet.Any?) : jet.Any?
 }
 
 public open class NSMetadataQueryAttributeValueTuple {
+    public open fun attribute() : jet.Any?
+    public open fun count() : jet.Any?
+    public open fun value() : jet.Any?
 }
 
 public open trait NSMetadataQueryDelegate {
+    public open fun metadataQuery(/*0*/ query : jet.Any?, /*1*/ result : jet.Any?) : jet.Any?
+    public open fun metadataQuery(/*0*/ query : jet.Any?, /*1*/ attrName : jet.Any?, /*2*/ attrValue : jet.Any?) : jet.Any?
 }
 
 public open class NSMetadataQueryResultGroup {
+    public open fun attribute() : jet.Any?
+    public open fun resultAtIndex(/*0*/ idx : jet.Any?) : jet.Any?
+    public open fun resultCount() : jet.Any?
+    public open fun results() : jet.Any?
+    public open fun subgroups() : jet.Any?
+    public open fun value() : jet.Any?
 }
 
 public open class NSMethodSignature {
+    public open fun frameLength() : jet.Any?
+    public open fun getArgumentTypeAtIndex(/*0*/ idx : jet.Any?) : jet.Any?
+    public open fun isOneway() : jet.Any?
+    public open fun methodReturnLength() : jet.Any?
+    public open fun methodReturnType() : jet.Any?
+    public open fun numberOfArguments() : jet.Any?
 }
 
 public open class NSMiddleSpecifier {
 }
 
 public open class NSMoveCommand {
+    public open fun keySpecifier() : jet.Any?
+    public open fun setReceiversSpecifier(/*0*/ receiversRef : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableArray {
+    public open fun addObject(/*0*/ anObject : jet.Any?) : jet.Any?
+    public open fun insertObject(/*0*/ anObject : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun removeLastObject() : jet.Any?
+    public open fun removeObjectAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun replaceObjectAtIndex(/*0*/ index : jet.Any?, /*1*/ anObject : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableAttributedString {
+    public open fun replaceCharactersInRange(/*0*/ range : jet.Any?, /*1*/ str : jet.Any?) : jet.Any?
+    public open fun setAttributes(/*0*/ attrs : jet.Any?, /*1*/ range : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableCharacterSet {
+    public open fun addCharactersInRange(/*0*/ aRange : jet.Any?) : jet.Any?
+    public open fun addCharactersInString(/*0*/ aString : jet.Any?) : jet.Any?
+    public open fun formIntersectionWithCharacterSet(/*0*/ otherSet : jet.Any?) : jet.Any?
+    public open fun formUnionWithCharacterSet(/*0*/ otherSet : jet.Any?) : jet.Any?
+    public open fun invert() : jet.Any?
+    public open fun removeCharactersInRange(/*0*/ aRange : jet.Any?) : jet.Any?
+    public open fun removeCharactersInString(/*0*/ aString : jet.Any?) : jet.Any?
 }
 
 public open trait NSMutableCopying {
+    public open fun mutableCopyWithZone(/*0*/ zone : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableData {
+    public open fun mutableBytes() : jet.Any?
+    public open fun setLength(/*0*/ length : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableDictionary {
+    public open fun removeObjectForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun setObject(/*0*/ anObject : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableIndexSet {
+    public open fun addIndex(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun addIndexes(/*0*/ indexSet : jet.Any?) : jet.Any?
+    public open fun addIndexesInRange(/*0*/ range : jet.Any?) : jet.Any?
+    public open fun removeAllIndexes() : jet.Any?
+    public open fun removeIndex(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun removeIndexes(/*0*/ indexSet : jet.Any?) : jet.Any?
+    public open fun removeIndexesInRange(/*0*/ range : jet.Any?) : jet.Any?
+    public open fun shiftIndexesStartingAtIndex(/*0*/ index : jet.Any?, /*1*/ delta : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableOrderedSet {
+    public open fun insertObject(/*0*/ `object` : jet.Any?, /*1*/ idx : jet.Any?) : jet.Any?
+    public open fun removeObjectAtIndex(/*0*/ idx : jet.Any?) : jet.Any?
+    public open fun replaceObjectAtIndex(/*0*/ idx : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableSet {
+    public open fun addObject(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun removeObject(/*0*/ `object` : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableString {
+    public open fun replaceCharactersInRange(/*0*/ range : jet.Any?, /*1*/ aString : jet.Any?) : jet.Any?
 }
 
 public open class NSMutableURLRequest {
+    public open fun setCachePolicy(/*0*/ policy : jet.Any?) : jet.Any?
+    public open fun setMainDocumentURL(/*0*/ URL : jet.Any?) : jet.Any?
+    public open fun setNetworkServiceType(/*0*/ networkServiceType : jet.Any?) : jet.Any?
+    public open fun setTimeoutInterval(/*0*/ seconds : jet.Any?) : jet.Any?
+    public open fun setURL(/*0*/ URL : jet.Any?) : jet.Any?
 }
 
 public open class NSNameSpecifier {
+    public open fun initWithContainerClassDescription(/*0*/ classDesc : jet.Any?, /*1*/ container : jet.Any?, /*2*/ property : jet.Any?, /*3*/ name : jet.Any?) : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun setName(/*0*/ name : jet.Any?) : jet.Any?
 }
 
 public open class NSNetService {
+    public open fun TXTRecordData() : jet.Any?
+    public open fun addresses() : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun domain() : jet.Any?
+    public open fun getInputStream(/*0*/ inputStream : jet.Any?, /*1*/ outputStream : jet.Any?) : jet.Any?
+    public open fun hostName() : jet.Any?
+    public open fun initWithDomain(/*0*/ domain : jet.Any?, /*1*/ `type` : jet.Any?, /*2*/ name : jet.Any?) : jet.Any?
+    public open fun initWithDomain(/*0*/ domain : jet.Any?, /*1*/ `type` : jet.Any?, /*2*/ name : jet.Any?, /*3*/ port : jet.Any?) : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun port() : jet.Any?
+    public open fun publish() : jet.Any?
+    public open fun publishWithOptions(/*0*/ options : jet.Any?) : jet.Any?
+    public open fun removeFromRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun resolve() : jet.Any?
+    public open fun resolveWithTimeout(/*0*/ timeout : jet.Any?) : jet.Any?
+    public open fun scheduleInRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
+    public open fun setTXTRecordData(/*0*/ recordData : jet.Any?) : jet.Any?
+    public open fun startMonitoring() : jet.Any?
+    public open fun stop() : jet.Any?
+    public open fun stopMonitoring() : jet.Any?
+    public open fun `type`() : jet.Any?
 }
 
 public open class NSNetServiceBrowser {
+    public open fun delegate() : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun removeFromRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun scheduleInRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun searchForBrowsableDomains() : jet.Any?
+    public open fun searchForRegistrationDomains() : jet.Any?
+    public open fun searchForServicesOfType(/*0*/ `type` : jet.Any?, /*1*/ domainString : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
+    public open fun stop() : jet.Any?
 }
 
 public open trait NSNetServiceBrowserDelegate {
+    public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ errorDict : jet.Any?) : jet.Any?
+    public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ domainString : jet.Any?, /*2*/ moreComing : jet.Any?) : jet.Any?
+    public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ aNetService : jet.Any?, /*2*/ moreComing : jet.Any?) : jet.Any?
+    public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ domainString : jet.Any?, /*2*/ moreComing : jet.Any?) : jet.Any?
+    public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ aNetService : jet.Any?, /*2*/ moreComing : jet.Any?) : jet.Any?
+    public open fun netServiceBrowserDidStopSearch(/*0*/ aNetServiceBrowser : jet.Any?) : jet.Any?
+    public open fun netServiceBrowserWillSearch(/*0*/ aNetServiceBrowser : jet.Any?) : jet.Any?
 }
 
 public open trait NSNetServiceDelegate {
+    public open fun netService(/*0*/ sender : jet.Any?, /*1*/ errorDict : jet.Any?) : jet.Any?
+    public open fun netService(/*0*/ sender : jet.Any?, /*1*/ errorDict : jet.Any?) : jet.Any?
+    public open fun netService(/*0*/ sender : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
+    public open fun netServiceDidPublish(/*0*/ sender : jet.Any?) : jet.Any?
+    public open fun netServiceDidResolveAddress(/*0*/ sender : jet.Any?) : jet.Any?
+    public open fun netServiceDidStop(/*0*/ sender : jet.Any?) : jet.Any?
+    public open fun netServiceWillPublish(/*0*/ sender : jet.Any?) : jet.Any?
+    public open fun netServiceWillResolve(/*0*/ sender : jet.Any?) : jet.Any?
 }
 
 public open class NSNotification {
+    public open fun name() : jet.Any?
+    public open fun `object`() : jet.Any?
+    public open fun userInfo() : jet.Any?
 }
 
 public open class NSNotificationCenter {
+    public open fun addObserver(/*0*/ observer : jet.Any?, /*1*/ aSelector : jet.Any?, /*2*/ aName : jet.Any?, /*3*/ anObject : jet.Any?) : jet.Any?
+    public open fun addObserverForName(/*0*/ name : jet.Any?, /*1*/ obj : jet.Any?, /*2*/ queue : jet.Any?, /*3*/ block : jet.Any?) : jet.Any?
+    public open fun postNotification(/*0*/ notification : jet.Any?) : jet.Any?
+    public open fun postNotificationName(/*0*/ aName : jet.Any?, /*1*/ anObject : jet.Any?) : jet.Any?
+    public open fun postNotificationName(/*0*/ aName : jet.Any?, /*1*/ anObject : jet.Any?, /*2*/ aUserInfo : jet.Any?) : jet.Any?
+    public open fun removeObserver(/*0*/ observer : jet.Any?) : jet.Any?
+    public open fun removeObserver(/*0*/ observer : jet.Any?, /*1*/ aName : jet.Any?, /*2*/ anObject : jet.Any?) : jet.Any?
 }
 
 public open class NSNotificationQueue {
+    public open fun dequeueNotificationsMatching(/*0*/ notification : jet.Any?, /*1*/ coalesceMask : jet.Any?) : jet.Any?
+    public open fun enqueueNotification(/*0*/ notification : jet.Any?, /*1*/ postingStyle : jet.Any?) : jet.Any?
+    public open fun enqueueNotification(/*0*/ notification : jet.Any?, /*1*/ postingStyle : jet.Any?, /*2*/ coalesceMask : jet.Any?, /*3*/ modes : jet.Any?) : jet.Any?
+    public open fun initWithNotificationCenter(/*0*/ notificationCenter : jet.Any?) : jet.Any?
 }
 
 public open class NSNull {
 }
 
 public open class NSNumber {
+    public open fun boolValue() : jet.Any?
+    public open fun charValue() : jet.Any?
+    public open fun compare(/*0*/ otherNumber : jet.Any?) : jet.Any?
+    public open fun descriptionWithLocale(/*0*/ locale : jet.Any?) : jet.Any?
+    public open fun doubleValue() : jet.Any?
+    public open fun floatValue() : jet.Any?
+    public open fun intValue() : jet.Any?
+    public open fun integerValue() : jet.Any?
+    public open fun isEqualToNumber(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun longLongValue() : jet.Any?
+    public open fun longValue() : jet.Any?
+    public open fun shortValue() : jet.Any?
+    public open fun stringValue() : jet.Any?
+    public open fun unsignedCharValue() : jet.Any?
+    public open fun unsignedIntValue() : jet.Any?
+    public open fun unsignedIntegerValue() : jet.Any?
+    public open fun unsignedLongLongValue() : jet.Any?
+    public open fun unsignedLongValue() : jet.Any?
+    public open fun unsignedShortValue() : jet.Any?
 }
 
 public open class NSNumberFormatter {
+    public open fun allowsFloats() : jet.Any?
+    public open fun alwaysShowsDecimalSeparator() : jet.Any?
+    public open fun currencyCode() : jet.Any?
+    public open fun currencyDecimalSeparator() : jet.Any?
+    public open fun currencyGroupingSeparator() : jet.Any?
+    public open fun currencySymbol() : jet.Any?
+    public open fun decimalSeparator() : jet.Any?
+    public open fun exponentSymbol() : jet.Any?
+    public open fun formatWidth() : jet.Any?
+    public open fun formatterBehavior() : jet.Any?
+    public open fun generatesDecimalNumbers() : jet.Any?
+    public open fun getObjectValue(/*0*/ obj : jet.Any?, /*1*/ string : jet.Any?, /*2*/ rangep : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    public open fun groupingSeparator() : jet.Any?
+    public open fun groupingSize() : jet.Any?
+    public open fun internationalCurrencySymbol() : jet.Any?
+    public open fun isLenient() : jet.Any?
+    public open fun isPartialStringValidationEnabled() : jet.Any?
+    public open fun locale() : jet.Any?
+    public open fun maximum() : jet.Any?
+    public open fun maximumFractionDigits() : jet.Any?
+    public open fun maximumIntegerDigits() : jet.Any?
+    public open fun maximumSignificantDigits() : jet.Any?
+    public open fun minimum() : jet.Any?
+    public open fun minimumFractionDigits() : jet.Any?
+    public open fun minimumIntegerDigits() : jet.Any?
+    public open fun minimumSignificantDigits() : jet.Any?
+    public open fun minusSign() : jet.Any?
+    public open fun multiplier() : jet.Any?
+    public open fun negativeFormat() : jet.Any?
+    public open fun negativeInfinitySymbol() : jet.Any?
+    public open fun negativePrefix() : jet.Any?
+    public open fun negativeSuffix() : jet.Any?
+    public open fun nilSymbol() : jet.Any?
+    public open fun notANumberSymbol() : jet.Any?
+    public open fun numberFromString(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun numberStyle() : jet.Any?
+    public open fun paddingCharacter() : jet.Any?
+    public open fun paddingPosition() : jet.Any?
+    public open fun perMillSymbol() : jet.Any?
+    public open fun percentSymbol() : jet.Any?
+    public open fun plusSign() : jet.Any?
+    public open fun positiveFormat() : jet.Any?
+    public open fun positiveInfinitySymbol() : jet.Any?
+    public open fun positivePrefix() : jet.Any?
+    public open fun positiveSuffix() : jet.Any?
+    public open fun roundingIncrement() : jet.Any?
+    public open fun roundingMode() : jet.Any?
+    public open fun secondaryGroupingSize() : jet.Any?
+    public open fun setAllowsFloats(/*0*/ flag : jet.Any?) : jet.Any?
+    public open fun setAlwaysShowsDecimalSeparator(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setCurrencyCode(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setCurrencyDecimalSeparator(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setCurrencyGroupingSeparator(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setCurrencySymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setDecimalSeparator(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setExponentSymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setFormatWidth(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setFormatterBehavior(/*0*/ behavior : jet.Any?) : jet.Any?
+    public open fun setGeneratesDecimalNumbers(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setGroupingSeparator(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setGroupingSize(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setInternationalCurrencySymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setLenient(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setLocale(/*0*/ locale : jet.Any?) : jet.Any?
+    public open fun setMaximum(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setMaximumFractionDigits(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setMaximumIntegerDigits(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setMaximumSignificantDigits(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setMinimum(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setMinimumFractionDigits(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setMinimumIntegerDigits(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setMinimumSignificantDigits(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setMinusSign(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setMultiplier(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setNegativeFormat(/*0*/ format : jet.Any?) : jet.Any?
+    public open fun setNegativeInfinitySymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setNegativePrefix(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setNegativeSuffix(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setNilSymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setNotANumberSymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setNumberStyle(/*0*/ style : jet.Any?) : jet.Any?
+    public open fun setPaddingCharacter(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setPaddingPosition(/*0*/ position : jet.Any?) : jet.Any?
+    public open fun setPartialStringValidationEnabled(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setPerMillSymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setPercentSymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setPlusSign(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setPositiveFormat(/*0*/ format : jet.Any?) : jet.Any?
+    public open fun setPositiveInfinitySymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setPositivePrefix(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setPositiveSuffix(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setRoundingIncrement(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setRoundingMode(/*0*/ mode : jet.Any?) : jet.Any?
+    public open fun setSecondaryGroupingSize(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun setTextAttributesForNegativeInfinity(/*0*/ newAttributes : jet.Any?) : jet.Any?
+    public open fun setTextAttributesForNegativeValues(/*0*/ newAttributes : jet.Any?) : jet.Any?
+    public open fun setTextAttributesForNil(/*0*/ newAttributes : jet.Any?) : jet.Any?
+    public open fun setTextAttributesForNotANumber(/*0*/ newAttributes : jet.Any?) : jet.Any?
+    public open fun setTextAttributesForPositiveInfinity(/*0*/ newAttributes : jet.Any?) : jet.Any?
+    public open fun setTextAttributesForPositiveValues(/*0*/ newAttributes : jet.Any?) : jet.Any?
+    public open fun setTextAttributesForZero(/*0*/ newAttributes : jet.Any?) : jet.Any?
+    public open fun setUsesGroupingSeparator(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setUsesSignificantDigits(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun setZeroSymbol(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun stringFromNumber(/*0*/ number : jet.Any?) : jet.Any?
+    public open fun textAttributesForNegativeInfinity() : jet.Any?
+    public open fun textAttributesForNegativeValues() : jet.Any?
+    public open fun textAttributesForNil() : jet.Any?
+    public open fun textAttributesForNotANumber() : jet.Any?
+    public open fun textAttributesForPositiveInfinity() : jet.Any?
+    public open fun textAttributesForPositiveValues() : jet.Any?
+    public open fun textAttributesForZero() : jet.Any?
+    public open fun usesGroupingSeparator() : jet.Any?
+    public open fun usesSignificantDigits() : jet.Any?
+    public open fun zeroSymbol() : jet.Any?
 }
 
 public open class NSObject {
+    public open fun allowsWeakReference() : jet.Any?
+    public open fun copy() : jet.Any?
+    public open fun dealloc() : jet.Any?
+    public open fun doesNotRecognizeSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+    public open fun finalize() : jet.Any?
+    public open fun forwardInvocation(/*0*/ anInvocation : jet.Any?) : jet.Any?
+    public open fun forwardingTargetForSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun methodForSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+    public open fun methodSignatureForSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+    public open fun mutableCopy() : jet.Any?
+    public open fun retainWeakReference() : jet.Any?
 }
 
 public open trait NSObjectProtocol {
+    public open fun autorelease() : jet.Any?
+    public open fun `class`() : jet.Any?
+    public open fun conformsToProtocol(/*0*/ aProtocol : jet.Any?) : jet.Any?
+    public open fun description() : jet.Any?
+    public open fun hash() : jet.Any?
+    public open fun isEqual(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun isKindOfClass(/*0*/ aClass : jet.Any?) : jet.Any?
+    public open fun isMemberOfClass(/*0*/ aClass : jet.Any?) : jet.Any?
+    public open fun isProxy() : jet.Any?
+    public open fun performSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+    public open fun performSelector(/*0*/ aSelector : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
+    public open fun performSelector(/*0*/ aSelector : jet.Any?, /*1*/ object1 : jet.Any?, /*2*/ object2 : jet.Any?) : jet.Any?
+    public open fun release() : jet.Any?
+    public open fun respondsToSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+    public open fun retain() : jet.Any?
+    public open fun retainCount() : jet.Any?
+    public open fun self() : jet.Any?
+    public open fun superclass() : jet.Any?
+    public open fun zone() : jet.Any?
 }
 
 public open class NSOperation {
+    public open fun addDependency(/*0*/ op : jet.Any?) : jet.Any?
+    public open fun cancel() : jet.Any?
+    public open fun completionBlock() : jet.Any?
+    public open fun dependencies() : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun isCancelled() : jet.Any?
+    public open fun isConcurrent() : jet.Any?
+    public open fun isExecuting() : jet.Any?
+    public open fun isFinished() : jet.Any?
+    public open fun isReady() : jet.Any?
+    public open fun main() : jet.Any?
+    public open fun queuePriority() : jet.Any?
+    public open fun removeDependency(/*0*/ op : jet.Any?) : jet.Any?
+    public open fun setCompletionBlock(/*0*/ block : jet.Any?) : jet.Any?
+    public open fun setQueuePriority(/*0*/ p : jet.Any?) : jet.Any?
+    public open fun setThreadPriority(/*0*/ p : jet.Any?) : jet.Any?
+    public open fun start() : jet.Any?
+    public open fun threadPriority() : jet.Any?
+    public open fun waitUntilFinished() : jet.Any?
 }
 
 public open class NSOperationQueue {
+    public open fun addOperation(/*0*/ op : jet.Any?) : jet.Any?
+    public open fun addOperationWithBlock(/*0*/ block : jet.Any?) : jet.Any?
+    public open fun addOperations(/*0*/ ops : jet.Any?, /*1*/ wait : jet.Any?) : jet.Any?
+    public open fun cancelAllOperations() : jet.Any?
+    public open fun isSuspended() : jet.Any?
+    public open fun maxConcurrentOperationCount() : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun operationCount() : jet.Any?
+    public open fun operations() : jet.Any?
+    public open fun setMaxConcurrentOperationCount(/*0*/ cnt : jet.Any?) : jet.Any?
+    public open fun setName(/*0*/ n : jet.Any?) : jet.Any?
+    public open fun setSuspended(/*0*/ b : jet.Any?) : jet.Any?
+    public open fun waitUntilAllOperationsAreFinished() : jet.Any?
 }
 
 public open class NSOrderedSet {
+    public open fun count() : jet.Any?
+    public open fun indexOfObject(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun objectAtIndex(/*0*/ idx : jet.Any?) : jet.Any?
 }
 
 public open class NSOrthography {
+    public open fun dominantScript() : jet.Any?
+    public open fun languageMap() : jet.Any?
 }
 
 public open class NSOutputStream {
+    public open fun hasSpaceAvailable() : jet.Any?
+    public open fun write(/*0*/ buffer : jet.Any?, /*1*/ len : jet.Any?) : jet.Any?
 }
 
 public open class NSPipe {
+    public open fun fileHandleForReading() : jet.Any?
+    public open fun fileHandleForWriting() : jet.Any?
+    public open fun init() : jet.Any?
 }
 
 public open class NSPointerArray {
+    public open fun addPointer(/*0*/ pointer : jet.Any?) : jet.Any?
+    public open fun compact() : jet.Any?
+    public open fun count() : jet.Any?
+    public open fun initWithOptions(/*0*/ options : jet.Any?) : jet.Any?
+    public open fun initWithPointerFunctions(/*0*/ functions : jet.Any?) : jet.Any?
+    public open fun insertPointer(/*0*/ item : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun pointerAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun pointerFunctions() : jet.Any?
+    public open fun removePointerAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun replacePointerAtIndex(/*0*/ index : jet.Any?, /*1*/ item : jet.Any?) : jet.Any?
+    public open fun setCount(/*0*/ count : jet.Any?) : jet.Any?
 }
 
 public open class NSPointerFunctions {
+    public open fun acquireFunction() : jet.Any?
+    public open fun descriptionFunction() : jet.Any?
+    public open fun hashFunction() : jet.Any?
+    public open fun initWithOptions(/*0*/ options : jet.Any?) : jet.Any?
+    public open fun isEqualFunction() : jet.Any?
+    public open fun relinquishFunction() : jet.Any?
+    public open fun setAcquireFunction(/*0*/ acquireFunction : jet.Any?) : jet.Any?
+    public open fun setDescriptionFunction(/*0*/ descriptionFunction : jet.Any?) : jet.Any?
+    public open fun setHashFunction(/*0*/ hashFunction : jet.Any?) : jet.Any?
+    public open fun setIsEqualFunction(/*0*/ isEqualFunction : jet.Any?) : jet.Any?
+    public open fun setRelinquishFunction(/*0*/ relinquishFunction : jet.Any?) : jet.Any?
+    public open fun setSizeFunction(/*0*/ sizeFunction : jet.Any?) : jet.Any?
+    public open fun setUsesStrongWriteBarrier(/*0*/ usesStrongWriteBarrier : jet.Any?) : jet.Any?
+    public open fun setUsesWeakReadAndWriteBarriers(/*0*/ usesWeakReadAndWriteBarriers : jet.Any?) : jet.Any?
+    public open fun sizeFunction() : jet.Any?
+    public open fun usesStrongWriteBarrier() : jet.Any?
+    public open fun usesWeakReadAndWriteBarriers() : jet.Any?
 }
 
 public open class NSPort {
+    public open fun addConnection(/*0*/ conn : jet.Any?, /*1*/ runLoop : jet.Any?, /*2*/ mode : jet.Any?) : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun invalidate() : jet.Any?
+    public open fun isValid() : jet.Any?
+    public open fun removeConnection(/*0*/ conn : jet.Any?, /*1*/ runLoop : jet.Any?, /*2*/ mode : jet.Any?) : jet.Any?
+    public open fun removeFromRunLoop(/*0*/ runLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun reservedSpaceLength() : jet.Any?
+    public open fun scheduleInRunLoop(/*0*/ runLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun sendBeforeDate(/*0*/ limitDate : jet.Any?, /*1*/ components : jet.Any?, /*2*/ receivePort : jet.Any?, /*3*/ headerSpaceReserved : jet.Any?) : jet.Any?
+    public open fun sendBeforeDate(/*0*/ limitDate : jet.Any?, /*1*/ msgID : jet.Any?, /*2*/ components : jet.Any?, /*3*/ receivePort : jet.Any?, /*4*/ headerSpaceReserved : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ anObject : jet.Any?) : jet.Any?
 }
 
 public open class NSPortCoder {
+    public open fun connection() : jet.Any?
+    public open fun decodePortObject() : jet.Any?
+    public open fun dispatch() : jet.Any?
+    public open fun encodePortObject(/*0*/ aport : jet.Any?) : jet.Any?
+    public open fun initWithReceivePort(/*0*/ rcvPort : jet.Any?, /*1*/ sndPort : jet.Any?, /*2*/ comps : jet.Any?) : jet.Any?
+    public open fun isBycopy() : jet.Any?
+    public open fun isByref() : jet.Any?
 }
 
 public open trait NSPortDelegate {
+    public open fun handlePortMessage(/*0*/ message : jet.Any?) : jet.Any?
 }
 
 public open class NSPortMessage {
+    public open fun components() : jet.Any?
+    public open fun initWithSendPort(/*0*/ sendPort : jet.Any?, /*1*/ replyPort : jet.Any?, /*2*/ components : jet.Any?) : jet.Any?
+    public open fun msgid() : jet.Any?
+    public open fun receivePort() : jet.Any?
+    public open fun sendBeforeDate(/*0*/ date : jet.Any?) : jet.Any?
+    public open fun sendPort() : jet.Any?
+    public open fun setMsgid(/*0*/ msgid : jet.Any?) : jet.Any?
 }
 
 public open class NSPortNameServer {
+    public open fun portForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun portForName(/*0*/ name : jet.Any?, /*1*/ host : jet.Any?) : jet.Any?
+    public open fun registerPort(/*0*/ port : jet.Any?, /*1*/ name : jet.Any?) : jet.Any?
+    public open fun removePortForName(/*0*/ name : jet.Any?) : jet.Any?
 }
 
 public open class NSPositionalSpecifier {
+    public open fun evaluate() : jet.Any?
+    public open fun initWithPosition(/*0*/ position : jet.Any?, /*1*/ specifier : jet.Any?) : jet.Any?
+    public open fun insertionContainer() : jet.Any?
+    public open fun insertionIndex() : jet.Any?
+    public open fun insertionKey() : jet.Any?
+    public open fun insertionReplaces() : jet.Any?
+    public open fun objectSpecifier() : jet.Any?
+    public open fun position() : jet.Any?
+    public open fun setInsertionClassDescription(/*0*/ classDescription : jet.Any?) : jet.Any?
 }
 
 public open class NSPredicate {
+    public open fun evaluateWithObject(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun evaluateWithObject(/*0*/ `object` : jet.Any?, /*1*/ bindings : jet.Any?) : jet.Any?
+    public open fun predicateFormat() : jet.Any?
+    public open fun predicateWithSubstitutionVariables(/*0*/ variables : jet.Any?) : jet.Any?
 }
 
 public open class NSProcessInfo {
+    public open fun activeProcessorCount() : jet.Any?
+    public open fun arguments() : jet.Any?
+    public open fun automaticTerminationSupportEnabled() : jet.Any?
+    public open fun disableAutomaticTermination(/*0*/ reason : jet.Any?) : jet.Any?
+    public open fun disableSuddenTermination() : jet.Any?
+    public open fun enableAutomaticTermination(/*0*/ reason : jet.Any?) : jet.Any?
+    public open fun enableSuddenTermination() : jet.Any?
+    public open fun environment() : jet.Any?
+    public open fun globallyUniqueString() : jet.Any?
+    public open fun hostName() : jet.Any?
+    public open fun operatingSystem() : jet.Any?
+    public open fun operatingSystemName() : jet.Any?
+    public open fun operatingSystemVersionString() : jet.Any?
+    public open fun physicalMemory() : jet.Any?
+    public open fun processIdentifier() : jet.Any?
+    public open fun processName() : jet.Any?
+    public open fun processorCount() : jet.Any?
+    public open fun setAutomaticTerminationSupportEnabled(/*0*/ flag : jet.Any?) : jet.Any?
+    public open fun setProcessName(/*0*/ newName : jet.Any?) : jet.Any?
+    public open fun systemUptime() : jet.Any?
 }
 
 public open class NSPropertyListSerialization {
@@ -430,205 +1728,899 @@ public open class NSPropertySpecifier {
 }
 
 public open class NSProtocolChecker {
+    public open fun protocol() : jet.Any?
+    public open fun target() : jet.Any?
 }
 
 public open class NSProxy {
+    public open fun allowsWeakReference() : jet.Any?
+    public open fun dealloc() : jet.Any?
+    public open fun description() : jet.Any?
+    public open fun finalize() : jet.Any?
+    public open fun forwardInvocation(/*0*/ invocation : jet.Any?) : jet.Any?
+    public open fun methodSignatureForSelector(/*0*/ sel : jet.Any?) : jet.Any?
+    public open fun retainWeakReference() : jet.Any?
 }
 
 public open class NSPurgeableData {
 }
 
 public open class NSQuitCommand {
+    public open fun saveOptions() : jet.Any?
 }
 
 public open class NSRandomSpecifier {
 }
 
 public open class NSRangeSpecifier {
+    public open fun endSpecifier() : jet.Any?
+    public open fun initWithContainerClassDescription(/*0*/ classDesc : jet.Any?, /*1*/ container : jet.Any?, /*2*/ property : jet.Any?, /*3*/ startSpec : jet.Any?, /*4*/ endSpec : jet.Any?) : jet.Any?
+    public open fun setEndSpecifier(/*0*/ endSpec : jet.Any?) : jet.Any?
+    public open fun setStartSpecifier(/*0*/ startSpec : jet.Any?) : jet.Any?
+    public open fun startSpecifier() : jet.Any?
 }
 
 public open class NSRecursiveLock {
+    public open fun lockBeforeDate(/*0*/ limit : jet.Any?) : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun setName(/*0*/ n : jet.Any?) : jet.Any?
+    public open fun tryLock() : jet.Any?
 }
 
 public open class NSRegularExpression {
+    public open fun initWithPattern(/*0*/ pattern : jet.Any?, /*1*/ options : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun numberOfCaptureGroups() : jet.Any?
+    public open fun options() : jet.Any?
+    public open fun pattern() : jet.Any?
 }
 
 public open class NSRelativeSpecifier {
+    public open fun baseSpecifier() : jet.Any?
+    public open fun initWithContainerClassDescription(/*0*/ classDesc : jet.Any?, /*1*/ container : jet.Any?, /*2*/ property : jet.Any?, /*3*/ relPos : jet.Any?, /*4*/ baseSpecifier : jet.Any?) : jet.Any?
+    public open fun relativePosition() : jet.Any?
+    public open fun setBaseSpecifier(/*0*/ baseSpecifier : jet.Any?) : jet.Any?
+    public open fun setRelativePosition(/*0*/ relPos : jet.Any?) : jet.Any?
 }
 
 public open class NSRunLoop {
+    public open fun acceptInputForMode(/*0*/ mode : jet.Any?, /*1*/ limitDate : jet.Any?) : jet.Any?
+    public open fun addPort(/*0*/ aPort : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun addTimer(/*0*/ timer : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun currentMode() : jet.Any?
+    public open fun getCFRunLoop() : jet.Any?
+    public open fun limitDateForMode(/*0*/ mode : jet.Any?) : jet.Any?
+    public open fun removePort(/*0*/ aPort : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
 }
 
 public open class NSScanner {
+    public open fun scanLocation() : jet.Any?
+    public open fun setCaseSensitive(/*0*/ flag : jet.Any?) : jet.Any?
+    public open fun setCharactersToBeSkipped(/*0*/ set : jet.Any?) : jet.Any?
+    public open fun setLocale(/*0*/ locale : jet.Any?) : jet.Any?
+    public open fun setScanLocation(/*0*/ pos : jet.Any?) : jet.Any?
+    public open fun string() : jet.Any?
 }
 
 public open class NSScriptClassDescription {
+    public open fun appleEventCode() : jet.Any?
+    public open fun appleEventCodeForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun classDescriptionForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun className() : jet.Any?
+    public open fun defaultSubcontainerAttributeKey() : jet.Any?
+    public open fun hasOrderedToManyRelationshipForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun hasPropertyForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun hasReadablePropertyForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun hasWritablePropertyForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun implementationClassName() : jet.Any?
+    public open fun initWithSuiteName(/*0*/ suiteName : jet.Any?, /*1*/ className : jet.Any?, /*2*/ classDeclaration : jet.Any?) : jet.Any?
+    public open fun isLocationRequiredToCreateForKey(/*0*/ toManyRelationshipKey : jet.Any?) : jet.Any?
+    public open fun keyWithAppleEventCode(/*0*/ appleEventCode : jet.Any?) : jet.Any?
+    public open fun matchesAppleEventCode(/*0*/ appleEventCode : jet.Any?) : jet.Any?
+    public open fun selectorForCommand(/*0*/ commandDescription : jet.Any?) : jet.Any?
+    public open fun suiteName() : jet.Any?
+    public open fun superclassDescription() : jet.Any?
+    public open fun supportsCommand(/*0*/ commandDescription : jet.Any?) : jet.Any?
+    public open fun typeForKey(/*0*/ key : jet.Any?) : jet.Any?
 }
 
 public open class NSScriptCoercionHandler {
+    public open fun coerceValue(/*0*/ value : jet.Any?, /*1*/ toClass : jet.Any?) : jet.Any?
+    public open fun registerCoercer(/*0*/ coercer : jet.Any?, /*1*/ selector : jet.Any?, /*2*/ fromClass : jet.Any?, /*3*/ toClass : jet.Any?) : jet.Any?
 }
 
 public open class NSScriptCommand {
+    public open fun appleEvent() : jet.Any?
+    public open fun arguments() : jet.Any?
+    public open fun commandDescription() : jet.Any?
+    public open fun directParameter() : jet.Any?
+    public open fun evaluatedArguments() : jet.Any?
+    public open fun evaluatedReceivers() : jet.Any?
+    public open fun executeCommand() : jet.Any?
+    public open fun initWithCommandDescription(/*0*/ commandDef : jet.Any?) : jet.Any?
+    public open fun isWellFormed() : jet.Any?
+    public open fun performDefaultImplementation() : jet.Any?
+    public open fun receiversSpecifier() : jet.Any?
+    public open fun resumeExecutionWithResult(/*0*/ result : jet.Any?) : jet.Any?
+    public open fun scriptErrorExpectedTypeDescriptor() : jet.Any?
+    public open fun scriptErrorNumber() : jet.Any?
+    public open fun scriptErrorOffendingObjectDescriptor() : jet.Any?
+    public open fun scriptErrorString() : jet.Any?
+    public open fun setArguments(/*0*/ args : jet.Any?) : jet.Any?
+    public open fun setDirectParameter(/*0*/ directParameter : jet.Any?) : jet.Any?
+    public open fun setReceiversSpecifier(/*0*/ receiversRef : jet.Any?) : jet.Any?
+    public open fun setScriptErrorExpectedTypeDescriptor(/*0*/ errorExpectedTypeDescriptor : jet.Any?) : jet.Any?
+    public open fun setScriptErrorNumber(/*0*/ errorNumber : jet.Any?) : jet.Any?
+    public open fun setScriptErrorOffendingObjectDescriptor(/*0*/ errorOffendingObjectDescriptor : jet.Any?) : jet.Any?
+    public open fun setScriptErrorString(/*0*/ errorString : jet.Any?) : jet.Any?
+    public open fun suspendExecution() : jet.Any?
 }
 
 public open class NSScriptCommandDescription {
+    public open fun appleEventClassCode() : jet.Any?
+    public open fun appleEventCode() : jet.Any?
+    public open fun appleEventCodeForArgumentWithName(/*0*/ argumentName : jet.Any?) : jet.Any?
+    public open fun appleEventCodeForReturnType() : jet.Any?
+    public open fun argumentNames() : jet.Any?
+    public open fun commandClassName() : jet.Any?
+    public open fun commandName() : jet.Any?
+    public open fun createCommandInstance() : jet.Any?
+    public open fun createCommandInstanceWithZone(/*0*/ zone : jet.Any?) : jet.Any?
+    public open fun initWithSuiteName(/*0*/ suiteName : jet.Any?, /*1*/ commandName : jet.Any?, /*2*/ commandDeclaration : jet.Any?) : jet.Any?
+    public open fun isOptionalArgumentWithName(/*0*/ argumentName : jet.Any?) : jet.Any?
+    public open fun returnType() : jet.Any?
+    public open fun suiteName() : jet.Any?
+    public open fun typeForArgumentWithName(/*0*/ argumentName : jet.Any?) : jet.Any?
 }
 
 public open class NSScriptExecutionContext {
+    public open fun objectBeingTested() : jet.Any?
+    public open fun rangeContainerObject() : jet.Any?
+    public open fun setObjectBeingTested(/*0*/ obj : jet.Any?) : jet.Any?
+    public open fun setRangeContainerObject(/*0*/ obj : jet.Any?) : jet.Any?
+    public open fun setTopLevelObject(/*0*/ obj : jet.Any?) : jet.Any?
+    public open fun topLevelObject() : jet.Any?
 }
 
 public open class NSScriptObjectSpecifier {
+    public open fun childSpecifier() : jet.Any?
+    public open fun containerClassDescription() : jet.Any?
+    public open fun containerIsObjectBeingTested() : jet.Any?
+    public open fun containerIsRangeContainerObject() : jet.Any?
+    public open fun containerSpecifier() : jet.Any?
+    public open fun descriptor() : jet.Any?
+    public open fun evaluationErrorNumber() : jet.Any?
+    public open fun evaluationErrorSpecifier() : jet.Any?
+    public open fun indicesOfObjectsByEvaluatingWithContainer(/*0*/ container : jet.Any?, /*1*/ count : jet.Any?) : jet.Any?
+    public open fun initWithContainerClassDescription(/*0*/ classDesc : jet.Any?, /*1*/ container : jet.Any?, /*2*/ property : jet.Any?) : jet.Any?
+    public open fun initWithContainerSpecifier(/*0*/ container : jet.Any?, /*1*/ property : jet.Any?) : jet.Any?
+    public open fun key() : jet.Any?
+    public open fun keyClassDescription() : jet.Any?
+    public open fun objectsByEvaluatingSpecifier() : jet.Any?
+    public open fun objectsByEvaluatingWithContainers(/*0*/ containers : jet.Any?) : jet.Any?
+    public open fun setChildSpecifier(/*0*/ child : jet.Any?) : jet.Any?
+    public open fun setContainerClassDescription(/*0*/ classDesc : jet.Any?) : jet.Any?
+    public open fun setContainerIsObjectBeingTested(/*0*/ flag : jet.Any?) : jet.Any?
+    public open fun setContainerIsRangeContainerObject(/*0*/ flag : jet.Any?) : jet.Any?
+    public open fun setContainerSpecifier(/*0*/ subRef : jet.Any?) : jet.Any?
+    public open fun setEvaluationErrorNumber(/*0*/ error : jet.Any?) : jet.Any?
+    public open fun setKey(/*0*/ key : jet.Any?) : jet.Any?
 }
 
 public open class NSScriptSuiteRegistry {
+    public open fun aeteResource(/*0*/ languageName : jet.Any?) : jet.Any?
+    public open fun appleEventCodeForSuite(/*0*/ suiteName : jet.Any?) : jet.Any?
+    public open fun bundleForSuite(/*0*/ suiteName : jet.Any?) : jet.Any?
+    public open fun classDescriptionWithAppleEventCode(/*0*/ appleEventCode : jet.Any?) : jet.Any?
+    public open fun classDescriptionsInSuite(/*0*/ suiteName : jet.Any?) : jet.Any?
+    public open fun commandDescriptionWithAppleEventClass(/*0*/ appleEventClassCode : jet.Any?, /*1*/ appleEventIDCode : jet.Any?) : jet.Any?
+    public open fun commandDescriptionsInSuite(/*0*/ suiteName : jet.Any?) : jet.Any?
+    public open fun loadSuiteWithDictionary(/*0*/ suiteDeclaration : jet.Any?, /*1*/ bundle : jet.Any?) : jet.Any?
+    public open fun loadSuitesFromBundle(/*0*/ bundle : jet.Any?) : jet.Any?
+    public open fun registerClassDescription(/*0*/ classDescription : jet.Any?) : jet.Any?
+    public open fun registerCommandDescription(/*0*/ commandDescription : jet.Any?) : jet.Any?
+    public open fun suiteForAppleEventCode(/*0*/ appleEventCode : jet.Any?) : jet.Any?
+    public open fun suiteNames() : jet.Any?
 }
 
 public open class NSScriptWhoseTest {
+    public open fun isTrue() : jet.Any?
 }
 
 public open class NSSet {
+    public open fun count() : jet.Any?
+    public open fun member(/*0*/ `object` : jet.Any?) : jet.Any?
+    public open fun objectEnumerator() : jet.Any?
 }
 
 public open class NSSetCommand {
+    public open fun keySpecifier() : jet.Any?
+    public open fun setReceiversSpecifier(/*0*/ receiversRef : jet.Any?) : jet.Any?
 }
 
 public open class NSSimpleCString {
 }
 
 public open class NSSocketPort {
+    public open fun address() : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun initRemoteWithProtocolFamily(/*0*/ family : jet.Any?, /*1*/ `type` : jet.Any?, /*2*/ protocol : jet.Any?, /*3*/ address : jet.Any?) : jet.Any?
+    public open fun initRemoteWithTCPPort(/*0*/ port : jet.Any?, /*1*/ hostName : jet.Any?) : jet.Any?
+    public open fun initWithProtocolFamily(/*0*/ family : jet.Any?, /*1*/ `type` : jet.Any?, /*2*/ protocol : jet.Any?, /*3*/ address : jet.Any?) : jet.Any?
+    public open fun initWithProtocolFamily(/*0*/ family : jet.Any?, /*1*/ `type` : jet.Any?, /*2*/ protocol : jet.Any?, /*3*/ sock : jet.Any?) : jet.Any?
+    public open fun initWithTCPPort(/*0*/ port : jet.Any?) : jet.Any?
+    public open fun protocol() : jet.Any?
+    public open fun protocolFamily() : jet.Any?
+    public open fun socket() : jet.Any?
+    public open fun socketType() : jet.Any?
 }
 
 public open class NSSocketPortNameServer {
+    public open fun defaultNameServerPortNumber() : jet.Any?
+    public open fun portForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun portForName(/*0*/ name : jet.Any?, /*1*/ host : jet.Any?) : jet.Any?
+    public open fun portForName(/*0*/ name : jet.Any?, /*1*/ host : jet.Any?, /*2*/ portNumber : jet.Any?) : jet.Any?
+    public open fun registerPort(/*0*/ port : jet.Any?, /*1*/ name : jet.Any?) : jet.Any?
+    public open fun registerPort(/*0*/ port : jet.Any?, /*1*/ name : jet.Any?, /*2*/ portNumber : jet.Any?) : jet.Any?
+    public open fun removePortForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun setDefaultNameServerPortNumber(/*0*/ portNumber : jet.Any?) : jet.Any?
 }
 
 public open class NSSortDescriptor {
+    public open fun ascending() : jet.Any?
+    public open fun comparator() : jet.Any?
+    public open fun compareObject(/*0*/ object1 : jet.Any?, /*1*/ object2 : jet.Any?) : jet.Any?
+    public open fun initWithKey(/*0*/ key : jet.Any?, /*1*/ ascending : jet.Any?) : jet.Any?
+    public open fun initWithKey(/*0*/ key : jet.Any?, /*1*/ ascending : jet.Any?, /*2*/ selector : jet.Any?) : jet.Any?
+    public open fun initWithKey(/*0*/ key : jet.Any?, /*1*/ ascending : jet.Any?, /*2*/ cmptr : jet.Any?) : jet.Any?
+    public open fun key() : jet.Any?
+    public open fun reversedSortDescriptor() : jet.Any?
+    public open fun selector() : jet.Any?
 }
 
 public open class NSSpecifierTest {
+    public open fun initWithObjectSpecifier(/*0*/ obj1 : jet.Any?, /*1*/ compOp : jet.Any?, /*2*/ obj2 : jet.Any?) : jet.Any?
 }
 
 public open class NSSpellServer {
+    public open fun delegate() : jet.Any?
+    public open fun isWordInUserDictionaries(/*0*/ word : jet.Any?, /*1*/ flag : jet.Any?) : jet.Any?
+    public open fun registerLanguage(/*0*/ language : jet.Any?, /*1*/ vendor : jet.Any?) : jet.Any?
+    public open fun run() : jet.Any?
+    public open fun setDelegate(/*0*/ anObject : jet.Any?) : jet.Any?
 }
 
 public open trait NSSpellServerDelegate {
+    public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : jet.Any?
+    public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : jet.Any?
+    public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : jet.Any?
+    public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ range : jet.Any?, /*2*/ string : jet.Any?, /*3*/ language : jet.Any?) : jet.Any?
+    public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ stringToCheck : jet.Any?, /*2*/ language : jet.Any?, /*3*/ details : jet.Any?) : jet.Any?
+    public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ stringToCheck : jet.Any?, /*2*/ language : jet.Any?, /*3*/ wordCount : jet.Any?, /*4*/ countOnly : jet.Any?) : jet.Any?
+    public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ response : jet.Any?, /*2*/ correction : jet.Any?, /*3*/ word : jet.Any?, /*4*/ language : jet.Any?) : jet.Any?
+    public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ stringToCheck : jet.Any?, /*2*/ offset : jet.Any?, /*3*/ checkingTypes : jet.Any?, /*4*/ options : jet.Any?, /*5*/ orthography : jet.Any?, /*6*/ wordCount : jet.Any?) : jet.Any?
 }
 
 public open class NSStream {
+    public open fun close() : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun open() : jet.Any?
+    public open fun propertyForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun removeFromRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun scheduleInRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
+    public open fun setProperty(/*0*/ property : jet.Any?, /*1*/ key : jet.Any?) : jet.Any?
+    public open fun streamError() : jet.Any?
+    public open fun streamStatus() : jet.Any?
 }
 
 public open trait NSStreamDelegate {
+    public open fun stream(/*0*/ aStream : jet.Any?, /*1*/ eventCode : jet.Any?) : jet.Any?
 }
 
 public open class NSString {
+    public open fun characterAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun length() : jet.Any?
 }
 
 public open class NSTask {
+    public open fun arguments() : jet.Any?
+    public open fun currentDirectoryPath() : jet.Any?
+    public open fun environment() : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun interrupt() : jet.Any?
+    public open fun isRunning() : jet.Any?
+    public open fun launch() : jet.Any?
+    public open fun launchPath() : jet.Any?
+    public open fun processIdentifier() : jet.Any?
+    public open fun resume() : jet.Any?
+    public open fun setArguments(/*0*/ arguments : jet.Any?) : jet.Any?
+    public open fun setCurrentDirectoryPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun setEnvironment(/*0*/ dict : jet.Any?) : jet.Any?
+    public open fun setLaunchPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun setStandardError(/*0*/ error : jet.Any?) : jet.Any?
+    public open fun setStandardInput(/*0*/ input : jet.Any?) : jet.Any?
+    public open fun setStandardOutput(/*0*/ output : jet.Any?) : jet.Any?
+    public open fun setTerminationHandler(/*0*/ terminationHandler : jet.Any?) : jet.Any?
+    public open fun standardError() : jet.Any?
+    public open fun standardInput() : jet.Any?
+    public open fun standardOutput() : jet.Any?
+    public open fun suspend() : jet.Any?
+    public open fun terminate() : jet.Any?
+    public open fun terminationHandler() : jet.Any?
+    public open fun terminationReason() : jet.Any?
+    public open fun terminationStatus() : jet.Any?
 }
 
 public open class NSTextCheckingResult {
+    public open fun range() : jet.Any?
+    public open fun resultType() : jet.Any?
 }
 
 public open class NSThread {
+    public open fun cancel() : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun initWithTarget(/*0*/ target : jet.Any?, /*1*/ selector : jet.Any?, /*2*/ argument : jet.Any?) : jet.Any?
+    public open fun isCancelled() : jet.Any?
+    public open fun isExecuting() : jet.Any?
+    public open fun isFinished() : jet.Any?
+    public open fun isMainThread() : jet.Any?
+    public open fun main() : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun setName(/*0*/ n : jet.Any?) : jet.Any?
+    public open fun setStackSize(/*0*/ s : jet.Any?) : jet.Any?
+    public open fun setThreadPriority(/*0*/ p : jet.Any?) : jet.Any?
+    public open fun stackSize() : jet.Any?
+    public open fun start() : jet.Any?
+    public open fun threadDictionary() : jet.Any?
+    public open fun threadPriority() : jet.Any?
 }
 
 public open class NSTimeZone {
+    public open fun abbreviationForDate(/*0*/ aDate : jet.Any?) : jet.Any?
+    public open fun data() : jet.Any?
+    public open fun daylightSavingTimeOffsetForDate(/*0*/ aDate : jet.Any?) : jet.Any?
+    public open fun isDaylightSavingTimeForDate(/*0*/ aDate : jet.Any?) : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun nextDaylightSavingTimeTransitionAfterDate(/*0*/ aDate : jet.Any?) : jet.Any?
+    public open fun secondsFromGMTForDate(/*0*/ aDate : jet.Any?) : jet.Any?
 }
 
 public open class NSTimer {
+    public open fun fire() : jet.Any?
+    public open fun fireDate() : jet.Any?
+    public open fun initWithFireDate(/*0*/ date : jet.Any?, /*1*/ ti : jet.Any?, /*2*/ t : jet.Any?, /*3*/ s : jet.Any?, /*4*/ ui : jet.Any?, /*5*/ rep : jet.Any?) : jet.Any?
+    public open fun invalidate() : jet.Any?
+    public open fun isValid() : jet.Any?
+    public open fun setFireDate(/*0*/ date : jet.Any?) : jet.Any?
+    public open fun timeInterval() : jet.Any?
+    public open fun userInfo() : jet.Any?
 }
 
 public open class NSURL {
+    public open fun absoluteString() : jet.Any?
+    public open fun absoluteURL() : jet.Any?
+    public open fun baseURL() : jet.Any?
+    public open fun bookmarkDataWithOptions(/*0*/ options : jet.Any?, /*1*/ keys : jet.Any?, /*2*/ relativeURL : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    public open fun checkResourceIsReachableAndReturnError(/*0*/ error : jet.Any?) : jet.Any?
+    public open fun filePathURL() : jet.Any?
+    public open fun fileReferenceURL() : jet.Any?
+    public open fun fragment() : jet.Any?
+    public open fun getResourceValue(/*0*/ value : jet.Any?, /*1*/ key : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun host() : jet.Any?
+    public open fun initByResolvingBookmarkData(/*0*/ bookmarkData : jet.Any?, /*1*/ options : jet.Any?, /*2*/ relativeURL : jet.Any?, /*3*/ isStale : jet.Any?, /*4*/ error : jet.Any?) : jet.Any?
+    public open fun initFileURLWithPath(/*0*/ path : jet.Any?) : jet.Any?
+    public open fun initFileURLWithPath(/*0*/ path : jet.Any?, /*1*/ isDir : jet.Any?) : jet.Any?
+    public open fun initWithScheme(/*0*/ scheme : jet.Any?, /*1*/ host : jet.Any?, /*2*/ path : jet.Any?) : jet.Any?
+    public open fun initWithString(/*0*/ URLString : jet.Any?) : jet.Any?
+    public open fun initWithString(/*0*/ URLString : jet.Any?, /*1*/ baseURL : jet.Any?) : jet.Any?
+    public open fun isFileReferenceURL() : jet.Any?
+    public open fun isFileURL() : jet.Any?
+    public open fun parameterString() : jet.Any?
+    public open fun password() : jet.Any?
+    public open fun path() : jet.Any?
+    public open fun port() : jet.Any?
+    public open fun query() : jet.Any?
+    public open fun relativePath() : jet.Any?
+    public open fun relativeString() : jet.Any?
+    public open fun resourceSpecifier() : jet.Any?
+    public open fun resourceValuesForKeys(/*0*/ keys : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun scheme() : jet.Any?
+    public open fun setResourceValue(/*0*/ value : jet.Any?, /*1*/ key : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun setResourceValues(/*0*/ keyedValues : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun standardizedURL() : jet.Any?
+    public open fun startAccessingSecurityScopedResource() : jet.Any?
+    public open fun stopAccessingSecurityScopedResource() : jet.Any?
+    public open fun user() : jet.Any?
 }
 
 public open class NSURLAuthenticationChallenge {
+    public open fun error() : jet.Any?
+    public open fun failureResponse() : jet.Any?
+    public open fun initWithAuthenticationChallenge(/*0*/ challenge : jet.Any?, /*1*/ sender : jet.Any?) : jet.Any?
+    public open fun initWithProtectionSpace(/*0*/ space : jet.Any?, /*1*/ credential : jet.Any?, /*2*/ previousFailureCount : jet.Any?, /*3*/ response : jet.Any?, /*4*/ error : jet.Any?, /*5*/ sender : jet.Any?) : jet.Any?
+    public open fun previousFailureCount() : jet.Any?
+    public open fun proposedCredential() : jet.Any?
+    public open fun protectionSpace() : jet.Any?
+    public open fun sender() : jet.Any?
 }
 
 public open trait NSURLAuthenticationChallengeSender {
+    public open fun cancelAuthenticationChallenge(/*0*/ challenge : jet.Any?) : jet.Any?
+    public open fun continueWithoutCredentialForAuthenticationChallenge(/*0*/ challenge : jet.Any?) : jet.Any?
+    public open fun performDefaultHandlingForAuthenticationChallenge(/*0*/ challenge : jet.Any?) : jet.Any?
+    public open fun rejectProtectionSpaceAndContinueWithChallenge(/*0*/ challenge : jet.Any?) : jet.Any?
+    public open fun useCredential(/*0*/ credential : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
 }
 
 public open class NSURLCache {
+    public open fun cachedResponseForRequest(/*0*/ request : jet.Any?) : jet.Any?
+    public open fun currentDiskUsage() : jet.Any?
+    public open fun currentMemoryUsage() : jet.Any?
+    public open fun diskCapacity() : jet.Any?
+    public open fun initWithMemoryCapacity(/*0*/ memoryCapacity : jet.Any?, /*1*/ diskCapacity : jet.Any?, /*2*/ path : jet.Any?) : jet.Any?
+    public open fun memoryCapacity() : jet.Any?
+    public open fun removeAllCachedResponses() : jet.Any?
+    public open fun removeCachedResponseForRequest(/*0*/ request : jet.Any?) : jet.Any?
+    public open fun setDiskCapacity(/*0*/ diskCapacity : jet.Any?) : jet.Any?
+    public open fun setMemoryCapacity(/*0*/ memoryCapacity : jet.Any?) : jet.Any?
+    public open fun storeCachedResponse(/*0*/ cachedResponse : jet.Any?, /*1*/ request : jet.Any?) : jet.Any?
 }
 
 public open class NSURLConnection {
+    public open fun cancel() : jet.Any?
+    public open fun initWithRequest(/*0*/ request : jet.Any?, /*1*/ delegate : jet.Any?) : jet.Any?
+    public open fun initWithRequest(/*0*/ request : jet.Any?, /*1*/ delegate : jet.Any?, /*2*/ startImmediately : jet.Any?) : jet.Any?
+    public open fun scheduleInRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    public open fun setDelegateQueue(/*0*/ queue : jet.Any?) : jet.Any?
+    public open fun start() : jet.Any?
+    public open fun unscheduleFromRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
 }
 
 public open trait NSURLConnectionDelegate {
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ request : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ protectionSpace : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ response : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ cachedResponse : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ request : jet.Any?, /*2*/ response : jet.Any?) : jet.Any?
+    public open fun connection(/*0*/ connection : jet.Any?, /*1*/ bytesWritten : jet.Any?, /*2*/ totalBytesWritten : jet.Any?, /*3*/ totalBytesExpectedToWrite : jet.Any?) : jet.Any?
+    public open fun connectionDidFinishLoading(/*0*/ connection : jet.Any?) : jet.Any?
+    public open fun connectionShouldUseCredentialStorage(/*0*/ connection : jet.Any?) : jet.Any?
 }
 
 public open class NSURLCredential {
+    public open fun persistence() : jet.Any?
 }
 
 public open class NSURLCredentialStorage {
+    public open fun allCredentials() : jet.Any?
+    public open fun credentialsForProtectionSpace(/*0*/ space : jet.Any?) : jet.Any?
+    public open fun defaultCredentialForProtectionSpace(/*0*/ space : jet.Any?) : jet.Any?
+    public open fun removeCredential(/*0*/ credential : jet.Any?, /*1*/ space : jet.Any?) : jet.Any?
+    public open fun setCredential(/*0*/ credential : jet.Any?, /*1*/ space : jet.Any?) : jet.Any?
+    public open fun setDefaultCredential(/*0*/ credential : jet.Any?, /*1*/ space : jet.Any?) : jet.Any?
 }
 
 public open class NSURLDownload {
+    public open fun cancel() : jet.Any?
+    public open fun deletesFileUponFailure() : jet.Any?
+    public open fun initWithRequest(/*0*/ request : jet.Any?, /*1*/ delegate : jet.Any?) : jet.Any?
+    public open fun initWithResumeData(/*0*/ resumeData : jet.Any?, /*1*/ delegate : jet.Any?, /*2*/ path : jet.Any?) : jet.Any?
+    public open fun request() : jet.Any?
+    public open fun resumeData() : jet.Any?
+    public open fun setDeletesFileUponFailure(/*0*/ deletesFileUponFailure : jet.Any?) : jet.Any?
+    public open fun setDestination(/*0*/ path : jet.Any?, /*1*/ allowOverwrite : jet.Any?) : jet.Any?
 }
 
 public open trait NSURLDownloadDelegate {
+    public open fun download(/*0*/ connection : jet.Any?, /*1*/ protectionSpace : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ response : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ length : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ encodingType : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ filename : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ path : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ request : jet.Any?, /*2*/ redirectResponse : jet.Any?) : jet.Any?
+    public open fun download(/*0*/ download : jet.Any?, /*1*/ response : jet.Any?, /*2*/ startingByte : jet.Any?) : jet.Any?
+    public open fun downloadDidBegin(/*0*/ download : jet.Any?) : jet.Any?
+    public open fun downloadDidFinish(/*0*/ download : jet.Any?) : jet.Any?
+    public open fun downloadShouldUseCredentialStorage(/*0*/ download : jet.Any?) : jet.Any?
 }
 
 public open class NSURLHandle {
+    public open fun addClient(/*0*/ client : jet.Any?) : jet.Any?
+    public open fun availableResourceData() : jet.Any?
+    public open fun backgroundLoadDidFailWithReason(/*0*/ reason : jet.Any?) : jet.Any?
+    public open fun beginLoadInBackground() : jet.Any?
+    public open fun cancelLoadInBackground() : jet.Any?
+    public open fun didLoadBytes(/*0*/ newBytes : jet.Any?, /*1*/ yorn : jet.Any?) : jet.Any?
+    public open fun endLoadInBackground() : jet.Any?
+    public open fun expectedResourceDataSize() : jet.Any?
+    public open fun failureReason() : jet.Any?
+    public open fun flushCachedData() : jet.Any?
+    public open fun initWithURL(/*0*/ anURL : jet.Any?, /*1*/ willCache : jet.Any?) : jet.Any?
+    public open fun loadInBackground() : jet.Any?
+    public open fun loadInForeground() : jet.Any?
+    public open fun propertyForKey(/*0*/ propertyKey : jet.Any?) : jet.Any?
+    public open fun propertyForKeyIfAvailable(/*0*/ propertyKey : jet.Any?) : jet.Any?
+    public open fun removeClient(/*0*/ client : jet.Any?) : jet.Any?
+    public open fun resourceData() : jet.Any?
+    public open fun status() : jet.Any?
+    public open fun writeData(/*0*/ data : jet.Any?) : jet.Any?
+    public open fun writeProperty(/*0*/ propertyValue : jet.Any?, /*1*/ propertyKey : jet.Any?) : jet.Any?
 }
 
 public open trait NSURLHandleClient {
+    public open fun URLHandle(/*0*/ sender : jet.Any?, /*1*/ newBytes : jet.Any?) : jet.Any?
+    public open fun URLHandle(/*0*/ sender : jet.Any?, /*1*/ reason : jet.Any?) : jet.Any?
+    public open fun URLHandleResourceDidBeginLoading(/*0*/ sender : jet.Any?) : jet.Any?
+    public open fun URLHandleResourceDidCancelLoading(/*0*/ sender : jet.Any?) : jet.Any?
+    public open fun URLHandleResourceDidFinishLoading(/*0*/ sender : jet.Any?) : jet.Any?
 }
 
 public open class NSURLProtectionSpace {
+    public open fun authenticationMethod() : jet.Any?
+    public open fun host() : jet.Any?
+    public open fun initWithHost(/*0*/ host : jet.Any?, /*1*/ port : jet.Any?, /*2*/ protocol : jet.Any?, /*3*/ realm : jet.Any?, /*4*/ authenticationMethod : jet.Any?) : jet.Any?
+    public open fun initWithProxyHost(/*0*/ host : jet.Any?, /*1*/ port : jet.Any?, /*2*/ `type` : jet.Any?, /*3*/ realm : jet.Any?, /*4*/ authenticationMethod : jet.Any?) : jet.Any?
+    public open fun isProxy() : jet.Any?
+    public open fun port() : jet.Any?
+    public open fun protocol() : jet.Any?
+    public open fun proxyType() : jet.Any?
+    public open fun realm() : jet.Any?
+    public open fun receivesCredentialSecurely() : jet.Any?
 }
 
 public open class NSURLProtocol {
+    public open fun cachedResponse() : jet.Any?
+    public open fun client() : jet.Any?
+    public open fun initWithRequest(/*0*/ request : jet.Any?, /*1*/ cachedResponse : jet.Any?, /*2*/ client : jet.Any?) : jet.Any?
+    public open fun request() : jet.Any?
+    public open fun startLoading() : jet.Any?
+    public open fun stopLoading() : jet.Any?
 }
 
 public open trait NSURLProtocolClient {
+    public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ cachedResponse : jet.Any?) : jet.Any?
+    public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
+    public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
+    public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
+    public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ request : jet.Any?, /*2*/ redirectResponse : jet.Any?) : jet.Any?
+    public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ response : jet.Any?, /*2*/ policy : jet.Any?) : jet.Any?
+    public open fun URLProtocolDidFinishLoading(/*0*/ protocol : jet.Any?) : jet.Any?
 }
 
 public open class NSURLRequest {
+    public open fun URL() : jet.Any?
+    public open fun cachePolicy() : jet.Any?
+    public open fun initWithURL(/*0*/ URL : jet.Any?) : jet.Any?
+    public open fun initWithURL(/*0*/ URL : jet.Any?, /*1*/ cachePolicy : jet.Any?, /*2*/ timeoutInterval : jet.Any?) : jet.Any?
+    public open fun mainDocumentURL() : jet.Any?
+    public open fun networkServiceType() : jet.Any?
+    public open fun timeoutInterval() : jet.Any?
 }
 
 public open class NSURLResponse {
+    public open fun MIMEType() : jet.Any?
+    public open fun URL() : jet.Any?
+    public open fun expectedContentLength() : jet.Any?
+    public open fun initWithURL(/*0*/ URL : jet.Any?, /*1*/ MIMEType : jet.Any?, /*2*/ length : jet.Any?, /*3*/ name : jet.Any?) : jet.Any?
+    public open fun suggestedFilename() : jet.Any?
+    public open fun textEncodingName() : jet.Any?
 }
 
 public open class NSUbiquitousKeyValueStore {
+    public open fun arrayForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun boolForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun dataForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun dictionaryForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun dictionaryRepresentation() : jet.Any?
+    public open fun doubleForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun longLongForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun objectForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun removeObjectForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun setArray(/*0*/ anArray : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun setBool(/*0*/ value : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun setData(/*0*/ aData : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun setDictionary(/*0*/ aDictionary : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun setDouble(/*0*/ value : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun setLongLong(/*0*/ value : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun setObject(/*0*/ anObject : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun setString(/*0*/ aString : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
+    public open fun stringForKey(/*0*/ aKey : jet.Any?) : jet.Any?
+    public open fun synchronize() : jet.Any?
 }
 
 public open class NSUnarchiver {
+    public open fun classNameDecodedForArchiveClassName(/*0*/ inArchiveName : jet.Any?) : jet.Any?
+    public open fun decodeClassName(/*0*/ inArchiveName : jet.Any?, /*1*/ trueName : jet.Any?) : jet.Any?
+    public open fun initForReadingWithData(/*0*/ data : jet.Any?) : jet.Any?
+    public open fun isAtEnd() : jet.Any?
+    public open fun objectZone() : jet.Any?
+    public open fun replaceObject(/*0*/ `object` : jet.Any?, /*1*/ newObject : jet.Any?) : jet.Any?
+    public open fun setObjectZone(/*0*/ zone : jet.Any?) : jet.Any?
+    public open fun systemVersion() : jet.Any?
 }
 
 public open class NSUndoManager {
+    public open fun beginUndoGrouping() : jet.Any?
+    public open fun canRedo() : jet.Any?
+    public open fun canUndo() : jet.Any?
+    public open fun disableUndoRegistration() : jet.Any?
+    public open fun enableUndoRegistration() : jet.Any?
+    public open fun endUndoGrouping() : jet.Any?
+    public open fun groupingLevel() : jet.Any?
+    public open fun groupsByEvent() : jet.Any?
+    public open fun isRedoing() : jet.Any?
+    public open fun isUndoRegistrationEnabled() : jet.Any?
+    public open fun isUndoing() : jet.Any?
+    public open fun levelsOfUndo() : jet.Any?
+    public open fun prepareWithInvocationTarget(/*0*/ target : jet.Any?) : jet.Any?
+    public open fun redo() : jet.Any?
+    public open fun redoActionIsDiscardable() : jet.Any?
+    public open fun redoActionName() : jet.Any?
+    public open fun redoMenuItemTitle() : jet.Any?
+    public open fun redoMenuTitleForUndoActionName(/*0*/ actionName : jet.Any?) : jet.Any?
+    public open fun registerUndoWithTarget(/*0*/ target : jet.Any?, /*1*/ selector : jet.Any?, /*2*/ anObject : jet.Any?) : jet.Any?
+    public open fun removeAllActions() : jet.Any?
+    public open fun removeAllActionsWithTarget(/*0*/ target : jet.Any?) : jet.Any?
+    public open fun runLoopModes() : jet.Any?
+    public open fun setActionIsDiscardable(/*0*/ discardable : jet.Any?) : jet.Any?
+    public open fun setActionName(/*0*/ actionName : jet.Any?) : jet.Any?
+    public open fun setGroupsByEvent(/*0*/ groupsByEvent : jet.Any?) : jet.Any?
+    public open fun setLevelsOfUndo(/*0*/ levels : jet.Any?) : jet.Any?
+    public open fun setRunLoopModes(/*0*/ runLoopModes : jet.Any?) : jet.Any?
+    public open fun undo() : jet.Any?
+    public open fun undoActionIsDiscardable() : jet.Any?
+    public open fun undoActionName() : jet.Any?
+    public open fun undoMenuItemTitle() : jet.Any?
+    public open fun undoMenuTitleForUndoActionName(/*0*/ actionName : jet.Any?) : jet.Any?
+    public open fun undoNestedGroup() : jet.Any?
 }
 
 public open class NSUniqueIDSpecifier {
+    public open fun initWithContainerClassDescription(/*0*/ classDesc : jet.Any?, /*1*/ container : jet.Any?, /*2*/ property : jet.Any?, /*3*/ uniqueID : jet.Any?) : jet.Any?
+    public open fun setUniqueID(/*0*/ uniqueID : jet.Any?) : jet.Any?
+    public open fun uniqueID() : jet.Any?
 }
 
 public open class NSUserDefaults {
+    public open fun URLForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun addSuiteNamed(/*0*/ suiteName : jet.Any?) : jet.Any?
+    public open fun arrayForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun boolForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun dataForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun dictionaryForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun dictionaryRepresentation() : jet.Any?
+    public open fun doubleForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun floatForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun init() : jet.Any?
+    public open fun initWithUser(/*0*/ username : jet.Any?) : jet.Any?
+    public open fun integerForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun objectForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun objectIsForcedForKey(/*0*/ key : jet.Any?) : jet.Any?
+    public open fun objectIsForcedForKey(/*0*/ key : jet.Any?, /*1*/ domain : jet.Any?) : jet.Any?
+    public open fun persistentDomainForName(/*0*/ domainName : jet.Any?) : jet.Any?
+    public open fun persistentDomainNames() : jet.Any?
+    public open fun registerDefaults(/*0*/ registrationDictionary : jet.Any?) : jet.Any?
+    public open fun removeObjectForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun removePersistentDomainForName(/*0*/ domainName : jet.Any?) : jet.Any?
+    public open fun removeSuiteNamed(/*0*/ suiteName : jet.Any?) : jet.Any?
+    public open fun removeVolatileDomainForName(/*0*/ domainName : jet.Any?) : jet.Any?
+    public open fun setBool(/*0*/ value : jet.Any?, /*1*/ defaultName : jet.Any?) : jet.Any?
+    public open fun setDouble(/*0*/ value : jet.Any?, /*1*/ defaultName : jet.Any?) : jet.Any?
+    public open fun setFloat(/*0*/ value : jet.Any?, /*1*/ defaultName : jet.Any?) : jet.Any?
+    public open fun setInteger(/*0*/ value : jet.Any?, /*1*/ defaultName : jet.Any?) : jet.Any?
+    public open fun setObject(/*0*/ value : jet.Any?, /*1*/ defaultName : jet.Any?) : jet.Any?
+    public open fun setPersistentDomain(/*0*/ domain : jet.Any?, /*1*/ domainName : jet.Any?) : jet.Any?
+    public open fun setURL(/*0*/ url : jet.Any?, /*1*/ defaultName : jet.Any?) : jet.Any?
+    public open fun setVolatileDomain(/*0*/ domain : jet.Any?, /*1*/ domainName : jet.Any?) : jet.Any?
+    public open fun stringArrayForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun stringForKey(/*0*/ defaultName : jet.Any?) : jet.Any?
+    public open fun synchronize() : jet.Any?
+    public open fun volatileDomainForName(/*0*/ domainName : jet.Any?) : jet.Any?
+    public open fun volatileDomainNames() : jet.Any?
 }
 
 public open class NSValue {
+    public open fun getValue(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun objCType() : jet.Any?
 }
 
 public open class NSValueTransformer {
+    public open fun reverseTransformedValue(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun transformedValue(/*0*/ value : jet.Any?) : jet.Any?
 }
 
 public open class NSWhoseSpecifier {
+    public open fun endSubelementIdentifier() : jet.Any?
+    public open fun endSubelementIndex() : jet.Any?
+    public open fun initWithContainerClassDescription(/*0*/ classDesc : jet.Any?, /*1*/ container : jet.Any?, /*2*/ property : jet.Any?, /*3*/ test : jet.Any?) : jet.Any?
+    public open fun setEndSubelementIdentifier(/*0*/ subelement : jet.Any?) : jet.Any?
+    public open fun setEndSubelementIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun setStartSubelementIdentifier(/*0*/ subelement : jet.Any?) : jet.Any?
+    public open fun setStartSubelementIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun setTest(/*0*/ test : jet.Any?) : jet.Any?
+    public open fun startSubelementIdentifier() : jet.Any?
+    public open fun startSubelementIndex() : jet.Any?
+    public open fun test() : jet.Any?
 }
 
 public open class NSXMLDTD {
+    public open fun addChild(/*0*/ child : jet.Any?) : jet.Any?
+    public open fun attributeDeclarationForName(/*0*/ name : jet.Any?, /*1*/ elementName : jet.Any?) : jet.Any?
+    public open fun elementDeclarationForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun entityDeclarationForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun initWithContentsOfURL(/*0*/ url : jet.Any?, /*1*/ mask : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun initWithData(/*0*/ data : jet.Any?, /*1*/ mask : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun insertChild(/*0*/ child : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun insertChildren(/*0*/ children : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun notationDeclarationForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun publicID() : jet.Any?
+    public open fun removeChildAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun replaceChildAtIndex(/*0*/ index : jet.Any?, /*1*/ node : jet.Any?) : jet.Any?
+    public open fun setChildren(/*0*/ children : jet.Any?) : jet.Any?
+    public open fun setPublicID(/*0*/ publicID : jet.Any?) : jet.Any?
+    public open fun setSystemID(/*0*/ systemID : jet.Any?) : jet.Any?
+    public open fun systemID() : jet.Any?
 }
 
 public open class NSXMLDTDNode {
+    public open fun DTDKind() : jet.Any?
+    public open fun initWithXMLString(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun isExternal() : jet.Any?
+    public open fun notationName() : jet.Any?
+    public open fun publicID() : jet.Any?
+    public open fun setDTDKind(/*0*/ kind : jet.Any?) : jet.Any?
+    public open fun setNotationName(/*0*/ notationName : jet.Any?) : jet.Any?
+    public open fun setPublicID(/*0*/ publicID : jet.Any?) : jet.Any?
+    public open fun setSystemID(/*0*/ systemID : jet.Any?) : jet.Any?
+    public open fun systemID() : jet.Any?
 }
 
 public open class NSXMLDocument {
+    public open fun DTD() : jet.Any?
+    public open fun MIMEType() : jet.Any?
+    public open fun XMLData() : jet.Any?
+    public open fun XMLDataWithOptions(/*0*/ options : jet.Any?) : jet.Any?
+    public open fun addChild(/*0*/ child : jet.Any?) : jet.Any?
+    public open fun characterEncoding() : jet.Any?
+    public open fun documentContentKind() : jet.Any?
+    public open fun initWithContentsOfURL(/*0*/ url : jet.Any?, /*1*/ mask : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun initWithData(/*0*/ data : jet.Any?, /*1*/ mask : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun initWithRootElement(/*0*/ element : jet.Any?) : jet.Any?
+    public open fun initWithXMLString(/*0*/ string : jet.Any?, /*1*/ mask : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun insertChild(/*0*/ child : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun insertChildren(/*0*/ children : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun isStandalone() : jet.Any?
+    public open fun objectByApplyingXSLT(/*0*/ xslt : jet.Any?, /*1*/ arguments : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun objectByApplyingXSLTAtURL(/*0*/ xsltURL : jet.Any?, /*1*/ argument : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun objectByApplyingXSLTString(/*0*/ xslt : jet.Any?, /*1*/ arguments : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun removeChildAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun replaceChildAtIndex(/*0*/ index : jet.Any?, /*1*/ node : jet.Any?) : jet.Any?
+    public open fun rootElement() : jet.Any?
+    public open fun setCharacterEncoding(/*0*/ encoding : jet.Any?) : jet.Any?
+    public open fun setChildren(/*0*/ children : jet.Any?) : jet.Any?
+    public open fun setDTD(/*0*/ documentTypeDeclaration : jet.Any?) : jet.Any?
+    public open fun setDocumentContentKind(/*0*/ kind : jet.Any?) : jet.Any?
+    public open fun setMIMEType(/*0*/ MIMEType : jet.Any?) : jet.Any?
+    public open fun setRootElement(/*0*/ root : jet.Any?) : jet.Any?
+    public open fun setStandalone(/*0*/ standalone : jet.Any?) : jet.Any?
+    public open fun setVersion(/*0*/ version : jet.Any?) : jet.Any?
+    public open fun validateAndReturnError(/*0*/ error : jet.Any?) : jet.Any?
+    public open fun version() : jet.Any?
 }
 
 public open class NSXMLElement {
+    public open fun addAttribute(/*0*/ attribute : jet.Any?) : jet.Any?
+    public open fun addChild(/*0*/ child : jet.Any?) : jet.Any?
+    public open fun addNamespace(/*0*/ aNamespace : jet.Any?) : jet.Any?
+    public open fun attributeForLocalName(/*0*/ localName : jet.Any?, /*1*/ URI : jet.Any?) : jet.Any?
+    public open fun attributeForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun attributes() : jet.Any?
+    public open fun elementsForLocalName(/*0*/ localName : jet.Any?, /*1*/ URI : jet.Any?) : jet.Any?
+    public open fun elementsForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun initWithName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun initWithName(/*0*/ name : jet.Any?, /*1*/ URI : jet.Any?) : jet.Any?
+    public open fun initWithName(/*0*/ name : jet.Any?, /*1*/ string : jet.Any?) : jet.Any?
+    public open fun initWithXMLString(/*0*/ string : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun insertChild(/*0*/ child : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun insertChildren(/*0*/ children : jet.Any?, /*1*/ index : jet.Any?) : jet.Any?
+    public open fun namespaceForPrefix(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun namespaces() : jet.Any?
+    public open fun normalizeAdjacentTextNodesPreservingCDATA(/*0*/ preserve : jet.Any?) : jet.Any?
+    public open fun removeAttributeForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun removeChildAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun removeNamespaceForPrefix(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun replaceChildAtIndex(/*0*/ index : jet.Any?, /*1*/ node : jet.Any?) : jet.Any?
+    public open fun resolveNamespaceForName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun resolvePrefixForNamespaceURI(/*0*/ namespaceURI : jet.Any?) : jet.Any?
+    public open fun setAttributes(/*0*/ attributes : jet.Any?) : jet.Any?
+    public open fun setAttributesWithDictionary(/*0*/ attributes : jet.Any?) : jet.Any?
+    public open fun setChildren(/*0*/ children : jet.Any?) : jet.Any?
+    public open fun setNamespaces(/*0*/ namespaces : jet.Any?) : jet.Any?
 }
 
 public open class NSXMLNode {
+    public open fun URI() : jet.Any?
+    public open fun XMLString() : jet.Any?
+    public open fun XMLStringWithOptions(/*0*/ options : jet.Any?) : jet.Any?
+    public open fun XPath() : jet.Any?
+    public open fun canonicalXMLStringPreservingComments(/*0*/ comments : jet.Any?) : jet.Any?
+    public open fun childAtIndex(/*0*/ index : jet.Any?) : jet.Any?
+    public open fun childCount() : jet.Any?
+    public open fun children() : jet.Any?
+    public open fun description() : jet.Any?
+    public open fun detach() : jet.Any?
+    public open fun index() : jet.Any?
+    public open fun initWithKind(/*0*/ kind : jet.Any?) : jet.Any?
+    public open fun initWithKind(/*0*/ kind : jet.Any?, /*1*/ options : jet.Any?) : jet.Any?
+    public open fun kind() : jet.Any?
+    public open fun level() : jet.Any?
+    public open fun localName() : jet.Any?
+    public open fun name() : jet.Any?
+    public open fun nextNode() : jet.Any?
+    public open fun nextSibling() : jet.Any?
+    public open fun nodesForXPath(/*0*/ xpath : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun objectValue() : jet.Any?
+    public open fun objectsForXQuery(/*0*/ xquery : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    public open fun objectsForXQuery(/*0*/ xquery : jet.Any?, /*1*/ constants : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    public open fun parent() : jet.Any?
+    public open fun prefix() : jet.Any?
+    public open fun previousNode() : jet.Any?
+    public open fun previousSibling() : jet.Any?
+    public open fun rootDocument() : jet.Any?
+    public open fun setName(/*0*/ name : jet.Any?) : jet.Any?
+    public open fun setObjectValue(/*0*/ value : jet.Any?) : jet.Any?
+    public open fun setStringValue(/*0*/ string : jet.Any?) : jet.Any?
+    public open fun setStringValue(/*0*/ string : jet.Any?, /*1*/ resolve : jet.Any?) : jet.Any?
+    public open fun setURI(/*0*/ URI : jet.Any?) : jet.Any?
+    public open fun stringValue() : jet.Any?
 }
 
 public open class NSXMLParser {
+    public open fun abortParsing() : jet.Any?
+    public open fun delegate() : jet.Any?
+    public open fun initWithContentsOfURL(/*0*/ url : jet.Any?) : jet.Any?
+    public open fun initWithData(/*0*/ data : jet.Any?) : jet.Any?
+    public open fun initWithStream(/*0*/ stream : jet.Any?) : jet.Any?
+    public open fun parse() : jet.Any?
+    public open fun parserError() : jet.Any?
+    public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
+    public open fun setShouldProcessNamespaces(/*0*/ shouldProcessNamespaces : jet.Any?) : jet.Any?
+    public open fun setShouldReportNamespacePrefixes(/*0*/ shouldReportNamespacePrefixes : jet.Any?) : jet.Any?
+    public open fun setShouldResolveExternalEntities(/*0*/ shouldResolveExternalEntities : jet.Any?) : jet.Any?
+    public open fun shouldProcessNamespaces() : jet.Any?
+    public open fun shouldReportNamespacePrefixes() : jet.Any?
+    public open fun shouldResolveExternalEntities() : jet.Any?
 }
 
 public open trait NSXMLParserDelegate {
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ prefix : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ string : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ whitespaceString : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ comment : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ CDATABlock : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ parseError : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ validationError : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ elementName : jet.Any?, /*2*/ model : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ name : jet.Any?, /*2*/ value : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ prefix : jet.Any?, /*2*/ namespaceURI : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ target : jet.Any?, /*2*/ data : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ name : jet.Any?, /*2*/ systemID : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ name : jet.Any?, /*2*/ publicID : jet.Any?, /*3*/ systemID : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ name : jet.Any?, /*2*/ publicID : jet.Any?, /*3*/ systemID : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ elementName : jet.Any?, /*2*/ namespaceURI : jet.Any?, /*3*/ qName : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ name : jet.Any?, /*2*/ publicID : jet.Any?, /*3*/ systemID : jet.Any?, /*4*/ notationName : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ attributeName : jet.Any?, /*2*/ elementName : jet.Any?, /*3*/ `type` : jet.Any?, /*4*/ defaultValue : jet.Any?) : jet.Any?
+    public open fun parser(/*0*/ parser : jet.Any?, /*1*/ elementName : jet.Any?, /*2*/ namespaceURI : jet.Any?, /*3*/ qName : jet.Any?, /*4*/ attributeDict : jet.Any?) : jet.Any?
+    public open fun parserDidEndDocument(/*0*/ parser : jet.Any?) : jet.Any?
+    public open fun parserDidStartDocument(/*0*/ parser : jet.Any?) : jet.Any?
 }

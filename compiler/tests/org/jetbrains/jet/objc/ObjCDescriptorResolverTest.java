@@ -38,11 +38,11 @@ public class ObjCDescriptorResolverTest extends TestCaseWithTmpdir {
         assert header.endsWith(".h") : header;
         File expected = new File(header.substring(0, header.length() - ".h".length()) + ".txt");
 
-        ObjCDescriptorResolver resolver = new ObjCDescriptorResolver();
-        NamespaceDescriptor descriptor = resolver.resolve(new File(header));
-
         CompilerConfiguration configuration = JetTestUtils.compilerConfigurationForTests(ConfigurationKind.JDK_ONLY, TestJdkKind.MOCK_JDK);
         new JetCoreEnvironment(getTestRootDisposable(), configuration);
+
+        ObjCDescriptorResolver resolver = new ObjCDescriptorResolver();
+        NamespaceDescriptor descriptor = resolver.resolve(new File(header));
 
         compareNamespaceWithFile(descriptor, RECURSIVE, expected);
     }
