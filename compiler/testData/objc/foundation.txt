@@ -14,6 +14,10 @@ public open class NSAffineTransform {
     public open fun transformSize(/*0*/ aSize : jet.Any?) : jet.Any?
     public open fun transformStruct() : jet.Any?
     public open fun translateXBy(/*0*/ deltaX : jet.Any?, /*1*/ deltaY : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSAffineTransform> {
+        public open fun transform() : jet.Any?
+    }
 }
 
 public open class NSAppleEventDescriptor {
@@ -49,6 +53,20 @@ public open class NSAppleEventDescriptor {
     public open fun stringValue() : jet.Any?
     public open fun transactionID() : jet.Any?
     public open fun typeCodeValue() : jet.Any?
+    
+    public class object <class-object-for-NSAppleEventDescriptor> {
+        public open fun appleEventWithEventClass(/*0*/ eventClass : jet.Any?, /*1*/ eventID : jet.Any?, /*2*/ targetDescriptor : jet.Any?, /*3*/ returnID : jet.Any?, /*4*/ transactionID : jet.Any?) : jet.Any?
+        public open fun descriptorWithBoolean(/*0*/ boolean : jet.Any?) : jet.Any?
+        public open fun descriptorWithDescriptorType(/*0*/ descriptorType : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
+        public open fun descriptorWithDescriptorType(/*0*/ descriptorType : jet.Any?, /*1*/ bytes : jet.Any?, /*2*/ byteCount : jet.Any?) : jet.Any?
+        public open fun descriptorWithEnumCode(/*0*/ enumerator : jet.Any?) : jet.Any?
+        public open fun descriptorWithInt32(/*0*/ signedInt : jet.Any?) : jet.Any?
+        public open fun descriptorWithString(/*0*/ string : jet.Any?) : jet.Any?
+        public open fun descriptorWithTypeCode(/*0*/ typeCode : jet.Any?) : jet.Any?
+        public open fun listDescriptor() : jet.Any?
+        public open fun nullDescriptor() : jet.Any?
+        public open fun recordDescriptor() : jet.Any?
+    }
 }
 
 public open class NSAppleEventManager {
@@ -62,6 +80,10 @@ public open class NSAppleEventManager {
     public open fun setCurrentAppleEventAndReplyEventWithSuspensionID(/*0*/ suspensionID : jet.Any?) : jet.Any?
     public open fun setEventHandler(/*0*/ handler : jet.Any?, /*1*/ handleEventSelector : jet.Any?, /*2*/ eventClass : jet.Any?, /*3*/ eventID : jet.Any?) : jet.Any?
     public open fun suspendCurrentAppleEvent() : jet.Any?
+    
+    public class object <class-object-for-NSAppleEventManager> {
+        public open fun sharedAppleEventManager() : jet.Any?
+    }
 }
 
 public open class NSAppleScript {
@@ -82,6 +104,11 @@ public open class NSArchiver {
     public open fun encodeRootObject(/*0*/ rootObject : jet.Any?) : jet.Any?
     public open fun initForWritingWithMutableData(/*0*/ mdata : jet.Any?) : jet.Any?
     public open fun replaceObject(/*0*/ `object` : jet.Any?, /*1*/ newObject : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSArchiver> {
+        public open fun archiveRootObject(/*0*/ rootObject : jet.Any?, /*1*/ path : jet.Any?) : jet.Any?
+        public open fun archivedDataWithRootObject(/*0*/ rootObject : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSArray {
@@ -92,6 +119,10 @@ public open class NSArray {
 public open class NSAssertionHandler {
     public open fun handleFailureInFunction(/*0*/ functionName : jet.Any?, /*1*/ fileName : jet.Any?, /*2*/ line : jet.Any?, /*3*/ format : jet.Any?) : jet.Any?
     public open fun handleFailureInMethod(/*0*/ selector : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ fileName : jet.Any?, /*3*/ line : jet.Any?, /*4*/ format : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSAssertionHandler> {
+        public open fun currentHandler() : jet.Any?
+    }
 }
 
 public open class NSAttributedString {
@@ -102,11 +133,19 @@ public open class NSAttributedString {
 public open class NSAutoreleasePool {
     public open fun addObject(/*0*/ anObject : jet.Any?) : jet.Any?
     public open fun drain() : jet.Any?
+    
+    public class object <class-object-for-NSAutoreleasePool> {
+        public open fun addObject(/*0*/ anObject : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSBlockOperation {
     public open fun addExecutionBlock(/*0*/ block : jet.Any?) : jet.Any?
     public open fun executionBlocks() : jet.Any?
+    
+    public class object <class-object-for-NSBlockOperation> {
+        public open fun blockOperationWithBlock(/*0*/ block : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSBundle {
@@ -155,6 +194,22 @@ public open class NSBundle {
     public open fun sharedSupportPath() : jet.Any?
     public open fun sharedSupportURL() : jet.Any?
     public open fun unload() : jet.Any?
+    
+    public class object <class-object-for-NSBundle> {
+        public open fun URLForResource(/*0*/ name : jet.Any?, /*1*/ ext : jet.Any?, /*2*/ subpath : jet.Any?, /*3*/ bundleURL : jet.Any?) : jet.Any?
+        public open fun URLsForResourcesWithExtension(/*0*/ ext : jet.Any?, /*1*/ subpath : jet.Any?, /*2*/ bundleURL : jet.Any?) : jet.Any?
+        public open fun allBundles() : jet.Any?
+        public open fun allFrameworks() : jet.Any?
+        public open fun bundleForClass(/*0*/ aClass : jet.Any?) : jet.Any?
+        public open fun bundleWithIdentifier(/*0*/ identifier : jet.Any?) : jet.Any?
+        public open fun bundleWithPath(/*0*/ path : jet.Any?) : jet.Any?
+        public open fun bundleWithURL(/*0*/ url : jet.Any?) : jet.Any?
+        public open fun mainBundle() : jet.Any?
+        public open fun pathForResource(/*0*/ name : jet.Any?, /*1*/ ext : jet.Any?, /*2*/ bundlePath : jet.Any?) : jet.Any?
+        public open fun pathsForResourcesOfType(/*0*/ ext : jet.Any?, /*1*/ bundlePath : jet.Any?) : jet.Any?
+        public open fun preferredLocalizationsFromArray(/*0*/ localizationsArray : jet.Any?) : jet.Any?
+        public open fun preferredLocalizationsFromArray(/*0*/ localizationsArray : jet.Any?, /*1*/ preferencesArray : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSCache {
@@ -175,7 +230,7 @@ public open class NSCache {
     public open fun totalCostLimit() : jet.Any?
 }
 
-public open trait NSCacheDelegate {
+public trait NSCacheDelegate {
     public open fun cache(/*0*/ cache : jet.Any?, /*1*/ obj : jet.Any?) : jet.Any?
 }
 
@@ -208,6 +263,11 @@ public open class NSCalendar {
     public open fun setMinimumDaysInFirstWeek(/*0*/ mdw : jet.Any?) : jet.Any?
     public open fun setTimeZone(/*0*/ tz : jet.Any?) : jet.Any?
     public open fun timeZone() : jet.Any?
+    
+    public class object <class-object-for-NSCalendar> {
+        public open fun autoupdatingCurrentCalendar() : jet.Any?
+        public open fun currentCalendar() : jet.Any?
+    }
 }
 
 public open class NSCalendarDate {
@@ -233,6 +293,13 @@ public open class NSCalendarDate {
     public open fun timeZone() : jet.Any?
     public open fun yearOfCommonEra() : jet.Any?
     public open fun years(/*0*/ yp : jet.Any?, /*1*/ mop : jet.Any?, /*2*/ dp : jet.Any?, /*3*/ hp : jet.Any?, /*4*/ mip : jet.Any?, /*5*/ sp : jet.Any?, /*6*/ date : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSCalendarDate> {
+        public open fun calendarDate() : jet.Any?
+        public open fun dateWithString(/*0*/ description : jet.Any?, /*1*/ format : jet.Any?) : jet.Any?
+        public open fun dateWithString(/*0*/ description : jet.Any?, /*1*/ format : jet.Any?, /*2*/ locale : jet.Any?) : jet.Any?
+        public open fun dateWithYear(/*0*/ year : jet.Any?, /*1*/ month : jet.Any?, /*2*/ day : jet.Any?, /*3*/ hour : jet.Any?, /*4*/ minute : jet.Any?, /*5*/ second : jet.Any?, /*6*/ aTimeZone : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSCharacterSet {
@@ -242,6 +309,28 @@ public open class NSCharacterSet {
     public open fun invertedSet() : jet.Any?
     public open fun isSupersetOfSet(/*0*/ theOtherSet : jet.Any?) : jet.Any?
     public open fun longCharacterIsMember(/*0*/ theLongChar : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSCharacterSet> {
+        public open fun alphanumericCharacterSet() : jet.Any?
+        public open fun capitalizedLetterCharacterSet() : jet.Any?
+        public open fun characterSetWithBitmapRepresentation(/*0*/ data : jet.Any?) : jet.Any?
+        public open fun characterSetWithCharactersInString(/*0*/ aString : jet.Any?) : jet.Any?
+        public open fun characterSetWithContentsOfFile(/*0*/ fName : jet.Any?) : jet.Any?
+        public open fun characterSetWithRange(/*0*/ aRange : jet.Any?) : jet.Any?
+        public open fun controlCharacterSet() : jet.Any?
+        public open fun decimalDigitCharacterSet() : jet.Any?
+        public open fun decomposableCharacterSet() : jet.Any?
+        public open fun illegalCharacterSet() : jet.Any?
+        public open fun letterCharacterSet() : jet.Any?
+        public open fun lowercaseLetterCharacterSet() : jet.Any?
+        public open fun newlineCharacterSet() : jet.Any?
+        public open fun nonBaseCharacterSet() : jet.Any?
+        public open fun punctuationCharacterSet() : jet.Any?
+        public open fun symbolCharacterSet() : jet.Any?
+        public open fun uppercaseLetterCharacterSet() : jet.Any?
+        public open fun whitespaceAndNewlineCharacterSet() : jet.Any?
+        public open fun whitespaceCharacterSet() : jet.Any?
+    }
 }
 
 public open class NSClassDescription {
@@ -249,6 +338,12 @@ public open class NSClassDescription {
     public open fun inverseForRelationshipKey(/*0*/ relationshipKey : jet.Any?) : jet.Any?
     public open fun toManyRelationshipKeys() : jet.Any?
     public open fun toOneRelationshipKeys() : jet.Any?
+    
+    public class object <class-object-for-NSClassDescription> {
+        public open fun classDescriptionForClass(/*0*/ aClass : jet.Any?) : jet.Any?
+        public open fun invalidateClassDescriptionCache() : jet.Any?
+        public open fun registerClassDescription(/*0*/ description : jet.Any?, /*1*/ aClass : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSCloneCommand {
@@ -268,7 +363,7 @@ public open class NSCoder {
     public open fun versionForClassName(/*0*/ className : jet.Any?) : jet.Any?
 }
 
-public open trait NSCoding {
+public trait NSCoding {
     public open fun encodeWithCoder(/*0*/ aCoder : jet.Any?) : jet.Any?
     public open fun initWithCoder(/*0*/ aDecoder : jet.Any?) : jet.Any?
 }
@@ -282,12 +377,23 @@ public open class NSComparisonPredicate {
     public open fun options() : jet.Any?
     public open fun predicateOperatorType() : jet.Any?
     public open fun rightExpression() : jet.Any?
+    
+    public class object <class-object-for-NSComparisonPredicate> {
+        public open fun predicateWithLeftExpression(/*0*/ lhs : jet.Any?, /*1*/ rhs : jet.Any?, /*2*/ selector : jet.Any?) : jet.Any?
+        public open fun predicateWithLeftExpression(/*0*/ lhs : jet.Any?, /*1*/ rhs : jet.Any?, /*2*/ modifier : jet.Any?, /*3*/ `type` : jet.Any?, /*4*/ options : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSCompoundPredicate {
     public open fun compoundPredicateType() : jet.Any?
     public open fun initWithType(/*0*/ `type` : jet.Any?, /*1*/ subpredicates : jet.Any?) : jet.Any?
     public open fun subpredicates() : jet.Any?
+    
+    public class object <class-object-for-NSCompoundPredicate> {
+        public open fun andPredicateWithSubpredicates(/*0*/ subpredicates : jet.Any?) : jet.Any?
+        public open fun notPredicateWithSubpredicate(/*0*/ predicate : jet.Any?) : jet.Any?
+        public open fun orPredicateWithSubpredicates(/*0*/ subpredicates : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSCondition {
@@ -343,9 +449,22 @@ public open class NSConnection {
     public open fun setRequestTimeout(/*0*/ ti : jet.Any?) : jet.Any?
     public open fun setRootObject(/*0*/ anObject : jet.Any?) : jet.Any?
     public open fun statistics() : jet.Any?
+    
+    public class object <class-object-for-NSConnection> {
+        public open fun allConnections() : jet.Any?
+        public open fun connectionWithReceivePort(/*0*/ receivePort : jet.Any?, /*1*/ sendPort : jet.Any?) : jet.Any?
+        public open fun connectionWithRegisteredName(/*0*/ name : jet.Any?, /*1*/ hostName : jet.Any?) : jet.Any?
+        public open fun connectionWithRegisteredName(/*0*/ name : jet.Any?, /*1*/ hostName : jet.Any?, /*2*/ server : jet.Any?) : jet.Any?
+        public open fun currentConversation() : jet.Any?
+        public open fun defaultConnection() : jet.Any?
+        public open fun rootProxyForConnectionWithRegisteredName(/*0*/ name : jet.Any?, /*1*/ hostName : jet.Any?) : jet.Any?
+        public open fun rootProxyForConnectionWithRegisteredName(/*0*/ name : jet.Any?, /*1*/ hostName : jet.Any?, /*2*/ server : jet.Any?) : jet.Any?
+        public open fun serviceConnectionWithName(/*0*/ name : jet.Any?, /*1*/ root : jet.Any?) : jet.Any?
+        public open fun serviceConnectionWithName(/*0*/ name : jet.Any?, /*1*/ root : jet.Any?, /*2*/ server : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSConnectionDelegate {
+public trait NSConnectionDelegate {
     public open fun authenticateComponents(/*0*/ components : jet.Any?, /*1*/ signature : jet.Any?) : jet.Any?
     public open fun authenticationDataForComponents(/*0*/ components : jet.Any?) : jet.Any?
     public open fun connection(/*0*/ ancestor : jet.Any?, /*1*/ conn : jet.Any?) : jet.Any?
@@ -357,7 +476,7 @@ public open trait NSConnectionDelegate {
 public open class NSConstantString {
 }
 
-public open trait NSCopying {
+public trait NSCopying {
     public open fun copyWithZone(/*0*/ zone : jet.Any?) : jet.Any?
 }
 
@@ -387,6 +506,10 @@ public open class NSData {
 public open class NSDataDetector {
     public open fun checkingTypes() : jet.Any?
     public open fun initWithTypes(/*0*/ checkingTypes : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSDataDetector> {
+        public open fun dataDetectorWithTypes(/*0*/ checkingTypes : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSDate {
@@ -499,6 +622,13 @@ public open class NSDateFormatter {
     public open fun veryShortStandaloneWeekdaySymbols() : jet.Any?
     public open fun veryShortWeekdaySymbols() : jet.Any?
     public open fun weekdaySymbols() : jet.Any?
+    
+    public class object <class-object-for-NSDateFormatter> {
+        public open fun dateFormatFromTemplate(/*0*/ tmplate : jet.Any?, /*1*/ opts : jet.Any?, /*2*/ locale : jet.Any?) : jet.Any?
+        public open fun defaultFormatterBehavior() : jet.Any?
+        public open fun localizedStringFromDate(/*0*/ date : jet.Any?, /*1*/ dstyle : jet.Any?, /*2*/ tstyle : jet.Any?) : jet.Any?
+        public open fun setDefaultFormatterBehavior(/*0*/ behavior : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSDecimalNumber {
@@ -524,9 +654,23 @@ public open class NSDecimalNumber {
     public open fun initWithString(/*0*/ numberValue : jet.Any?) : jet.Any?
     public open fun initWithString(/*0*/ numberValue : jet.Any?, /*1*/ locale : jet.Any?) : jet.Any?
     public open fun objCType() : jet.Any?
+    
+    public class object <class-object-for-NSDecimalNumber> {
+        public open fun decimalNumberWithDecimal(/*0*/ dcm : jet.Any?) : jet.Any?
+        public open fun decimalNumberWithMantissa(/*0*/ mantissa : jet.Any?, /*1*/ exponent : jet.Any?, /*2*/ flag : jet.Any?) : jet.Any?
+        public open fun decimalNumberWithString(/*0*/ numberValue : jet.Any?) : jet.Any?
+        public open fun decimalNumberWithString(/*0*/ numberValue : jet.Any?, /*1*/ locale : jet.Any?) : jet.Any?
+        public open fun defaultBehavior() : jet.Any?
+        public open fun maximumDecimalNumber() : jet.Any?
+        public open fun minimumDecimalNumber() : jet.Any?
+        public open fun notANumber() : jet.Any?
+        public open fun one() : jet.Any?
+        public open fun setDefaultBehavior(/*0*/ behavior : jet.Any?) : jet.Any?
+        public open fun zero() : jet.Any?
+    }
 }
 
-public open trait NSDecimalNumberBehaviors {
+public trait NSDecimalNumberBehaviors {
     public open fun exceptionDuringOperation(/*0*/ operation : jet.Any?, /*1*/ error : jet.Any?, /*2*/ leftOperand : jet.Any?, /*3*/ rightOperand : jet.Any?) : jet.Any?
     public open fun roundingMode() : jet.Any?
     public open fun scale() : jet.Any?
@@ -534,6 +678,11 @@ public open trait NSDecimalNumberBehaviors {
 
 public open class NSDecimalNumberHandler {
     public open fun initWithRoundingMode(/*0*/ roundingMode : jet.Any?, /*1*/ scale : jet.Any?, /*2*/ exact : jet.Any?, /*3*/ overflow : jet.Any?, /*4*/ underflow : jet.Any?, /*5*/ divideByZero : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSDecimalNumberHandler> {
+        public open fun decimalNumberHandlerWithRoundingMode(/*0*/ roundingMode : jet.Any?, /*1*/ scale : jet.Any?, /*2*/ exact : jet.Any?, /*3*/ overflow : jet.Any?, /*4*/ underflow : jet.Any?, /*5*/ divideByZero : jet.Any?) : jet.Any?
+        public open fun defaultDecimalNumberHandler() : jet.Any?
+    }
 }
 
 public open class NSDeleteCommand {
@@ -555,7 +704,7 @@ public open class NSDirectoryEnumerator {
     public open fun skipDescendents() : jet.Any?
 }
 
-public open trait NSDiscardableContent {
+public trait NSDiscardableContent {
     public open fun beginContentAccess() : jet.Any?
     public open fun discardContentIfPossible() : jet.Any?
     public open fun endContentAccess() : jet.Any?
@@ -567,6 +716,11 @@ public open class NSDistantObject {
     public open fun initWithLocal(/*0*/ target : jet.Any?, /*1*/ connection : jet.Any?) : jet.Any?
     public open fun initWithTarget(/*0*/ target : jet.Any?, /*1*/ connection : jet.Any?) : jet.Any?
     public open fun setProtocolForProxy(/*0*/ proto : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSDistantObject> {
+        public open fun proxyWithLocal(/*0*/ target : jet.Any?, /*1*/ connection : jet.Any?) : jet.Any?
+        public open fun proxyWithTarget(/*0*/ target : jet.Any?, /*1*/ connection : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSDistantObjectRequest {
@@ -582,6 +736,10 @@ public open class NSDistributedLock {
     public open fun lockDate() : jet.Any?
     public open fun tryLock() : jet.Any?
     public open fun unlock() : jet.Any?
+    
+    public class object <class-object-for-NSDistributedLock> {
+        public open fun lockWithPath(/*0*/ path : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSDistributedNotificationCenter {
@@ -594,6 +752,11 @@ public open class NSDistributedNotificationCenter {
     public open fun removeObserver(/*0*/ observer : jet.Any?, /*1*/ aName : jet.Any?, /*2*/ anObject : jet.Any?) : jet.Any?
     public open fun setSuspended(/*0*/ suspended : jet.Any?) : jet.Any?
     public open fun suspended() : jet.Any?
+    
+    public class object <class-object-for-NSDistributedNotificationCenter> {
+        public open fun defaultCenter() : jet.Any?
+        public open fun notificationCenterForType(/*0*/ notificationCenterType : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSEnumerator {
@@ -611,6 +774,10 @@ public open class NSError {
     public open fun localizedRecoverySuggestion() : jet.Any?
     public open fun recoveryAttempter() : jet.Any?
     public open fun userInfo() : jet.Any?
+    
+    public class object <class-object-for-NSError> {
+        public open fun errorWithDomain(/*0*/ domain : jet.Any?, /*1*/ code : jet.Any?, /*2*/ dict : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSException {
@@ -621,6 +788,10 @@ public open class NSException {
     public open fun raise() : jet.Any?
     public open fun reason() : jet.Any?
     public open fun userInfo() : jet.Any?
+    
+    public class object <class-object-for-NSException> {
+        public open fun exceptionWithName(/*0*/ name : jet.Any?, /*1*/ reason : jet.Any?, /*2*/ userInfo : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSExistsCommand {
@@ -641,9 +812,27 @@ public open class NSExpression {
     public open fun predicate() : jet.Any?
     public open fun rightExpression() : jet.Any?
     public open fun variable() : jet.Any?
+    
+    public class object <class-object-for-NSExpression> {
+        public open fun expressionForAggregate(/*0*/ subexpressions : jet.Any?) : jet.Any?
+        public open fun expressionForBlock(/*0*/ block : jet.Any?, /*1*/ arguments : jet.Any?) : jet.Any?
+        public open fun expressionForConstantValue(/*0*/ obj : jet.Any?) : jet.Any?
+        public open fun expressionForEvaluatedObject() : jet.Any?
+        public open fun expressionForFunction(/*0*/ name : jet.Any?, /*1*/ parameters : jet.Any?) : jet.Any?
+        public open fun expressionForFunction(/*0*/ target : jet.Any?, /*1*/ name : jet.Any?, /*2*/ parameters : jet.Any?) : jet.Any?
+        public open fun expressionForIntersectSet(/*0*/ left : jet.Any?, /*1*/ right : jet.Any?) : jet.Any?
+        public open fun expressionForKeyPath(/*0*/ keyPath : jet.Any?) : jet.Any?
+        public open fun expressionForMinusSet(/*0*/ left : jet.Any?, /*1*/ right : jet.Any?) : jet.Any?
+        public open fun expressionForSubquery(/*0*/ expression : jet.Any?, /*1*/ variable : jet.Any?, /*2*/ predicate : jet.Any?) : jet.Any?
+        public open fun expressionForUnionSet(/*0*/ left : jet.Any?, /*1*/ right : jet.Any?) : jet.Any?
+        public open fun expressionForVariable(/*0*/ string : jet.Any?) : jet.Any?
+        public open fun expressionWithFormat(/*0*/ expressionFormat : jet.Any?) : jet.Any?
+        public open fun expressionWithFormat(/*0*/ expressionFormat : jet.Any?, /*1*/ arguments : jet.Any?) : jet.Any?
+        public open fun expressionWithFormat(/*0*/ expressionFormat : jet.Any?, /*1*/ argList : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSFastEnumeration {
+public trait NSFastEnumeration {
     public open fun countByEnumeratingWithState(/*0*/ state : jet.Any?, /*1*/ buffer : jet.Any?, /*2*/ len : jet.Any?) : jet.Any?
 }
 
@@ -656,6 +845,12 @@ public open class NSFileCoordinator {
     public open fun initWithFilePresenter(/*0*/ filePresenterOrNil : jet.Any?) : jet.Any?
     public open fun itemAtURL(/*0*/ oldURL : jet.Any?, /*1*/ newURL : jet.Any?) : jet.Any?
     public open fun prepareForReadingItemsAtURLs(/*0*/ readingURLs : jet.Any?, /*1*/ readingOptions : jet.Any?, /*2*/ writingURLs : jet.Any?, /*3*/ writingOptions : jet.Any?, /*4*/ outError : jet.Any?, /*5*/ batchAccessor : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSFileCoordinator> {
+        public open fun addFilePresenter(/*0*/ filePresenter : jet.Any?) : jet.Any?
+        public open fun filePresenters() : jet.Any?
+        public open fun removeFilePresenter(/*0*/ filePresenter : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSFileHandle {
@@ -732,9 +927,13 @@ public open class NSFileManager {
     public open fun stringWithFileSystemRepresentation(/*0*/ str : jet.Any?, /*1*/ len : jet.Any?) : jet.Any?
     public open fun subpathsAtPath(/*0*/ path : jet.Any?) : jet.Any?
     public open fun subpathsOfDirectoryAtPath(/*0*/ path : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSFileManager> {
+        public open fun defaultManager() : jet.Any?
+    }
 }
 
-public open trait NSFileManagerDelegate {
+public trait NSFileManagerDelegate {
     public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ path : jet.Any?) : jet.Any?
     public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ URL : jet.Any?) : jet.Any?
     public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ srcPath : jet.Any?, /*2*/ dstPath : jet.Any?) : jet.Any?
@@ -753,7 +952,7 @@ public open trait NSFileManagerDelegate {
     public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ srcURL : jet.Any?, /*3*/ dstURL : jet.Any?) : jet.Any?
 }
 
-public open trait NSFilePresenter {
+public trait NSFilePresenter {
     public open fun accommodatePresentedItemDeletionWithCompletionHandler(/*0*/ completionHandler : jet.Any?) : jet.Any?
     public open fun accommodatePresentedSubitemDeletionAtURL(/*0*/ url : jet.Any?, /*1*/ completionHandler : jet.Any?) : jet.Any?
     public open fun presentedItemDidChange() : jet.Any?
@@ -790,6 +989,16 @@ public open class NSFileVersion {
     public open fun replaceItemAtURL(/*0*/ url : jet.Any?, /*1*/ options : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
     public open fun setDiscardable(/*0*/ discardable : jet.Any?) : jet.Any?
     public open fun setResolved(/*0*/ resolved : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSFileVersion> {
+        public open fun addVersionOfItemAtURL(/*0*/ url : jet.Any?, /*1*/ contentsURL : jet.Any?, /*2*/ options : jet.Any?, /*3*/ outError : jet.Any?) : jet.Any?
+        public open fun currentVersionOfItemAtURL(/*0*/ url : jet.Any?) : jet.Any?
+        public open fun otherVersionsOfItemAtURL(/*0*/ url : jet.Any?) : jet.Any?
+        public open fun removeOtherVersionsOfItemAtURL(/*0*/ url : jet.Any?, /*1*/ outError : jet.Any?) : jet.Any?
+        public open fun temporaryDirectoryURLForNewVersionOfItemAtURL(/*0*/ url : jet.Any?) : jet.Any?
+        public open fun unresolvedConflictVersionsOfItemAtURL(/*0*/ url : jet.Any?) : jet.Any?
+        public open fun versionOfItemAtURL(/*0*/ url : jet.Any?, /*1*/ persistentIdentifier : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSFileWrapper {
@@ -839,6 +1048,10 @@ public open class NSGarbageCollector {
     public open fun isCollecting() : jet.Any?
     public open fun isEnabled() : jet.Any?
     public open fun zone() : jet.Any?
+    
+    public class object <class-object-for-NSGarbageCollector> {
+        public open fun defaultCollector() : jet.Any?
+    }
 }
 
 public open class NSGetCommand {
@@ -859,6 +1072,12 @@ public open class NSHTTPCookie {
     public open fun properties() : jet.Any?
     public open fun value() : jet.Any?
     public open fun version() : jet.Any?
+    
+    public class object <class-object-for-NSHTTPCookie> {
+        public open fun cookieWithProperties(/*0*/ properties : jet.Any?) : jet.Any?
+        public open fun cookiesWithResponseHeaderFields(/*0*/ headerFields : jet.Any?, /*1*/ URL : jet.Any?) : jet.Any?
+        public open fun requestHeaderFieldsWithCookies(/*0*/ cookies : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSHTTPCookieStorage {
@@ -870,12 +1089,20 @@ public open class NSHTTPCookieStorage {
     public open fun setCookieAcceptPolicy(/*0*/ cookieAcceptPolicy : jet.Any?) : jet.Any?
     public open fun setCookies(/*0*/ cookies : jet.Any?, /*1*/ URL : jet.Any?, /*2*/ mainDocumentURL : jet.Any?) : jet.Any?
     public open fun sortedCookiesUsingDescriptors(/*0*/ sortOrder : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSHTTPCookieStorage> {
+        public open fun sharedHTTPCookieStorage() : jet.Any?
+    }
 }
 
 public open class NSHTTPURLResponse {
     public open fun allHeaderFields() : jet.Any?
     public open fun initWithURL(/*0*/ url : jet.Any?, /*1*/ statusCode : jet.Any?, /*2*/ HTTPVersion : jet.Any?, /*3*/ headerFields : jet.Any?) : jet.Any?
     public open fun statusCode() : jet.Any?
+    
+    public class object <class-object-for-NSHTTPURLResponse> {
+        public open fun localizedStringForStatusCode(/*0*/ statusCode : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSHashTable {
@@ -898,6 +1125,11 @@ public open class NSHashTable {
     public open fun removeObject(/*0*/ `object` : jet.Any?) : jet.Any?
     public open fun setRepresentation() : jet.Any?
     public open fun unionHashTable(/*0*/ other : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSHashTable> {
+        public open fun hashTableWithOptions(/*0*/ options : jet.Any?) : jet.Any?
+        public open fun hashTableWithWeakObjects() : jet.Any?
+    }
 }
 
 public open class NSHost {
@@ -907,6 +1139,15 @@ public open class NSHost {
     public open fun localizedName() : jet.Any?
     public open fun name() : jet.Any?
     public open fun names() : jet.Any?
+    
+    public class object <class-object-for-NSHost> {
+        public open fun currentHost() : jet.Any?
+        public open fun flushHostCache() : jet.Any?
+        public open fun hostWithAddress(/*0*/ address : jet.Any?) : jet.Any?
+        public open fun hostWithName(/*0*/ name : jet.Any?) : jet.Any?
+        public open fun isHostCacheEnabled() : jet.Any?
+        public open fun setHostCacheEnabled(/*0*/ flag : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSIndexPath {
@@ -918,6 +1159,11 @@ public open class NSIndexPath {
     public open fun initWithIndex(/*0*/ index : jet.Any?) : jet.Any?
     public open fun initWithIndexes(/*0*/ indexes : jet.Any?, /*1*/ length : jet.Any?) : jet.Any?
     public open fun length() : jet.Any?
+    
+    public class object <class-object-for-NSIndexPath> {
+        public open fun indexPathWithIndex(/*0*/ index : jet.Any?) : jet.Any?
+        public open fun indexPathWithIndexes(/*0*/ indexes : jet.Any?, /*1*/ length : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSIndexSet {
@@ -951,6 +1197,12 @@ public open class NSIndexSet {
     public open fun intersectsIndexesInRange(/*0*/ range : jet.Any?) : jet.Any?
     public open fun isEqualToIndexSet(/*0*/ indexSet : jet.Any?) : jet.Any?
     public open fun lastIndex() : jet.Any?
+    
+    public class object <class-object-for-NSIndexSet> {
+        public open fun indexSet() : jet.Any?
+        public open fun indexSetWithIndex(/*0*/ value : jet.Any?) : jet.Any?
+        public open fun indexSetWithIndexesInRange(/*0*/ range : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSIndexSpecifier {
@@ -979,6 +1231,10 @@ public open class NSInvocation {
     public open fun setSelector(/*0*/ selector : jet.Any?) : jet.Any?
     public open fun setTarget(/*0*/ target : jet.Any?) : jet.Any?
     public open fun target() : jet.Any?
+    
+    public class object <class-object-for-NSInvocation> {
+        public open fun invocationWithMethodSignature(/*0*/ sig : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSInvocationOperation {
@@ -989,6 +1245,14 @@ public open class NSInvocationOperation {
 }
 
 public open class NSJSONSerialization {
+    
+    public class object <class-object-for-NSJSONSerialization> {
+        public open fun JSONObjectWithData(/*0*/ data : jet.Any?, /*1*/ opt : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+        public open fun JSONObjectWithStream(/*0*/ stream : jet.Any?, /*1*/ opt : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+        public open fun dataWithJSONObject(/*0*/ obj : jet.Any?, /*1*/ opt : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+        public open fun isValidJSONObject(/*0*/ obj : jet.Any?) : jet.Any?
+        public open fun writeJSONObject(/*0*/ obj : jet.Any?, /*1*/ stream : jet.Any?, /*2*/ opt : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSKeyedArchiver {
@@ -1009,9 +1273,16 @@ public open class NSKeyedArchiver {
     public open fun setClassName(/*0*/ codedName : jet.Any?, /*1*/ cls : jet.Any?) : jet.Any?
     public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
     public open fun setOutputFormat(/*0*/ format : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSKeyedArchiver> {
+        public open fun archiveRootObject(/*0*/ rootObject : jet.Any?, /*1*/ path : jet.Any?) : jet.Any?
+        public open fun archivedDataWithRootObject(/*0*/ rootObject : jet.Any?) : jet.Any?
+        public open fun classNameForClass(/*0*/ cls : jet.Any?) : jet.Any?
+        public open fun setClassName(/*0*/ codedName : jet.Any?, /*1*/ cls : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSKeyedArchiverDelegate {
+public trait NSKeyedArchiverDelegate {
     public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
     public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
     public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ newObject : jet.Any?) : jet.Any?
@@ -1035,9 +1306,16 @@ public open class NSKeyedUnarchiver {
     public open fun initForReadingWithData(/*0*/ data : jet.Any?) : jet.Any?
     public open fun setClass(/*0*/ cls : jet.Any?, /*1*/ codedName : jet.Any?) : jet.Any?
     public open fun setDelegate(/*0*/ delegate : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSKeyedUnarchiver> {
+        public open fun classForClassName(/*0*/ codedName : jet.Any?) : jet.Any?
+        public open fun setClass(/*0*/ cls : jet.Any?, /*1*/ codedName : jet.Any?) : jet.Any?
+        public open fun unarchiveObjectWithData(/*0*/ data : jet.Any?) : jet.Any?
+        public open fun unarchiveObjectWithFile(/*0*/ path : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSKeyedUnarchiverDelegate {
+public trait NSKeyedUnarchiverDelegate {
     public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
     public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ name : jet.Any?, /*2*/ classNames : jet.Any?) : jet.Any?
     public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ newObject : jet.Any?) : jet.Any?
@@ -1058,6 +1336,10 @@ public open class NSLinguisticTagger {
     public open fun tagAtIndex(/*0*/ charIndex : jet.Any?, /*1*/ tagScheme : jet.Any?, /*2*/ tokenRange : jet.Any?, /*3*/ sentenceRange : jet.Any?) : jet.Any?
     public open fun tagSchemes() : jet.Any?
     public open fun tagsInRange(/*0*/ range : jet.Any?, /*1*/ tagScheme : jet.Any?, /*2*/ opts : jet.Any?, /*3*/ tokenRanges : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSLinguisticTagger> {
+        public open fun availableTagSchemesForLanguage(/*0*/ language : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSLocale {
@@ -1072,7 +1354,7 @@ public open class NSLock {
     public open fun tryLock() : jet.Any?
 }
 
-public open trait NSLocking {
+public trait NSLocking {
     public open fun lock() : jet.Any?
     public open fun unlock() : jet.Any?
 }
@@ -1088,6 +1370,10 @@ public open class NSMachBootstrapServer {
     public open fun portForName(/*0*/ name : jet.Any?, /*1*/ host : jet.Any?) : jet.Any?
     public open fun registerPort(/*0*/ port : jet.Any?, /*1*/ name : jet.Any?) : jet.Any?
     public open fun servicePortWithName(/*0*/ name : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSMachBootstrapServer> {
+        public open fun sharedInstance() : jet.Any?
+    }
 }
 
 public open class NSMachPort {
@@ -1098,9 +1384,14 @@ public open class NSMachPort {
     public open fun removeFromRunLoop(/*0*/ runLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
     public open fun scheduleInRunLoop(/*0*/ runLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
     public open fun setDelegate(/*0*/ anObject : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSMachPort> {
+        public open fun portWithMachPort(/*0*/ machPort : jet.Any?) : jet.Any?
+        public open fun portWithMachPort(/*0*/ machPort : jet.Any?, /*1*/ f : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSMachPortDelegate {
+public trait NSMachPortDelegate {
     public open fun handleMachMessage(/*0*/ msg : jet.Any?) : jet.Any?
 }
 
@@ -1117,6 +1408,14 @@ public open class NSMapTable {
     public open fun removeObjectForKey(/*0*/ aKey : jet.Any?) : jet.Any?
     public open fun setObject(/*0*/ anObject : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
     public open fun valuePointerFunctions() : jet.Any?
+    
+    public class object <class-object-for-NSMapTable> {
+        public open fun mapTableWithKeyOptions(/*0*/ keyOptions : jet.Any?, /*1*/ valueOptions : jet.Any?) : jet.Any?
+        public open fun mapTableWithStrongToStrongObjects() : jet.Any?
+        public open fun mapTableWithStrongToWeakObjects() : jet.Any?
+        public open fun mapTableWithWeakToStrongObjects() : jet.Any?
+        public open fun mapTableWithWeakToWeakObjects() : jet.Any?
+    }
 }
 
 public open class NSMessagePort {
@@ -1125,6 +1424,10 @@ public open class NSMessagePort {
 public open class NSMessagePortNameServer {
     public open fun portForName(/*0*/ name : jet.Any?) : jet.Any?
     public open fun portForName(/*0*/ name : jet.Any?, /*1*/ host : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSMessagePortNameServer> {
+        public open fun sharedInstance() : jet.Any?
+    }
 }
 
 public open class NSMetadataItem {
@@ -1171,7 +1474,7 @@ public open class NSMetadataQueryAttributeValueTuple {
     public open fun value() : jet.Any?
 }
 
-public open trait NSMetadataQueryDelegate {
+public trait NSMetadataQueryDelegate {
     public open fun metadataQuery(/*0*/ query : jet.Any?, /*1*/ result : jet.Any?) : jet.Any?
     public open fun metadataQuery(/*0*/ query : jet.Any?, /*1*/ attrName : jet.Any?, /*2*/ attrValue : jet.Any?) : jet.Any?
 }
@@ -1192,6 +1495,10 @@ public open class NSMethodSignature {
     public open fun methodReturnLength() : jet.Any?
     public open fun methodReturnType() : jet.Any?
     public open fun numberOfArguments() : jet.Any?
+    
+    public class object <class-object-for-NSMethodSignature> {
+        public open fun signatureWithObjCTypes(/*0*/ types : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSMiddleSpecifier {
@@ -1225,7 +1532,7 @@ public open class NSMutableCharacterSet {
     public open fun removeCharactersInString(/*0*/ aString : jet.Any?) : jet.Any?
 }
 
-public open trait NSMutableCopying {
+public trait NSMutableCopying {
     public open fun mutableCopyWithZone(/*0*/ zone : jet.Any?) : jet.Any?
 }
 
@@ -1302,6 +1609,11 @@ public open class NSNetService {
     public open fun stop() : jet.Any?
     public open fun stopMonitoring() : jet.Any?
     public open fun `type`() : jet.Any?
+    
+    public class object <class-object-for-NSNetService> {
+        public open fun dataFromTXTRecordDictionary(/*0*/ txtDictionary : jet.Any?) : jet.Any?
+        public open fun dictionaryFromTXTRecordData(/*0*/ txtData : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSNetServiceBrowser {
@@ -1316,7 +1628,7 @@ public open class NSNetServiceBrowser {
     public open fun stop() : jet.Any?
 }
 
-public open trait NSNetServiceBrowserDelegate {
+public trait NSNetServiceBrowserDelegate {
     public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ errorDict : jet.Any?) : jet.Any?
     public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ domainString : jet.Any?, /*2*/ moreComing : jet.Any?) : jet.Any?
     public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ aNetService : jet.Any?, /*2*/ moreComing : jet.Any?) : jet.Any?
@@ -1326,7 +1638,7 @@ public open trait NSNetServiceBrowserDelegate {
     public open fun netServiceBrowserWillSearch(/*0*/ aNetServiceBrowser : jet.Any?) : jet.Any?
 }
 
-public open trait NSNetServiceDelegate {
+public trait NSNetServiceDelegate {
     public open fun netService(/*0*/ sender : jet.Any?, /*1*/ errorDict : jet.Any?) : jet.Any?
     public open fun netService(/*0*/ sender : jet.Any?, /*1*/ errorDict : jet.Any?) : jet.Any?
     public open fun netService(/*0*/ sender : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
@@ -1351,6 +1663,10 @@ public open class NSNotificationCenter {
     public open fun postNotificationName(/*0*/ aName : jet.Any?, /*1*/ anObject : jet.Any?, /*2*/ aUserInfo : jet.Any?) : jet.Any?
     public open fun removeObserver(/*0*/ observer : jet.Any?) : jet.Any?
     public open fun removeObserver(/*0*/ observer : jet.Any?, /*1*/ aName : jet.Any?, /*2*/ anObject : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSNotificationCenter> {
+        public open fun defaultCenter() : jet.Any?
+    }
 }
 
 public open class NSNotificationQueue {
@@ -1358,9 +1674,17 @@ public open class NSNotificationQueue {
     public open fun enqueueNotification(/*0*/ notification : jet.Any?, /*1*/ postingStyle : jet.Any?) : jet.Any?
     public open fun enqueueNotification(/*0*/ notification : jet.Any?, /*1*/ postingStyle : jet.Any?, /*2*/ coalesceMask : jet.Any?, /*3*/ modes : jet.Any?) : jet.Any?
     public open fun initWithNotificationCenter(/*0*/ notificationCenter : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSNotificationQueue> {
+        public open fun defaultQueue() : jet.Any?
+    }
 }
 
 public open class NSNull {
+    
+    public class object <class-object-for-NSNull> {
+        public open fun `null`() : jet.Any?
+    }
 }
 
 public open class NSNumber {
@@ -1501,6 +1825,12 @@ public open class NSNumberFormatter {
     public open fun usesGroupingSeparator() : jet.Any?
     public open fun usesSignificantDigits() : jet.Any?
     public open fun zeroSymbol() : jet.Any?
+    
+    public class object <class-object-for-NSNumberFormatter> {
+        public open fun defaultFormatterBehavior() : jet.Any?
+        public open fun localizedStringFromNumber(/*0*/ num : jet.Any?, /*1*/ nstyle : jet.Any?) : jet.Any?
+        public open fun setDefaultFormatterBehavior(/*0*/ behavior : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSObject {
@@ -1516,9 +1846,29 @@ public open class NSObject {
     public open fun methodSignatureForSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
     public open fun mutableCopy() : jet.Any?
     public open fun retainWeakReference() : jet.Any?
+    
+    public class object <class-object-for-NSObject> {
+        public open fun alloc() : jet.Any?
+        public open fun allocWithZone(/*0*/ zone : jet.Any?) : jet.Any?
+        public open fun `class`() : jet.Any?
+        public open fun conformsToProtocol(/*0*/ protocol : jet.Any?) : jet.Any?
+        public open fun copyWithZone(/*0*/ zone : jet.Any?) : jet.Any?
+        public open fun description() : jet.Any?
+        public open fun initialize() : jet.Any?
+        public open fun instanceMethodForSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+        public open fun instanceMethodSignatureForSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+        public open fun instancesRespondToSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+        public open fun isSubclassOfClass(/*0*/ aClass : jet.Any?) : jet.Any?
+        public open fun load() : jet.Any?
+        public open fun mutableCopyWithZone(/*0*/ zone : jet.Any?) : jet.Any?
+        public open fun new() : jet.Any?
+        public open fun resolveClassMethod(/*0*/ sel : jet.Any?) : jet.Any?
+        public open fun resolveInstanceMethod(/*0*/ sel : jet.Any?) : jet.Any?
+        public open fun superclass() : jet.Any?
+    }
 }
 
-public open trait NSObjectProtocol {
+public trait NSObjectProtocol {
     public open fun autorelease() : jet.Any?
     public open fun `class`() : jet.Any?
     public open fun conformsToProtocol(/*0*/ aProtocol : jet.Any?) : jet.Any?
@@ -1576,6 +1926,11 @@ public open class NSOperationQueue {
     public open fun setName(/*0*/ n : jet.Any?) : jet.Any?
     public open fun setSuspended(/*0*/ b : jet.Any?) : jet.Any?
     public open fun waitUntilAllOperationsAreFinished() : jet.Any?
+    
+    public class object <class-object-for-NSOperationQueue> {
+        public open fun currentQueue() : jet.Any?
+        public open fun mainQueue() : jet.Any?
+    }
 }
 
 public open class NSOrderedSet {
@@ -1598,6 +1953,10 @@ public open class NSPipe {
     public open fun fileHandleForReading() : jet.Any?
     public open fun fileHandleForWriting() : jet.Any?
     public open fun init() : jet.Any?
+    
+    public class object <class-object-for-NSPipe> {
+        public open fun pipe() : jet.Any?
+    }
 }
 
 public open class NSPointerArray {
@@ -1612,6 +1971,11 @@ public open class NSPointerArray {
     public open fun removePointerAtIndex(/*0*/ index : jet.Any?) : jet.Any?
     public open fun replacePointerAtIndex(/*0*/ index : jet.Any?, /*1*/ item : jet.Any?) : jet.Any?
     public open fun setCount(/*0*/ count : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSPointerArray> {
+        public open fun pointerArrayWithOptions(/*0*/ options : jet.Any?) : jet.Any?
+        public open fun pointerArrayWithPointerFunctions(/*0*/ functions : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSPointerFunctions {
@@ -1632,6 +1996,10 @@ public open class NSPointerFunctions {
     public open fun sizeFunction() : jet.Any?
     public open fun usesStrongWriteBarrier() : jet.Any?
     public open fun usesWeakReadAndWriteBarriers() : jet.Any?
+    
+    public class object <class-object-for-NSPointerFunctions> {
+        public open fun pointerFunctionsWithOptions(/*0*/ options : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSPort {
@@ -1646,6 +2014,10 @@ public open class NSPort {
     public open fun sendBeforeDate(/*0*/ limitDate : jet.Any?, /*1*/ components : jet.Any?, /*2*/ receivePort : jet.Any?, /*3*/ headerSpaceReserved : jet.Any?) : jet.Any?
     public open fun sendBeforeDate(/*0*/ limitDate : jet.Any?, /*1*/ msgID : jet.Any?, /*2*/ components : jet.Any?, /*3*/ receivePort : jet.Any?, /*4*/ headerSpaceReserved : jet.Any?) : jet.Any?
     public open fun setDelegate(/*0*/ anObject : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSPort> {
+        public open fun port() : jet.Any?
+    }
 }
 
 public open class NSPortCoder {
@@ -1656,9 +2028,13 @@ public open class NSPortCoder {
     public open fun initWithReceivePort(/*0*/ rcvPort : jet.Any?, /*1*/ sndPort : jet.Any?, /*2*/ comps : jet.Any?) : jet.Any?
     public open fun isBycopy() : jet.Any?
     public open fun isByref() : jet.Any?
+    
+    public class object <class-object-for-NSPortCoder> {
+        public open fun portCoderWithReceivePort(/*0*/ rcvPort : jet.Any?, /*1*/ sndPort : jet.Any?, /*2*/ comps : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSPortDelegate {
+public trait NSPortDelegate {
     public open fun handlePortMessage(/*0*/ message : jet.Any?) : jet.Any?
 }
 
@@ -1677,6 +2053,10 @@ public open class NSPortNameServer {
     public open fun portForName(/*0*/ name : jet.Any?, /*1*/ host : jet.Any?) : jet.Any?
     public open fun registerPort(/*0*/ port : jet.Any?, /*1*/ name : jet.Any?) : jet.Any?
     public open fun removePortForName(/*0*/ name : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSPortNameServer> {
+        public open fun systemDefaultPortNameServer() : jet.Any?
+    }
 }
 
 public open class NSPositionalSpecifier {
@@ -1696,6 +2076,14 @@ public open class NSPredicate {
     public open fun evaluateWithObject(/*0*/ `object` : jet.Any?, /*1*/ bindings : jet.Any?) : jet.Any?
     public open fun predicateFormat() : jet.Any?
     public open fun predicateWithSubstitutionVariables(/*0*/ variables : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSPredicate> {
+        public open fun predicateWithBlock(/*0*/ block : jet.Any?) : jet.Any?
+        public open fun predicateWithFormat(/*0*/ predicateFormat : jet.Any?) : jet.Any?
+        public open fun predicateWithFormat(/*0*/ predicateFormat : jet.Any?, /*1*/ arguments : jet.Any?) : jet.Any?
+        public open fun predicateWithFormat(/*0*/ predicateFormat : jet.Any?, /*1*/ argList : jet.Any?) : jet.Any?
+        public open fun predicateWithValue(/*0*/ value : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSProcessInfo {
@@ -1719,9 +2107,23 @@ public open class NSProcessInfo {
     public open fun setAutomaticTerminationSupportEnabled(/*0*/ flag : jet.Any?) : jet.Any?
     public open fun setProcessName(/*0*/ newName : jet.Any?) : jet.Any?
     public open fun systemUptime() : jet.Any?
+    
+    public class object <class-object-for-NSProcessInfo> {
+        public open fun processInfo() : jet.Any?
+    }
 }
 
 public open class NSPropertyListSerialization {
+    
+    public class object <class-object-for-NSPropertyListSerialization> {
+        public open fun dataFromPropertyList(/*0*/ plist : jet.Any?, /*1*/ format : jet.Any?, /*2*/ errorString : jet.Any?) : jet.Any?
+        public open fun dataWithPropertyList(/*0*/ plist : jet.Any?, /*1*/ format : jet.Any?, /*2*/ opt : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+        public open fun propertyList(/*0*/ plist : jet.Any?, /*1*/ format : jet.Any?) : jet.Any?
+        public open fun propertyListFromData(/*0*/ data : jet.Any?, /*1*/ opt : jet.Any?, /*2*/ format : jet.Any?, /*3*/ errorString : jet.Any?) : jet.Any?
+        public open fun propertyListWithData(/*0*/ data : jet.Any?, /*1*/ opt : jet.Any?, /*2*/ format : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+        public open fun propertyListWithStream(/*0*/ stream : jet.Any?, /*1*/ opt : jet.Any?, /*2*/ format : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+        public open fun writePropertyList(/*0*/ plist : jet.Any?, /*1*/ stream : jet.Any?, /*2*/ format : jet.Any?, /*3*/ opt : jet.Any?, /*4*/ error : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSPropertySpecifier {
@@ -1740,6 +2142,13 @@ public open class NSProxy {
     public open fun forwardInvocation(/*0*/ invocation : jet.Any?) : jet.Any?
     public open fun methodSignatureForSelector(/*0*/ sel : jet.Any?) : jet.Any?
     public open fun retainWeakReference() : jet.Any?
+    
+    public class object <class-object-for-NSProxy> {
+        public open fun alloc() : jet.Any?
+        public open fun allocWithZone(/*0*/ zone : jet.Any?) : jet.Any?
+        public open fun `class`() : jet.Any?
+        public open fun respondsToSelector(/*0*/ aSelector : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSPurgeableData {
@@ -1772,6 +2181,11 @@ public open class NSRegularExpression {
     public open fun numberOfCaptureGroups() : jet.Any?
     public open fun options() : jet.Any?
     public open fun pattern() : jet.Any?
+    
+    public class object <class-object-for-NSRegularExpression> {
+        public open fun escapedPatternForString(/*0*/ string : jet.Any?) : jet.Any?
+        public open fun regularExpressionWithPattern(/*0*/ pattern : jet.Any?, /*1*/ options : jet.Any?, /*2*/ error : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSRelativeSpecifier {
@@ -1790,6 +2204,11 @@ public open class NSRunLoop {
     public open fun getCFRunLoop() : jet.Any?
     public open fun limitDateForMode(/*0*/ mode : jet.Any?) : jet.Any?
     public open fun removePort(/*0*/ aPort : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSRunLoop> {
+        public open fun currentRunLoop() : jet.Any?
+        public open fun mainRunLoop() : jet.Any?
+    }
 }
 
 public open class NSScanner {
@@ -1821,11 +2240,19 @@ public open class NSScriptClassDescription {
     public open fun superclassDescription() : jet.Any?
     public open fun supportsCommand(/*0*/ commandDescription : jet.Any?) : jet.Any?
     public open fun typeForKey(/*0*/ key : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSScriptClassDescription> {
+        public open fun classDescriptionForClass(/*0*/ aClass : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSScriptCoercionHandler {
     public open fun coerceValue(/*0*/ value : jet.Any?, /*1*/ toClass : jet.Any?) : jet.Any?
     public open fun registerCoercer(/*0*/ coercer : jet.Any?, /*1*/ selector : jet.Any?, /*2*/ fromClass : jet.Any?, /*3*/ toClass : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSScriptCoercionHandler> {
+        public open fun sharedCoercionHandler() : jet.Any?
+    }
 }
 
 public open class NSScriptCommand {
@@ -1853,6 +2280,10 @@ public open class NSScriptCommand {
     public open fun setScriptErrorOffendingObjectDescriptor(/*0*/ errorOffendingObjectDescriptor : jet.Any?) : jet.Any?
     public open fun setScriptErrorString(/*0*/ errorString : jet.Any?) : jet.Any?
     public open fun suspendExecution() : jet.Any?
+    
+    public class object <class-object-for-NSScriptCommand> {
+        public open fun currentCommand() : jet.Any?
+    }
 }
 
 public open class NSScriptCommandDescription {
@@ -1879,6 +2310,10 @@ public open class NSScriptExecutionContext {
     public open fun setRangeContainerObject(/*0*/ obj : jet.Any?) : jet.Any?
     public open fun setTopLevelObject(/*0*/ obj : jet.Any?) : jet.Any?
     public open fun topLevelObject() : jet.Any?
+    
+    public class object <class-object-for-NSScriptExecutionContext> {
+        public open fun sharedScriptExecutionContext() : jet.Any?
+    }
 }
 
 public open class NSScriptObjectSpecifier {
@@ -1904,6 +2339,10 @@ public open class NSScriptObjectSpecifier {
     public open fun setContainerSpecifier(/*0*/ subRef : jet.Any?) : jet.Any?
     public open fun setEvaluationErrorNumber(/*0*/ error : jet.Any?) : jet.Any?
     public open fun setKey(/*0*/ key : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSScriptObjectSpecifier> {
+        public open fun objectSpecifierWithDescriptor(/*0*/ descriptor : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSScriptSuiteRegistry {
@@ -1920,6 +2359,11 @@ public open class NSScriptSuiteRegistry {
     public open fun registerCommandDescription(/*0*/ commandDescription : jet.Any?) : jet.Any?
     public open fun suiteForAppleEventCode(/*0*/ appleEventCode : jet.Any?) : jet.Any?
     public open fun suiteNames() : jet.Any?
+    
+    public class object <class-object-for-NSScriptSuiteRegistry> {
+        public open fun setSharedScriptSuiteRegistry(/*0*/ registry : jet.Any?) : jet.Any?
+        public open fun sharedScriptSuiteRegistry() : jet.Any?
+    }
 }
 
 public open class NSScriptWhoseTest {
@@ -1963,6 +2407,10 @@ public open class NSSocketPortNameServer {
     public open fun registerPort(/*0*/ port : jet.Any?, /*1*/ name : jet.Any?, /*2*/ portNumber : jet.Any?) : jet.Any?
     public open fun removePortForName(/*0*/ name : jet.Any?) : jet.Any?
     public open fun setDefaultNameServerPortNumber(/*0*/ portNumber : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSSocketPortNameServer> {
+        public open fun sharedInstance() : jet.Any?
+    }
 }
 
 public open class NSSortDescriptor {
@@ -1975,6 +2423,12 @@ public open class NSSortDescriptor {
     public open fun key() : jet.Any?
     public open fun reversedSortDescriptor() : jet.Any?
     public open fun selector() : jet.Any?
+    
+    public class object <class-object-for-NSSortDescriptor> {
+        public open fun sortDescriptorWithKey(/*0*/ key : jet.Any?, /*1*/ ascending : jet.Any?) : jet.Any?
+        public open fun sortDescriptorWithKey(/*0*/ key : jet.Any?, /*1*/ ascending : jet.Any?, /*2*/ selector : jet.Any?) : jet.Any?
+        public open fun sortDescriptorWithKey(/*0*/ key : jet.Any?, /*1*/ ascending : jet.Any?, /*2*/ cmptr : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSSpecifierTest {
@@ -1989,7 +2443,7 @@ public open class NSSpellServer {
     public open fun setDelegate(/*0*/ anObject : jet.Any?) : jet.Any?
 }
 
-public open trait NSSpellServerDelegate {
+public trait NSSpellServerDelegate {
     public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : jet.Any?
     public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : jet.Any?
     public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : jet.Any?
@@ -2013,7 +2467,7 @@ public open class NSStream {
     public open fun streamStatus() : jet.Any?
 }
 
-public open trait NSStreamDelegate {
+public trait NSStreamDelegate {
     public open fun stream(/*0*/ aStream : jet.Any?, /*1*/ eventCode : jet.Any?) : jet.Any?
 }
 
@@ -2073,6 +2527,21 @@ public open class NSThread {
     public open fun start() : jet.Any?
     public open fun threadDictionary() : jet.Any?
     public open fun threadPriority() : jet.Any?
+    
+    public class object <class-object-for-NSThread> {
+        public open fun callStackReturnAddresses() : jet.Any?
+        public open fun callStackSymbols() : jet.Any?
+        public open fun currentThread() : jet.Any?
+        public open fun detachNewThreadSelector(/*0*/ selector : jet.Any?, /*1*/ target : jet.Any?, /*2*/ argument : jet.Any?) : jet.Any?
+        public open fun exit() : jet.Any?
+        public open fun isMainThread() : jet.Any?
+        public open fun isMultiThreaded() : jet.Any?
+        public open fun mainThread() : jet.Any?
+        public open fun setThreadPriority(/*0*/ p : jet.Any?) : jet.Any?
+        public open fun sleepForTimeInterval(/*0*/ ti : jet.Any?) : jet.Any?
+        public open fun sleepUntilDate(/*0*/ date : jet.Any?) : jet.Any?
+        public open fun threadPriority() : jet.Any?
+    }
 }
 
 public open class NSTimeZone {
@@ -2094,6 +2563,13 @@ public open class NSTimer {
     public open fun setFireDate(/*0*/ date : jet.Any?) : jet.Any?
     public open fun timeInterval() : jet.Any?
     public open fun userInfo() : jet.Any?
+    
+    public class object <class-object-for-NSTimer> {
+        public open fun scheduledTimerWithTimeInterval(/*0*/ ti : jet.Any?, /*1*/ invocation : jet.Any?, /*2*/ yesOrNo : jet.Any?) : jet.Any?
+        public open fun scheduledTimerWithTimeInterval(/*0*/ ti : jet.Any?, /*1*/ aTarget : jet.Any?, /*2*/ aSelector : jet.Any?, /*3*/ userInfo : jet.Any?, /*4*/ yesOrNo : jet.Any?) : jet.Any?
+        public open fun timerWithTimeInterval(/*0*/ ti : jet.Any?, /*1*/ invocation : jet.Any?, /*2*/ yesOrNo : jet.Any?) : jet.Any?
+        public open fun timerWithTimeInterval(/*0*/ ti : jet.Any?, /*1*/ aTarget : jet.Any?, /*2*/ aSelector : jet.Any?, /*3*/ userInfo : jet.Any?, /*4*/ yesOrNo : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSURL {
@@ -2131,6 +2607,17 @@ public open class NSURL {
     public open fun startAccessingSecurityScopedResource() : jet.Any?
     public open fun stopAccessingSecurityScopedResource() : jet.Any?
     public open fun user() : jet.Any?
+    
+    public class object <class-object-for-NSURL> {
+        public open fun URLByResolvingBookmarkData(/*0*/ bookmarkData : jet.Any?, /*1*/ options : jet.Any?, /*2*/ relativeURL : jet.Any?, /*3*/ isStale : jet.Any?, /*4*/ error : jet.Any?) : jet.Any?
+        public open fun URLWithString(/*0*/ URLString : jet.Any?) : jet.Any?
+        public open fun URLWithString(/*0*/ URLString : jet.Any?, /*1*/ baseURL : jet.Any?) : jet.Any?
+        public open fun bookmarkDataWithContentsOfURL(/*0*/ bookmarkFileURL : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
+        public open fun fileURLWithPath(/*0*/ path : jet.Any?) : jet.Any?
+        public open fun fileURLWithPath(/*0*/ path : jet.Any?, /*1*/ isDir : jet.Any?) : jet.Any?
+        public open fun resourceValuesForKeys(/*0*/ keys : jet.Any?, /*1*/ bookmarkData : jet.Any?) : jet.Any?
+        public open fun writeBookmarkData(/*0*/ bookmarkData : jet.Any?, /*1*/ bookmarkFileURL : jet.Any?, /*2*/ options : jet.Any?, /*3*/ error : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSURLAuthenticationChallenge {
@@ -2144,7 +2631,7 @@ public open class NSURLAuthenticationChallenge {
     public open fun sender() : jet.Any?
 }
 
-public open trait NSURLAuthenticationChallengeSender {
+public trait NSURLAuthenticationChallengeSender {
     public open fun cancelAuthenticationChallenge(/*0*/ challenge : jet.Any?) : jet.Any?
     public open fun continueWithoutCredentialForAuthenticationChallenge(/*0*/ challenge : jet.Any?) : jet.Any?
     public open fun performDefaultHandlingForAuthenticationChallenge(/*0*/ challenge : jet.Any?) : jet.Any?
@@ -2164,6 +2651,11 @@ public open class NSURLCache {
     public open fun setDiskCapacity(/*0*/ diskCapacity : jet.Any?) : jet.Any?
     public open fun setMemoryCapacity(/*0*/ memoryCapacity : jet.Any?) : jet.Any?
     public open fun storeCachedResponse(/*0*/ cachedResponse : jet.Any?, /*1*/ request : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSURLCache> {
+        public open fun setSharedURLCache(/*0*/ cache : jet.Any?) : jet.Any?
+        public open fun sharedURLCache() : jet.Any?
+    }
 }
 
 public open class NSURLConnection {
@@ -2174,9 +2666,14 @@ public open class NSURLConnection {
     public open fun setDelegateQueue(/*0*/ queue : jet.Any?) : jet.Any?
     public open fun start() : jet.Any?
     public open fun unscheduleFromRunLoop(/*0*/ aRunLoop : jet.Any?, /*1*/ mode : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSURLConnection> {
+        public open fun canHandleRequest(/*0*/ request : jet.Any?) : jet.Any?
+        public open fun connectionWithRequest(/*0*/ request : jet.Any?, /*1*/ delegate : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSURLConnectionDelegate {
+public trait NSURLConnectionDelegate {
     public open fun connection(/*0*/ connection : jet.Any?, /*1*/ request : jet.Any?) : jet.Any?
     public open fun connection(/*0*/ connection : jet.Any?, /*1*/ protectionSpace : jet.Any?) : jet.Any?
     public open fun connection(/*0*/ connection : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
@@ -2203,6 +2700,10 @@ public open class NSURLCredentialStorage {
     public open fun removeCredential(/*0*/ credential : jet.Any?, /*1*/ space : jet.Any?) : jet.Any?
     public open fun setCredential(/*0*/ credential : jet.Any?, /*1*/ space : jet.Any?) : jet.Any?
     public open fun setDefaultCredential(/*0*/ credential : jet.Any?, /*1*/ space : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSURLCredentialStorage> {
+        public open fun sharedCredentialStorage() : jet.Any?
+    }
 }
 
 public open class NSURLDownload {
@@ -2214,9 +2715,13 @@ public open class NSURLDownload {
     public open fun resumeData() : jet.Any?
     public open fun setDeletesFileUponFailure(/*0*/ deletesFileUponFailure : jet.Any?) : jet.Any?
     public open fun setDestination(/*0*/ path : jet.Any?, /*1*/ allowOverwrite : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSURLDownload> {
+        public open fun canResumeDownloadDecodedWithEncodingMIMEType(/*0*/ MIMEType : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSURLDownloadDelegate {
+public trait NSURLDownloadDelegate {
     public open fun download(/*0*/ connection : jet.Any?, /*1*/ protectionSpace : jet.Any?) : jet.Any?
     public open fun download(/*0*/ download : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
     public open fun download(/*0*/ download : jet.Any?, /*1*/ challenge : jet.Any?) : jet.Any?
@@ -2254,9 +2759,16 @@ public open class NSURLHandle {
     public open fun status() : jet.Any?
     public open fun writeData(/*0*/ data : jet.Any?) : jet.Any?
     public open fun writeProperty(/*0*/ propertyValue : jet.Any?, /*1*/ propertyKey : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSURLHandle> {
+        public open fun URLHandleClassForURL(/*0*/ anURL : jet.Any?) : jet.Any?
+        public open fun cachedHandleForURL(/*0*/ anURL : jet.Any?) : jet.Any?
+        public open fun canInitWithURL(/*0*/ anURL : jet.Any?) : jet.Any?
+        public open fun registerURLHandleClass(/*0*/ anURLHandleSubclass : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSURLHandleClient {
+public trait NSURLHandleClient {
     public open fun URLHandle(/*0*/ sender : jet.Any?, /*1*/ newBytes : jet.Any?) : jet.Any?
     public open fun URLHandle(/*0*/ sender : jet.Any?, /*1*/ reason : jet.Any?) : jet.Any?
     public open fun URLHandleResourceDidBeginLoading(/*0*/ sender : jet.Any?) : jet.Any?
@@ -2284,9 +2796,20 @@ public open class NSURLProtocol {
     public open fun request() : jet.Any?
     public open fun startLoading() : jet.Any?
     public open fun stopLoading() : jet.Any?
+    
+    public class object <class-object-for-NSURLProtocol> {
+        public open fun canInitWithRequest(/*0*/ request : jet.Any?) : jet.Any?
+        public open fun canonicalRequestForRequest(/*0*/ request : jet.Any?) : jet.Any?
+        public open fun propertyForKey(/*0*/ key : jet.Any?, /*1*/ request : jet.Any?) : jet.Any?
+        public open fun registerClass(/*0*/ protocolClass : jet.Any?) : jet.Any?
+        public open fun removePropertyForKey(/*0*/ key : jet.Any?, /*1*/ request : jet.Any?) : jet.Any?
+        public open fun requestIsCacheEquivalent(/*0*/ a : jet.Any?, /*1*/ b : jet.Any?) : jet.Any?
+        public open fun setProperty(/*0*/ value : jet.Any?, /*1*/ key : jet.Any?, /*2*/ request : jet.Any?) : jet.Any?
+        public open fun unregisterClass(/*0*/ protocolClass : jet.Any?) : jet.Any?
+    }
 }
 
-public open trait NSURLProtocolClient {
+public trait NSURLProtocolClient {
     public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ cachedResponse : jet.Any?) : jet.Any?
     public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ data : jet.Any?) : jet.Any?
     public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ error : jet.Any?) : jet.Any?
@@ -2305,6 +2828,11 @@ public open class NSURLRequest {
     public open fun mainDocumentURL() : jet.Any?
     public open fun networkServiceType() : jet.Any?
     public open fun timeoutInterval() : jet.Any?
+    
+    public class object <class-object-for-NSURLRequest> {
+        public open fun requestWithURL(/*0*/ URL : jet.Any?) : jet.Any?
+        public open fun requestWithURL(/*0*/ URL : jet.Any?, /*1*/ cachePolicy : jet.Any?, /*2*/ timeoutInterval : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSURLResponse {
@@ -2336,6 +2864,10 @@ public open class NSUbiquitousKeyValueStore {
     public open fun setString(/*0*/ aString : jet.Any?, /*1*/ aKey : jet.Any?) : jet.Any?
     public open fun stringForKey(/*0*/ aKey : jet.Any?) : jet.Any?
     public open fun synchronize() : jet.Any?
+    
+    public class object <class-object-for-NSUbiquitousKeyValueStore> {
+        public open fun defaultStore() : jet.Any?
+    }
 }
 
 public open class NSUnarchiver {
@@ -2347,6 +2879,13 @@ public open class NSUnarchiver {
     public open fun replaceObject(/*0*/ `object` : jet.Any?, /*1*/ newObject : jet.Any?) : jet.Any?
     public open fun setObjectZone(/*0*/ zone : jet.Any?) : jet.Any?
     public open fun systemVersion() : jet.Any?
+    
+    public class object <class-object-for-NSUnarchiver> {
+        public open fun classNameDecodedForArchiveClassName(/*0*/ inArchiveName : jet.Any?) : jet.Any?
+        public open fun decodeClassName(/*0*/ inArchiveName : jet.Any?, /*1*/ trueName : jet.Any?) : jet.Any?
+        public open fun unarchiveObjectWithData(/*0*/ data : jet.Any?) : jet.Any?
+        public open fun unarchiveObjectWithFile(/*0*/ path : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSUndoManager {
@@ -2427,6 +2966,11 @@ public open class NSUserDefaults {
     public open fun synchronize() : jet.Any?
     public open fun volatileDomainForName(/*0*/ domainName : jet.Any?) : jet.Any?
     public open fun volatileDomainNames() : jet.Any?
+    
+    public class object <class-object-for-NSUserDefaults> {
+        public open fun resetStandardUserDefaults() : jet.Any?
+        public open fun standardUserDefaults() : jet.Any?
+    }
 }
 
 public open class NSValue {
@@ -2437,6 +2981,14 @@ public open class NSValue {
 public open class NSValueTransformer {
     public open fun reverseTransformedValue(/*0*/ value : jet.Any?) : jet.Any?
     public open fun transformedValue(/*0*/ value : jet.Any?) : jet.Any?
+    
+    public class object <class-object-for-NSValueTransformer> {
+        public open fun allowsReverseTransformation() : jet.Any?
+        public open fun setValueTransformer(/*0*/ transformer : jet.Any?, /*1*/ name : jet.Any?) : jet.Any?
+        public open fun transformedValueClass() : jet.Any?
+        public open fun valueTransformerForName(/*0*/ name : jet.Any?) : jet.Any?
+        public open fun valueTransformerNames() : jet.Any?
+    }
 }
 
 public open class NSWhoseSpecifier {
@@ -2470,6 +3022,10 @@ public open class NSXMLDTD {
     public open fun setPublicID(/*0*/ publicID : jet.Any?) : jet.Any?
     public open fun setSystemID(/*0*/ systemID : jet.Any?) : jet.Any?
     public open fun systemID() : jet.Any?
+    
+    public class object <class-object-for-NSXMLDTD> {
+        public open fun predefinedEntityDeclarationForName(/*0*/ name : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSXMLDTDNode {
@@ -2516,6 +3072,10 @@ public open class NSXMLDocument {
     public open fun setVersion(/*0*/ version : jet.Any?) : jet.Any?
     public open fun validateAndReturnError(/*0*/ error : jet.Any?) : jet.Any?
     public open fun version() : jet.Any?
+    
+    public class object <class-object-for-NSXMLDocument> {
+        public open fun replacementClassForClass(/*0*/ cls : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSXMLElement {
@@ -2583,6 +3143,25 @@ public open class NSXMLNode {
     public open fun setStringValue(/*0*/ string : jet.Any?, /*1*/ resolve : jet.Any?) : jet.Any?
     public open fun setURI(/*0*/ URI : jet.Any?) : jet.Any?
     public open fun stringValue() : jet.Any?
+    
+    public class object <class-object-for-NSXMLNode> {
+        public open fun DTDNodeWithXMLString(/*0*/ string : jet.Any?) : jet.Any?
+        public open fun attributeWithName(/*0*/ name : jet.Any?, /*1*/ stringValue : jet.Any?) : jet.Any?
+        public open fun attributeWithName(/*0*/ name : jet.Any?, /*1*/ URI : jet.Any?, /*2*/ stringValue : jet.Any?) : jet.Any?
+        public open fun commentWithStringValue(/*0*/ stringValue : jet.Any?) : jet.Any?
+        public open fun document() : jet.Any?
+        public open fun documentWithRootElement(/*0*/ element : jet.Any?) : jet.Any?
+        public open fun elementWithName(/*0*/ name : jet.Any?) : jet.Any?
+        public open fun elementWithName(/*0*/ name : jet.Any?, /*1*/ URI : jet.Any?) : jet.Any?
+        public open fun elementWithName(/*0*/ name : jet.Any?, /*1*/ string : jet.Any?) : jet.Any?
+        public open fun elementWithName(/*0*/ name : jet.Any?, /*1*/ children : jet.Any?, /*2*/ attributes : jet.Any?) : jet.Any?
+        public open fun localNameForName(/*0*/ name : jet.Any?) : jet.Any?
+        public open fun namespaceWithName(/*0*/ name : jet.Any?, /*1*/ stringValue : jet.Any?) : jet.Any?
+        public open fun predefinedNamespaceForPrefix(/*0*/ name : jet.Any?) : jet.Any?
+        public open fun prefixForName(/*0*/ name : jet.Any?) : jet.Any?
+        public open fun processingInstructionWithName(/*0*/ name : jet.Any?, /*1*/ stringValue : jet.Any?) : jet.Any?
+        public open fun textWithStringValue(/*0*/ stringValue : jet.Any?) : jet.Any?
+    }
 }
 
 public open class NSXMLParser {
@@ -2602,7 +3181,7 @@ public open class NSXMLParser {
     public open fun shouldResolveExternalEntities() : jet.Any?
 }
 
-public open trait NSXMLParserDelegate {
+public trait NSXMLParserDelegate {
     public open fun parser(/*0*/ parser : jet.Any?, /*1*/ prefix : jet.Any?) : jet.Any?
     public open fun parser(/*0*/ parser : jet.Any?, /*1*/ string : jet.Any?) : jet.Any?
     public open fun parser(/*0*/ parser : jet.Any?, /*1*/ whitespaceString : jet.Any?) : jet.Any?

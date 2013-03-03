@@ -21,13 +21,14 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.MutableClassDescriptorLite;
+import org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder;
 import org.jetbrains.jet.lang.descriptors.impl.SimpleFunctionDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.impl.ValueParameterDescriptorImpl;
+import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCNamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.resolve.scopes.RedeclarationHandler;
-import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
@@ -37,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder.ClassObjectStatus;
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
 public class ObjCDescriptorMapper {
@@ -49,40 +51,72 @@ public class ObjCDescriptorMapper {
     @NotNull
     public ClassDescriptor mapClass(@NotNull ObjCClass clazz) {
         Name name = Name.identifier(clazz.getName());
-        TempClassDescriptor descriptor = new TempClassDescriptor(namespace, ClassKind.CLASS, name);
+        TempClassDescriptor descriptor = new TempClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name);
 
-        addMethodsToClassScope(clazz.getMethodList(), descriptor, false);
-        descriptor.getWritableScope().changeLockLevel(WritableScope.LockLevel.READING);
+        List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
+        List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
+        filterClassAndInstanceMethods(clazz.getMethodList(), classMethods, instanceMethods);
+
+        addMethodsToClassScope(instanceMethods, descriptor);
+        createAndFillClassObjectIfNeeded(classMethods, descriptor);
+
+        descriptor.lockScopes();
 
         return descriptor;
     }
 
-    private void addMethodsToClassScope(
+    private void filterClassAndInstanceMethods(
             @NotNull List<ObjCMethod> methods,
-            @NotNull TempClassDescriptor descriptor,
-            boolean classMethods
+            @NotNull List<ObjCMethod> classMethods,
+            @NotNull List<ObjCMethod> instanceMethods
     ) {
-        WritableScope scope = descriptor.getWritableScope();
         for (ObjCMethod method : methods) {
-            if (method.getClassMethod() == classMethods) {
-                FunctionDescriptor functionDescriptor = mapMethod(method, descriptor);
-                scope.addFunctionDescriptor(functionDescriptor);
+            if (method.getClassMethod()) {
+                classMethods.add(method);
             }
+            else {
+                instanceMethods.add(method);
+            }
+        }
+    }
+
+    private void addMethodsToClassScope(@NotNull List<ObjCMethod> methods, @NotNull TempClassDescriptor descriptor) {
+        NamespaceLikeBuilder builder = descriptor.getBuilder();
+        for (ObjCMethod method : methods) {
+            SimpleFunctionDescriptor functionDescriptor = mapMethod(method, descriptor);
+            builder.addFunctionDescriptor(functionDescriptor);
         }
     }
 
     @NotNull
     public ClassDescriptor mapProtocol(@NotNull ObjCProtocol protocol, @NotNull Name name) {
-        TempClassDescriptor descriptor = new TempClassDescriptor(namespace, ClassKind.TRAIT, name);
+        TempClassDescriptor descriptor = new TempClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name);
 
-        addMethodsToClassScope(protocol.getMethodList(), descriptor, false);
-        descriptor.getWritableScope().changeLockLevel(WritableScope.LockLevel.READING);
+        List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
+        List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
+        filterClassAndInstanceMethods(protocol.getMethodList(), classMethods, instanceMethods);
+
+        addMethodsToClassScope(instanceMethods, descriptor);
+        createAndFillClassObjectIfNeeded(classMethods, descriptor);
+
+        descriptor.lockScopes();
 
         return descriptor;
     }
 
+    private void createAndFillClassObjectIfNeeded(@NotNull List<ObjCMethod> methods, @NotNull TempClassDescriptor descriptor) {
+        if (methods.isEmpty()) return;
+
+        Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
+        TempClassDescriptor classObject = new TempClassDescriptor(namespace, ClassKind.CLASS_OBJECT, Modality.FINAL, name);
+        addMethodsToClassScope(methods, classObject);
+
+        ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
+        assert result == ClassObjectStatus.OK : result;
+    }
+
     @NotNull
-    private FunctionDescriptor mapMethod(@NotNull ObjCMethod method, @NotNull TempClassDescriptor containingClass) {
+    private SimpleFunctionDescriptor mapMethod(@NotNull ObjCMethod method, @NotNull TempClassDescriptor containingClass) {
         Function function = method.getFunction();
         Name name = transformMethodName(function.getName());
         SimpleFunctionDescriptorImpl descriptor = new SimpleFunctionDescriptorImpl(containingClass,
@@ -146,11 +180,16 @@ public class ObjCDescriptorMapper {
     }
 
     private static class TempClassDescriptor extends MutableClassDescriptorLite {
-        public TempClassDescriptor(@NotNull DeclarationDescriptor containingDeclaration, @NotNull ClassKind kind, @NotNull Name name) {
+        public TempClassDescriptor(
+                @NotNull DeclarationDescriptor containingDeclaration,
+                @NotNull ClassKind kind,
+                @NotNull Modality modality,
+                @NotNull Name name
+        ) {
             super(containingDeclaration, kind, false);
 
             setName(name);
-            setModality(Modality.OPEN);
+            setModality(modality);
             setVisibility(Visibilities.PUBLIC);
 
             WritableScopeImpl scope = new WritableScopeImpl(JetScope.EMPTY, this, RedeclarationHandler.THROW_EXCEPTION, "Obj-C class");
@@ -170,11 +209,6 @@ public class ObjCDescriptorMapper {
         @Override
         public ConstructorDescriptor getUnsubstitutedPrimaryConstructor() {
             return null;
-        }
-
-        @NotNull
-        private WritableScope getWritableScope() {
-            return (WritableScope) getScopeForMemberLookup();
         }
     }
 }
