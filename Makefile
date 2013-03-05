@@ -2,11 +2,15 @@ CPP=c++
 CC_FLAGS=-std=c++0x -Iinclude -stdlib=libstdc++
 LD_FLAGS=-Llib -lclang -lprotobuf
 
+PROJECT_NAME=ObjCIndex
+
 SRC_FILES=$(wildcard *.cc)
 OBJ_FILES=$(patsubst %.cc,$(OUT)/%.o,$(SRC_FILES))
 OUT=out
-DYLIB=$(OUT)/libObjCIndex.dylib
-EXE=$(OUT)/a.out
+DYLIB=$(OUT)/lib$(PROJECT_NAME).dylib
+
+TEST_FILES=$(wildcard tests/*.cc)
+TEST_EXE=$(OUT)/a.out
 
 
 
@@ -27,5 +31,5 @@ $(OUT)/%.o: %.cc
 
 
 test: mkdir dylib
-	$(CPP) $(CC_FLAGS) $(LD_FLAGS) -I. -Lout -lObjCIndex $(wildcard tests/*.cc) -o $(EXE)
-	$(EXE)
+	$(CPP) $(CC_FLAGS) $(LD_FLAGS) -I. -L$(OUT) -l$(PROJECT_NAME) $(TEST_FILES) -o $(TEST_EXE)
+	$(TEST_EXE)

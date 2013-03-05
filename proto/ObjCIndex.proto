@@ -1,3 +1,5 @@
+option java_package = "org.jetbrains.jet.lang.resolve.objc";
+
 message Function {
     required string name = 1;
     required string return_type = 2;
