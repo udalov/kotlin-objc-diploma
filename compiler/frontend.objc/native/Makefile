@@ -1,5 +1,8 @@
+JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/Current
+JAVA_INCLUDE=$(JAVA_HOME)/Headers
+
 CPP=c++
-CC_FLAGS=-std=c++0x -Iinclude -stdlib=libstdc++
+CC_FLAGS=-std=c++0x -I$(JAVA_INCLUDE) -Iinclude -stdlib=libstdc++
 LD_FLAGS=-Llib -lclang -lprotobuf
 
 PROJECT_NAME=ObjCIndex

@@ -35,7 +35,7 @@ public class ObjCDescriptorResolver {
     public static final String PROTOCOL_NAME_SUFFIX = "Protocol";
 
     static {
-        System.loadLibrary("ObjCDescriptorResolver");
+        System.loadLibrary("ObjCIndex");
     }
 
     private native void buildObjCIndex(@NotNull String header, @NotNull String outputFileName);
