@@ -1,3 +1,30 @@
+# ----------------------------------------------------------------------------
+#  KotlinNativeIndexer Makefile
+#
+#  Usages:
+#
+#  1. make clean
+#  	  Remove previously compiled files (out/ directory)
+#
+#  2. make proto
+#     Launch Protocol Buffers compiler to generate C++ and Java classes
+#
+#  3. make
+#     Compile everything and link to out/libKotlinNativeIndexer.dylib
+#
+#  4. make test
+#     Compile (linking to the .dylib) and run tests
+#
+# ----------------------------------------------------------------------------
+
+
+
+# ----------------------------------------------------------------------------
+#  Variables
+# ----------------------------------------------------------------------------
+
+PROJECT_NAME=KotlinNativeIndexer
+
 JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/Current
 JAVA_INCLUDE=$(JAVA_HOME)/Headers
 
@@ -5,17 +32,17 @@ CPP=c++
 CC_FLAGS=-std=c++0x -I$(JAVA_INCLUDE) -Iinclude -stdlib=libstdc++
 LD_FLAGS=-Llib -lclang -lprotobuf
 
-PROJECT_NAME=KotlinNativeIndexer
-
 SRC_FILES=$(wildcard *.cc)
 OBJ_FILES=$(patsubst %.cc,$(OUT)/%.o,$(SRC_FILES))
 OUT=out
 DYLIB=$(OUT)/lib$(PROJECT_NAME).dylib
 
 TEST_FILES=$(wildcard tests/*.cc)
-TEST_EXE=$(OUT)/a.out
+TEST_EXE=$(OUT)/tests
 
 
+# ----------------------------------------------------------------------------
+#  Targets
 # ----------------------------------------------------------------------------
 
 # Resolve 'proto' to the target name, not to the directory
