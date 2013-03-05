@@ -1,5 +1,6 @@
 #include <fstream>
 #include <vector>
+#include <string>
 
 #include "clang-c/Index.h"
 
@@ -212,7 +213,7 @@ void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
 }
 
 
-void Indexer::run() const {
+void doIndex(const std::vector<std::string>& headers, const std::string& outputFile) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     CXIndex index = clang_createIndex(false, false);
@@ -236,14 +237,13 @@ void Indexer::run() const {
     clientData.writeToFile(outputFile);
 }
 
-void buildObjCIndex(const char *const *headers, int numHeaders, const char *outputFile) {
+void buildNativeIndex(const char *const *headers, int numHeaders, const char *outputFile) {
     std::vector<std::string> headersVector;
     headersVector.reserve(static_cast<size_t>(numHeaders));
     for (int i = 0; i < numHeaders; i++) {
         headersVector.push_back(headers[i]);
     }
-    Indexer indexer(headersVector, outputFile);
-    indexer.run();
+    doIndex(headersVector, outputFile);
 }
 
 JNIEXPORT void JNICALL Java_org_jetbrains_jet_lang_resolve_objc_ObjCDescriptorResolver_buildObjCIndex
@@ -253,7 +253,7 @@ JNIEXPORT void JNICALL Java_org_jetbrains_jet_lang_resolve_objc_ObjCDescriptorRe
 
     const char *outputFile = env->GetStringUTFChars(outputFileNameString, NULL);
 
-    buildObjCIndex(headers, 1, outputFile);
+    buildNativeIndex(headers, 1, outputFile);
 
     env->ReleaseStringUTFChars(headerString, header);
     env->ReleaseStringUTFChars(outputFileNameString, outputFile);

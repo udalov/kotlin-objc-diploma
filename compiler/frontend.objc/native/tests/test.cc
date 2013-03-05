@@ -57,7 +57,7 @@ void doTest(const std::string& filename) {
     const char *tmpFile = "/tmp/KotlinNativeIndexTest.out";
 
     try {
-        buildObjCIndex(headers, 1, tmpFile);
+        buildNativeIndex(headers, 1, tmpFile);
 
         TranslationUnit tu;
         std::ifstream actualStream(tmpFile);
