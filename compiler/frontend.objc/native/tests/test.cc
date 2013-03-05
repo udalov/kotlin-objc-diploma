@@ -6,7 +6,7 @@
 #include <string>
 
 #include "asserts.h"
-#include "ObjCIndex.h"
+#include "Indexer.h"
 #include "ObjCIndex.pb.h"
 
 template<typename Callback> void recurseIntoFiles(const std::string& startDir, Callback callback) {
@@ -54,7 +54,7 @@ void doTest(const std::string& filename) {
     auto expectedFile = filename.substr(0, filename.length() - 1) + "out";
 
     const char *const headers[] = {filename.c_str()};
-    const char *tmpFile = "/tmp/ObjCIndexTest.out";
+    const char *tmpFile = "/tmp/KotlinNativeIndexTest.out";
 
     try {
         buildObjCIndex(headers, 1, tmpFile);

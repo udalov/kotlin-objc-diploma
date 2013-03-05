@@ -5,7 +5,7 @@ CPP=c++
 CC_FLAGS=-std=c++0x -I$(JAVA_INCLUDE) -Iinclude -stdlib=libstdc++
 LD_FLAGS=-Llib -lclang -lprotobuf
 
-PROJECT_NAME=ObjCIndex
+PROJECT_NAME=KotlinNativeIndexer
 
 SRC_FILES=$(wildcard *.cc)
 OBJ_FILES=$(patsubst %.cc,$(OUT)/%.o,$(SRC_FILES))
