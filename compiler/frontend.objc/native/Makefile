@@ -16,11 +16,16 @@ TEST_FILES=$(wildcard tests/*.cc)
 TEST_EXE=$(OUT)/a.out
 
 
+# ----------------------------------------------------------------------------
 
-all: mkdir dylib
+# Resolve 'proto' to the target name, not to the directory
+.PHONY: proto
 
-clean:
-	@rm -rf $(OUT)
+
+all: proto mkdir dylib
+
+proto:
+	@make -C proto all
 
 mkdir:
 	@mkdir -p $(OUT)
@@ -30,6 +35,11 @@ dylib: $(OBJ_FILES)
 
 $(OUT)/%.o: %.cc
 	$(CPP) $(CC_FLAGS) -c $^ -o $@
+
+
+
+clean:
+	@rm -rf $(OUT)
 
 
 
