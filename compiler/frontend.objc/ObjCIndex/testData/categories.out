@@ -1,0 +1,49 @@
+class {
+  name: "A"
+}
+class {
+  name: "B"
+}
+class {
+  name: "C"
+}
+category {
+  class_name: "A"
+  category_name: ""
+}
+category {
+  class_name: "B"
+  category_name: "B"
+  method {
+    function {
+      name: "foo"
+      return_type: "Void"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "bar"
+      return_type: "Int"
+    }
+    class_method: false
+  }
+}
+category {
+  class_name: "C"
+  category_name: "CC"
+  method {
+    function {
+      name: "foo"
+      return_type: "Void"
+    }
+    class_method: true
+  }
+  method {
+    function {
+      name: "bar"
+      return_type: "Int"
+    }
+    class_method: true
+  }
+}
