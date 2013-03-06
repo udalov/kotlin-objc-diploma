@@ -17,32 +17,27 @@
 package org.jetbrains.jet.objc;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jet.ConfigurationKind;
-import org.jetbrains.jet.JetTestUtils;
-import org.jetbrains.jet.TestJdkKind;
-import org.jetbrains.jet.cli.jvm.compiler.JetCoreEnvironment;
-import org.jetbrains.jet.config.CompilerConfiguration;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
-import org.jetbrains.jet.lang.resolve.objc.ObjCDescriptorResolver;
 import org.jetbrains.jet.test.TestCaseWithTmpdir;
 
 import java.io.File;
 
+import static org.jetbrains.jet.objc.ObjCTestUtil.createEnvironment;
+import static org.jetbrains.jet.objc.ObjCTestUtil.resolveHeaderToNamespaceDescriptor;
 import static org.jetbrains.jet.test.util.NamespaceComparator.RECURSIVE;
 import static org.jetbrains.jet.test.util.NamespaceComparator.compareNamespaceWithFile;
 
 public class ObjCDescriptorResolverTest extends TestCaseWithTmpdir {
+    public static final String TEST_DATA_PATH = "compiler/testData/objc/resolve/";
+
     public void doTest(@NotNull String filename) {
-        String header = "compiler/testData/objc/" + filename;
+        String header = TEST_DATA_PATH + filename;
 
         assert header.endsWith(".h") : header;
         File expected = new File(header.substring(0, header.length() - ".h".length()) + ".txt");
 
-        CompilerConfiguration configuration = JetTestUtils.compilerConfigurationForTests(ConfigurationKind.JDK_ONLY, TestJdkKind.MOCK_JDK);
-        new JetCoreEnvironment(getTestRootDisposable(), configuration);
-
-        ObjCDescriptorResolver resolver = new ObjCDescriptorResolver();
-        NamespaceDescriptor descriptor = resolver.resolve(new File(header));
+        createEnvironment(getTestRootDisposable());
+        NamespaceDescriptor descriptor = resolveHeaderToNamespaceDescriptor(header);
 
         compareNamespaceWithFile(descriptor, RECURSIVE, expected);
     }
