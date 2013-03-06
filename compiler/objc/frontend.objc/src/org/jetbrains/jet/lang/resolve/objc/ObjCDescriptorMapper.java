@@ -25,7 +25,6 @@ import org.jetbrains.jet.lang.descriptors.impl.SimpleFunctionDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.impl.ValueParameterDescriptorImpl;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.name.Name;
-import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCNamespaceDescriptor;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 
@@ -38,9 +37,9 @@ import static org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder.Class
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
 public class ObjCDescriptorMapper {
-    private final ObjCNamespaceDescriptor namespace;
+    private final NamespaceDescriptor namespace;
 
-    public ObjCDescriptorMapper(@NotNull ObjCNamespaceDescriptor namespace) {
+    public ObjCDescriptorMapper(@NotNull NamespaceDescriptor namespace) {
         this.namespace = namespace;
     }
 

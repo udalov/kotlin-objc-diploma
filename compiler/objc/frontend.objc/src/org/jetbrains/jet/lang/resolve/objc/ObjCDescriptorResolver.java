@@ -18,16 +18,21 @@ package org.jetbrains.jet.lang.resolve.objc;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
+import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
+import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorImpl;
 import org.jetbrains.jet.lang.resolve.name.Name;
-import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCModuleDescriptor;
-import org.jetbrains.jet.lang.resolve.objc.descriptors.ObjCNamespaceDescriptor;
+import org.jetbrains.jet.lang.resolve.scopes.JetScope;
+import org.jetbrains.jet.lang.resolve.scopes.RedeclarationHandler;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
+import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
 import org.jetbrains.jet.utils.ExceptionUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
@@ -56,11 +61,16 @@ public class ObjCDescriptorResolver {
     public NamespaceDescriptor resolve(@NotNull /* TODO: List<File> */ File header) {
         TranslationUnit translationUnit = indexObjCHeaders(header);
 
-        ObjCModuleDescriptor module = new ObjCModuleDescriptor();
-        ObjCNamespaceDescriptor namespace = new ObjCNamespaceDescriptor(module);
+        ModuleDescriptor module = new ModuleDescriptor(Name.special("<objc module>"));
+        NamespaceDescriptor rootNamespace = new NamespaceDescriptorImpl(module,
+                Collections.<AnnotationDescriptor>emptyList(), Name.special("<objc root namespace>"));
+        NamespaceDescriptorImpl namespace = new NamespaceDescriptorImpl(rootNamespace,
+                Collections.<AnnotationDescriptor>emptyList(), Name.identifier("objc"));
         ObjCDescriptorMapper mapper = new ObjCDescriptorMapper(namespace);
 
-        WritableScope scope = namespace.getMemberScope().changeLockLevel(WritableScope.LockLevel.BOTH);
+        WritableScope scope = new WritableScopeImpl(JetScope.EMPTY, namespace, RedeclarationHandler.THROW_EXCEPTION, "objc scope");
+        scope.changeLockLevel(WritableScope.LockLevel.BOTH);
+        namespace.initialize(scope);
 
         for (ObjCClass clazz : translationUnit.getClassList()) {
             ClassDescriptor classDescriptor = mapper.mapClass(clazz);
