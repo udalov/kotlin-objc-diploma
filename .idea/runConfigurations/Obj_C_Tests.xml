@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Obj-C Resolve Tests" type="JUnit" factoryName="JUnit">
+  <configuration default="false" name="Obj-C Tests" type="JUnit" factoryName="JUnit">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <module name="compiler-tests" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -8,7 +8,7 @@
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="package" />
-    <option name="VM_PARAMETERS" value="-Djava.library.path=compiler/frontend.objc/native/out -ea" />
+    <option name="VM_PARAMETERS" value="-Djava.library.path=compiler/objc/frontend.objc/native/out -ea" />
     <option name="PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
     <option name="ENV_VARIABLES" />
@@ -17,7 +17,7 @@
       <value defaultName="moduleWithDependencies" />
     </option>
     <envs>
-      <env name="DYLD_LIBRARY_PATH" value="compiler/frontend.objc/native/lib" />
+      <env name="DYLD_LIBRARY_PATH" value="compiler/objc/frontend.objc/native/lib" />
     </envs>
     <patterns />
     <RunnerSettings RunnerId="Debug">
