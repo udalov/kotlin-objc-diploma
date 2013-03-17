@@ -74,7 +74,7 @@ public class ObjCDescriptorMapper {
 
         if (!classMethods.isEmpty()) {
             Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
-            ObjCClassDescriptor classObject = new ObjCClassDescriptor(namespace, ClassKind.CLASS_OBJECT, Modality.FINAL, name);
+            ObjCClassDescriptor classObject = new ObjCClassDescriptor(descriptor, ClassKind.CLASS_OBJECT, Modality.FINAL, name);
             addMethodsToClassScope(classMethods, classObject);
 
             ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
