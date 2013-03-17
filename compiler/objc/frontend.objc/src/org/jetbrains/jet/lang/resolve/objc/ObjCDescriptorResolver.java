@@ -16,9 +16,9 @@
 
 package org.jetbrains.jet.lang.resolve.objc;
 
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
-import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorImpl;
@@ -29,6 +29,7 @@ import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
 import org.jetbrains.jet.utils.ExceptionUtils;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,6 +39,19 @@ import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
 public class ObjCDescriptorResolver {
     public static final String PROTOCOL_NAME_SUFFIX = "Protocol";
+
+    private Project project;
+    private NamespaceDescriptor rootNamespace;
+    private NamespaceDescriptor resolvedNamespace;
+
+    @Inject
+    public void setProject(@NotNull Project project) {
+        this.project = project;
+    }
+
+    public void setRootNamespace(@NotNull NamespaceDescriptor rootNamespace) {
+        this.rootNamespace = rootNamespace;
+    }
 
     static {
         System.loadLibrary("KotlinNativeIndexer");
@@ -58,14 +72,22 @@ public class ObjCDescriptorResolver {
     }
 
     @NotNull
-    public NamespaceDescriptor resolve(@NotNull /* TODO: List<File> */ File header) {
+    public NamespaceDescriptor resolve() {
+        if (resolvedNamespace != null) {
+            return resolvedNamespace;
+        }
+
+        assert project != null : "Project should be initialized in " + getClass().getName();
+        File header = ObjCInteropParameters.getHeaders(project);
+        assert header != null : "Header parameter should be saved into " + ObjCInteropParameters.class.getName();
+        assert rootNamespace != null : "Root namespace should be set before Obj-C resolve";
+
         TranslationUnit translationUnit = indexObjCHeaders(header);
 
-        ModuleDescriptor module = new ModuleDescriptor(Name.special("<objc module>"));
-        NamespaceDescriptor rootNamespace = new NamespaceDescriptorImpl(module,
-                Collections.<AnnotationDescriptor>emptyList(), Name.special("<objc root namespace>"));
         NamespaceDescriptorImpl namespace = new NamespaceDescriptorImpl(rootNamespace,
                 Collections.<AnnotationDescriptor>emptyList(), Name.identifier("objc"));
+        rootNamespace.addNamespace(namespace);
+
         ObjCDescriptorMapper mapper = new ObjCDescriptorMapper(namespace);
 
         WritableScope scope = new WritableScopeImpl(JetScope.EMPTY, namespace, RedeclarationHandler.THROW_EXCEPTION, "objc scope");
@@ -89,9 +111,7 @@ public class ObjCDescriptorResolver {
             scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
         }
 
-
-        scope.changeLockLevel(WritableScope.LockLevel.READING);
-
-        return namespace;
+        resolvedNamespace = namespace;
+        return resolvedNamespace;
     }
 }

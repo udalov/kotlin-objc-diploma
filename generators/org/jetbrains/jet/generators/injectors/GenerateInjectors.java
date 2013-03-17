@@ -34,6 +34,8 @@ import org.jetbrains.jet.lang.resolve.java.JavaSemanticServices;
 import org.jetbrains.jet.lang.resolve.java.PsiClassFinderImpl;
 import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
 import org.jetbrains.jet.lang.resolve.lazy.ScopeProvider;
+import org.jetbrains.jet.lang.resolve.objc.ObjCModuleConfiguration;
+import org.jetbrains.jet.lang.resolve.objc.ObjCDescriptorResolver;
 import org.jetbrains.jet.lang.types.DependencyClassByQualifiedNameResolverDummyImpl;
 import org.jetbrains.jet.lang.types.expressions.ExpressionTypingServices;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
@@ -52,6 +54,7 @@ public class GenerateInjectors {
         generateInjectorForTopDownAnalyzerForJvm();
         generateInjectorForJavaDescriptorResolver();
         generateInjectorForTopDownAnalyzerForJs();
+        generateInjectorForTopDownAnalyzerForObjC();
         generateMacroInjector();
         generateTestInjector();
         generateInjectorForJavaSemanticServices();
@@ -92,6 +95,17 @@ public class GenerateInjectors {
         generator.addField(DependencyClassByQualifiedNameResolverDummyImpl.class);
         generator.addField(NamespaceFactoryImpl.class);
         generator.generate("js/js.translator/src", "org.jetbrains.jet.di", "InjectorForTopDownAnalyzerForJs", GenerateInjectors.class);
+    }
+
+    private static void generateInjectorForTopDownAnalyzerForObjC() throws IOException {
+        DependencyInjectorGenerator generator = new DependencyInjectorGenerator(false);
+        generator.implementInterface(InjectorForTopDownAnalyzer.class);
+        generateInjectorForTopDownAnalyzerCommon(generator);
+        generator.addField(true, ModuleConfiguration.class, null, new InstantiateType(ObjCModuleConfiguration.class));
+        generator.addField(DependencyClassByQualifiedNameResolverDummyImpl.class);
+        generator.addPublicField(NamespaceFactoryImpl.class);
+        generator.generate("compiler/objc/frontend.objc/src", "org.jetbrains.jet.di", "InjectorForTopDownAnalyzerForObjC",
+                           GenerateInjectors.class);
     }
 
     private static void generateInjectorForTopDownAnalyzerForJvm() throws IOException {

@@ -21,10 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.ConfigurationKind;
 import org.jetbrains.jet.JetTestUtils;
 import org.jetbrains.jet.TestJdkKind;
+import org.jetbrains.jet.analyzer.AnalyzeExhaust;
 import org.jetbrains.jet.cli.jvm.compiler.JetCoreEnvironment;
 import org.jetbrains.jet.config.CompilerConfiguration;
+import org.jetbrains.jet.lang.ModuleConfiguration;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
-import org.jetbrains.jet.lang.resolve.objc.ObjCDescriptorResolver;
+import org.jetbrains.jet.lang.resolve.objc.ObjCModuleConfiguration;
 
 import java.io.File;
 
@@ -32,14 +34,17 @@ public class ObjCTestUtil {
     private ObjCTestUtil() {}
 
     @NotNull
-    public static NamespaceDescriptor resolveHeaderToNamespaceDescriptor(@NotNull String header) {
-        ObjCDescriptorResolver resolver = new ObjCDescriptorResolver();
-        return resolver.resolve(new File(header));
-    }
-
-    @NotNull
     public static JetCoreEnvironment createEnvironment(@NotNull Disposable disposable) {
         CompilerConfiguration configuration = JetTestUtils.compilerConfigurationForTests(ConfigurationKind.JDK_ONLY, TestJdkKind.MOCK_JDK);
         return new JetCoreEnvironment(disposable, configuration);
     }
+
+    @NotNull
+    public static NamespaceDescriptor extractObjCNamespaceFromAnalyzeExhaust(@NotNull AnalyzeExhaust analyzeExhaust) {
+        ModuleConfiguration moduleConfiguration = analyzeExhaust.getModuleConfiguration();
+        assert moduleConfiguration instanceof ObjCModuleConfiguration
+                : "Not an Obj-C module configuration: " + moduleConfiguration;
+        return ((ObjCModuleConfiguration) moduleConfiguration).getResolver().resolve();
+    }
+
 }

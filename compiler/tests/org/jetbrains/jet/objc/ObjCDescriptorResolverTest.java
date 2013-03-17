@@ -16,14 +16,24 @@
 
 package org.jetbrains.jet.objc;
 
+import com.google.common.base.Predicates;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.jet.analyzer.AnalyzeExhaust;
+import org.jetbrains.jet.cli.jvm.compiler.JetCoreEnvironment;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
+import org.jetbrains.jet.lang.psi.JetFile;
+import org.jetbrains.jet.lang.resolve.AnalyzerScriptParameter;
+import org.jetbrains.jet.lang.resolve.AnalyzingUtils;
+import org.jetbrains.jet.lang.resolve.objc.AnalyzerFacadeForObjC;
+import org.jetbrains.jet.lang.resolve.objc.ObjCInteropParameters;
 import org.jetbrains.jet.test.TestCaseWithTmpdir;
 
 import java.io.File;
+import java.util.Collections;
 
 import static org.jetbrains.jet.objc.ObjCTestUtil.createEnvironment;
-import static org.jetbrains.jet.objc.ObjCTestUtil.resolveHeaderToNamespaceDescriptor;
+import static org.jetbrains.jet.objc.ObjCTestUtil.extractObjCNamespaceFromAnalyzeExhaust;
 import static org.jetbrains.jet.test.util.NamespaceComparator.RECURSIVE;
 import static org.jetbrains.jet.test.util.NamespaceComparator.compareNamespaceWithFile;
 
@@ -36,8 +46,19 @@ public class ObjCDescriptorResolverTest extends TestCaseWithTmpdir {
         assert header.endsWith(".h") : header;
         File expected = new File(header.substring(0, header.length() - ".h".length()) + ".txt");
 
-        createEnvironment(getTestRootDisposable());
-        NamespaceDescriptor descriptor = resolveHeaderToNamespaceDescriptor(header);
+        JetCoreEnvironment environment = createEnvironment(getTestRootDisposable());
+        ObjCInteropParameters.saveHeaders(environment.getProject(), new File(header));
+
+        AnalyzeExhaust analyzeExhaust = AnalyzerFacadeForObjC.INSTANCE.analyzeFiles(
+                environment.getProject(),
+                Collections.<JetFile>emptyList(),
+                Collections.<AnalyzerScriptParameter>emptyList(),
+                Predicates.<PsiFile>alwaysFalse()
+        );
+        analyzeExhaust.throwIfError();
+        AnalyzingUtils.throwExceptionOnErrors(analyzeExhaust.getBindingContext());
+
+        NamespaceDescriptor descriptor = extractObjCNamespaceFromAnalyzeExhaust(analyzeExhaust);
 
         compareNamespaceWithFile(descriptor, RECURSIVE, expected);
     }
