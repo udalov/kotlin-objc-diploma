@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# TODO: write a proper Makefile or build.xml
+
+javah -classpath ../../out/production/runtime -o KotlinNative.h jet.runtime.objc.Native
+
+JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/Current
+JAVA_INCLUDE=$JAVA_HOME/Headers
+
+c++ -I$JAVA_INCLUDE -lobjc -dynamiclib KotlinNative.cc -o libKotlinNative.dylib

@@ -27,8 +27,14 @@ import org.jetbrains.jet.config.CompilerConfiguration;
 import org.jetbrains.jet.lang.ModuleConfiguration;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.objc.ObjCModuleConfiguration;
+import org.jetbrains.jet.utils.ExceptionUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObjCTestUtil {
     private ObjCTestUtil() {}
@@ -47,4 +53,42 @@ public class ObjCTestUtil {
         return ((ObjCModuleConfiguration) moduleConfiguration).getResolver().resolve();
     }
 
+    public static void compileObjectiveC(@NotNull String filename, @NotNull File out) {
+        String command = String.format("clang -ObjC -dynamiclib -framework Foundation %s -o %s", filename, out);
+        runProcess(command);
+    }
+
+    @NotNull
+    public static List<String> runProcess(@NotNull String command) {
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+
+            List<String> result = readLines(process.getInputStream());
+
+            for (String line : readLines(process.getErrorStream())) {
+                System.err.println(line);
+            }
+            System.err.flush();
+
+            int exitCode = process.exitValue();
+            assert exitCode == 0 : "Process exited with code " + exitCode;
+
+            return result;
+        }
+        catch (Exception e) {
+            throw ExceptionUtils.rethrow(e);
+        }
+    }
+
+    @NotNull
+    private static List<String> readLines(@NotNull InputStream in) throws Exception {
+        List<String> result = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            result.add(line);
+        }
+        return result;
+    }
 }
