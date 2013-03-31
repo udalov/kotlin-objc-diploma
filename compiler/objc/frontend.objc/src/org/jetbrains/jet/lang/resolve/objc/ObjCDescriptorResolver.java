@@ -20,11 +20,16 @@ import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
+import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder;
 import org.jetbrains.jet.lang.descriptors.impl.SimpleFunctionDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.impl.ValueParameterDescriptorImpl;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.name.Name;
+import org.jetbrains.jet.lang.resolve.scopes.JetScope;
+import org.jetbrains.jet.lang.resolve.scopes.RedeclarationHandler;
+import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
+import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 
@@ -36,29 +41,64 @@ import java.util.Map;
 import static org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder.ClassObjectStatus;
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
-public class ObjCDescriptorMapper {
-    private final NamespaceDescriptor namespace;
+public class ObjCDescriptorResolver {
+    public static final String PROTOCOL_NAME_SUFFIX = "Protocol";
 
-    public ObjCDescriptorMapper(@NotNull NamespaceDescriptor namespace) {
-        this.namespace = namespace;
+    private final NamespaceDescriptor rootNamespace;
+
+    public ObjCDescriptorResolver(@NotNull NamespaceDescriptor rootNamespace) {
+        this.rootNamespace = rootNamespace;
     }
 
     @NotNull
-    public ClassDescriptor mapClass(@NotNull ObjCClass clazz) {
+    public NamespaceDescriptor resolveTranslationUnit(@NotNull TranslationUnit translationUnit) {
+        NamespaceDescriptorImpl namespace = new NamespaceDescriptorImpl(rootNamespace,
+                Collections.<AnnotationDescriptor>emptyList(), Name.identifier("objc"));
+        rootNamespace.addNamespace(namespace);
+
+        WritableScope scope = new WritableScopeImpl(JetScope.EMPTY, namespace, RedeclarationHandler.THROW_EXCEPTION, "objc scope");
+        scope.changeLockLevel(WritableScope.LockLevel.BOTH);
+        namespace.initialize(scope);
+
+        for (ObjCClass clazz : translationUnit.getClassList()) {
+            ClassDescriptor classDescriptor = resolveClass(clazz, namespace);
+            scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
+        }
+
+        for (ObjCProtocol protocol : translationUnit.getProtocolList()) {
+            String protocolName = protocol.getName();
+            Name name = Name.identifier(protocolName);
+            if (scope.getClassifier(name) != null) {
+                // Since Objective-C classes and protocols exist in different namespaces and Kotlin classes and traits don't,
+                // we invent a new name here for the trait when a class with the same name exists already
+                name = Name.identifier(protocolName + PROTOCOL_NAME_SUFFIX);
+            }
+            ClassDescriptor classDescriptor = resolveProtocol(protocol, name, namespace);
+            scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
+        }
+        return namespace;
+    }
+
+    @NotNull
+    public ClassDescriptor resolveClass(@NotNull ObjCClass clazz, @NotNull NamespaceDescriptor containingNamespace) {
         Name name = Name.identifier(clazz.getName());
-        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name);
-        resolveAndAddMethodsToClassOrProtocol(clazz.getMethodList(), descriptor);
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(containingNamespace, ClassKind.CLASS, Modality.OPEN, name);
+        processMethodsOfClassOrProtocol(clazz.getMethodList(), descriptor);
         return descriptor;
     }
 
     @NotNull
-    public ClassDescriptor mapProtocol(@NotNull ObjCProtocol protocol, @NotNull Name name) {
-        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name);
-        resolveAndAddMethodsToClassOrProtocol(protocol.getMethodList(), descriptor);
+    public ClassDescriptor resolveProtocol(
+            @NotNull ObjCProtocol protocol,
+            @NotNull Name name,
+            @NotNull NamespaceDescriptor containingNamespace
+    ) {
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(containingNamespace, ClassKind.TRAIT, Modality.ABSTRACT, name);
+        processMethodsOfClassOrProtocol(protocol.getMethodList(), descriptor);
         return descriptor;
     }
 
-    private void resolveAndAddMethodsToClassOrProtocol(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
+    private void processMethodsOfClassOrProtocol(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
         List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
         List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
         for (ObjCMethod method : methods) {
@@ -87,13 +127,13 @@ public class ObjCDescriptorMapper {
     private void addMethodsToClassScope(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
         NamespaceLikeBuilder builder = descriptor.getBuilder();
         for (ObjCMethod method : methods) {
-            SimpleFunctionDescriptor functionDescriptor = mapMethod(method, descriptor);
+            SimpleFunctionDescriptor functionDescriptor = resolveMethod(method, descriptor);
             builder.addFunctionDescriptor(functionDescriptor);
         }
     }
 
     @NotNull
-    private SimpleFunctionDescriptor mapMethod(@NotNull ObjCMethod method, @NotNull ObjCClassDescriptor containingClass) {
+    private SimpleFunctionDescriptor resolveMethod(@NotNull ObjCMethod method, @NotNull ObjCClassDescriptor containingClass) {
         Function function = method.getFunction();
         Name name = transformMethodName(function.getName());
         SimpleFunctionDescriptorImpl descriptor = new SimpleFunctionDescriptorImpl(containingClass,
@@ -102,7 +142,7 @@ public class ObjCDescriptorMapper {
         int params = function.getParameterCount();
         List<ValueParameterDescriptor> valueParameters = new ArrayList<ValueParameterDescriptor>(params);
         for (int i = 0; i < params; i++) {
-            ValueParameterDescriptor parameter = mapFunctionParameter(function.getParameter(i), descriptor, i);
+            ValueParameterDescriptor parameter = resolveFunctionParameter(function.getParameter(i), descriptor, i);
             valueParameters.add(parameter);
         }
 
@@ -133,7 +173,7 @@ public class ObjCDescriptorMapper {
     }
 
     @NotNull
-    private ValueParameterDescriptor mapFunctionParameter(
+    private ValueParameterDescriptor resolveFunctionParameter(
             @NotNull Function.Parameter parameter,
             @NotNull FunctionDescriptor containingFunction,
             int index
