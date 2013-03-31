@@ -31,11 +31,11 @@ import javax.inject.Inject;
 import java.util.List;
 
 public class ObjCModuleConfiguration implements ModuleConfiguration {
-    private ObjCDescriptorResolver resolver;
+    private ObjCResolveFacade resolver;
     private ModuleConfiguration delegateConfiguration;
 
     @Inject
-    public void setResolver(@NotNull ObjCDescriptorResolver resolver) {
+    public void setResolver(@NotNull ObjCResolveFacade resolver) {
         this.resolver = resolver;
     }
 
@@ -44,7 +44,7 @@ public class ObjCModuleConfiguration implements ModuleConfiguration {
         this.delegateConfiguration = DefaultModuleConfiguration.createStandardConfiguration();
     }
 
-    public ObjCDescriptorResolver getResolver() {
+    public ObjCResolveFacade getResolver() {
         return resolver;
     }
 

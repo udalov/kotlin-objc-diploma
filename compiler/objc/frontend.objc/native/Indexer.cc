@@ -246,7 +246,7 @@ void buildNativeIndex(const char *const *headers, int numHeaders, const char *ou
     doIndex(headersVector, outputFile);
 }
 
-JNIEXPORT void JNICALL Java_org_jetbrains_jet_lang_resolve_objc_ObjCDescriptorResolver_buildObjCIndex
+JNIEXPORT void JNICALL Java_org_jetbrains_jet_lang_resolve_objc_ObjCResolveFacade_buildObjCIndex
         (JNIEnv *env, jobject resolver, jstring headerString, jstring outputFileNameString) {
     const char *header = env->GetStringUTFChars(headerString, NULL);
     const char *const headers[] = { header };

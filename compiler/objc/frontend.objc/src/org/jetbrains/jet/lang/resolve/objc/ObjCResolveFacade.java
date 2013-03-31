@@ -37,7 +37,7 @@ import java.util.Collections;
 
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
-public class ObjCDescriptorResolver {
+public class ObjCResolveFacade {
     public static final String PROTOCOL_NAME_SUFFIX = "Protocol";
 
     private Project project;

@@ -46,7 +46,7 @@ import org.jetbrains.jet.lang.resolve.OverloadResolver;
 import org.jetbrains.jet.lang.resolve.OverrideResolver;
 import org.jetbrains.jet.lang.resolve.TypeHierarchyResolver;
 import org.jetbrains.jet.lang.resolve.ScriptBodyResolver;
-import org.jetbrains.jet.lang.resolve.objc.ObjCDescriptorResolver;
+import org.jetbrains.jet.lang.resolve.objc.ObjCResolveFacade;
 import org.jetbrains.annotations.NotNull;
 import javax.annotation.PreDestroy;
 
@@ -82,7 +82,7 @@ public class InjectorForTopDownAnalyzerForObjC implements InjectorForTopDownAnal
     private OverrideResolver overrideResolver;
     private TypeHierarchyResolver typeHierarchyResolver;
     private ScriptBodyResolver scriptBodyResolver;
-    private ObjCDescriptorResolver objCDescriptorResolver;
+    private ObjCResolveFacade objCResolveFacade;
 
     public InjectorForTopDownAnalyzerForObjC(
         @NotNull Project project,
@@ -119,7 +119,7 @@ public class InjectorForTopDownAnalyzerForObjC implements InjectorForTopDownAnal
         this.overrideResolver = new OverrideResolver();
         this.typeHierarchyResolver = new TypeHierarchyResolver();
         this.scriptBodyResolver = new ScriptBodyResolver();
-        this.objCDescriptorResolver = new ObjCDescriptorResolver();
+        this.objCResolveFacade = new ObjCResolveFacade();
 
         this.topDownAnalyzer.setBodyResolver(bodyResolver);
         this.topDownAnalyzer.setContext(topDownAnalysisContext);
@@ -153,7 +153,7 @@ public class InjectorForTopDownAnalyzerForObjC implements InjectorForTopDownAnal
         this.descriptorResolver.setExpressionTypingServices(expressionTypingServices);
         this.descriptorResolver.setTypeResolver(typeResolver);
 
-        this.moduleConfiguration.setResolver(objCDescriptorResolver);
+        this.moduleConfiguration.setResolver(objCResolveFacade);
 
         this.namespaceFactory.setConfiguration(moduleConfiguration);
         this.namespaceFactory.setModuleDescriptor(moduleDescriptor);
@@ -224,7 +224,7 @@ public class InjectorForTopDownAnalyzerForObjC implements InjectorForTopDownAnal
         scriptBodyResolver.setExpressionTypingServices(expressionTypingServices);
         scriptBodyResolver.setTrace(bindingTrace);
 
-        objCDescriptorResolver.setProject(project);
+        objCResolveFacade.setProject(project);
 
         moduleConfiguration.init();
 

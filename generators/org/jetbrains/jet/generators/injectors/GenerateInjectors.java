@@ -35,7 +35,6 @@ import org.jetbrains.jet.lang.resolve.java.PsiClassFinderImpl;
 import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
 import org.jetbrains.jet.lang.resolve.lazy.ScopeProvider;
 import org.jetbrains.jet.lang.resolve.objc.ObjCModuleConfiguration;
-import org.jetbrains.jet.lang.resolve.objc.ObjCDescriptorResolver;
 import org.jetbrains.jet.lang.types.DependencyClassByQualifiedNameResolverDummyImpl;
 import org.jetbrains.jet.lang.types.expressions.ExpressionTypingServices;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
