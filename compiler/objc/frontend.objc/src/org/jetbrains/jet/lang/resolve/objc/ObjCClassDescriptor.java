@@ -24,6 +24,7 @@ import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.resolve.scopes.RedeclarationHandler;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
+import org.jetbrains.jet.lang.types.JetType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +34,8 @@ public class ObjCClassDescriptor extends MutableClassDescriptorLite {
             @NotNull DeclarationDescriptor containingDeclaration,
             @NotNull ClassKind kind,
             @NotNull Modality modality,
-            @NotNull Name name
+            @NotNull Name name,
+            @NotNull Collection<JetType> supertypes
     ) {
         super(containingDeclaration, kind, false);
 
@@ -44,6 +46,10 @@ public class ObjCClassDescriptor extends MutableClassDescriptorLite {
         WritableScopeImpl scope = new WritableScopeImpl(JetScope.EMPTY, this, RedeclarationHandler.THROW_EXCEPTION, "Obj-C class");
         setScopeForMemberLookup(scope);
         setTypeParameterDescriptors(Collections.<TypeParameterDescriptor>emptyList());
+
+        for (JetType supertype : supertypes) {
+            addSupertype(supertype);
+        }
 
         createTypeConstructor();
     }

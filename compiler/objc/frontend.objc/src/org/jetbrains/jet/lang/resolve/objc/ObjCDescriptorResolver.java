@@ -32,17 +32,15 @@ import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
+import org.jetbrains.jet.util.lazy.RecursionIntolerantLazyValue;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder.ClassObjectStatus;
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
 public class ObjCDescriptorResolver {
-    public static final String PROTOCOL_NAME_SUFFIX = "Protocol";
+    private static final String PROTOCOL_NAME_SUFFIX = "Protocol";
 
     private final NamespaceDescriptor rootNamespace;
 
@@ -66,36 +64,69 @@ public class ObjCDescriptorResolver {
         }
 
         for (ObjCProtocol protocol : translationUnit.getProtocolList()) {
-            String protocolName = protocol.getName();
-            Name name = Name.identifier(protocolName);
-            if (scope.getClassifier(name) != null) {
-                // Since Objective-C classes and protocols exist in different namespaces and Kotlin classes and traits don't,
-                // we invent a new name here for the trait when a class with the same name exists already
-                name = Name.identifier(protocolName + PROTOCOL_NAME_SUFFIX);
-            }
-            ClassDescriptor classDescriptor = resolveProtocol(protocol, name, namespace);
+            ClassDescriptor classDescriptor = resolveProtocol(protocol, namespace);
             scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
         }
         return namespace;
     }
 
     @NotNull
-    public ClassDescriptor resolveClass(@NotNull ObjCClass clazz, @NotNull NamespaceDescriptor containingNamespace) {
+    private ClassDescriptor resolveClass(@NotNull ObjCClass clazz, @NotNull NamespaceDescriptor containingNamespace) {
         Name name = Name.identifier(clazz.getName());
-        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(containingNamespace, ClassKind.CLASS, Modality.OPEN, name);
+
+        Collection<JetType> supertypes;
+        if (clazz.hasBaseClass()) {
+            JetType supertype = createDeferredSuperclass(name, Name.identifier(clazz.getBaseClass()), containingNamespace);
+            supertypes = Collections.singletonList(supertype);
+        }
+        else {
+            supertypes = Collections.emptyList();
+        }
+
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(containingNamespace, ClassKind.CLASS, Modality.OPEN, name, supertypes);
         processMethodsOfClassOrProtocol(clazz.getMethodList(), descriptor);
         return descriptor;
     }
 
     @NotNull
-    public ClassDescriptor resolveProtocol(
-            @NotNull ObjCProtocol protocol,
-            @NotNull Name name,
-            @NotNull NamespaceDescriptor containingNamespace
+    private JetType createDeferredSuperclass(
+            @NotNull final Name className,
+            @NotNull final Name baseClassName,
+            @NotNull final NamespaceDescriptor containingNamespace
     ) {
-        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(containingNamespace, ClassKind.TRAIT, Modality.ABSTRACT, name);
+        return new ObjCDeferredType(new RecursionIntolerantLazyValue<JetType>() {
+            @Override
+            protected JetType compute() {
+                JetScope scope = containingNamespace.getMemberScope();
+                ClassifierDescriptor classifier = scope.getClassifier(baseClassName);
+                assert classifier != null : "Super class is not resolved for class: " + className + ", base: " + baseClassName;
+                return classifier.getDefaultType();
+            }
+        });
+    }
+
+    @NotNull
+    private ClassDescriptor resolveProtocol(@NotNull ObjCProtocol protocol, @NotNull NamespaceDescriptor containingNamespace) {
+        Name name = nameForProtocol(protocol.getName(), containingNamespace);
+
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(containingNamespace, ClassKind.TRAIT, Modality.ABSTRACT, name,
+                                                                 Collections.<JetType>emptyList() /* TODO */);
         processMethodsOfClassOrProtocol(protocol.getMethodList(), descriptor);
         return descriptor;
+    }
+
+    @NotNull
+    private Name nameForProtocol(@NotNull String protocolName, @NotNull NamespaceDescriptor containingNamespace) {
+        Name name = Name.identifier(protocolName);
+        if (containingNamespace.getMemberScope().getClassifier(name) == null) {
+            return name;
+        }
+
+        // Since Objective-C classes and protocols exist in different namespaces and Kotlin classes and traits don't,
+        // we invent a new name here for the trait when a class with the same name exists already
+        // TODO: handle collisions (where both classes X and XProtocol and a protocol X exist)
+        name = Name.identifier(protocolName + PROTOCOL_NAME_SUFFIX);
+        return name;
     }
 
     private void processMethodsOfClassOrProtocol(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
@@ -114,7 +145,8 @@ public class ObjCDescriptorResolver {
 
         if (!classMethods.isEmpty()) {
             Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
-            ObjCClassDescriptor classObject = new ObjCClassDescriptor(descriptor, ClassKind.CLASS_OBJECT, Modality.FINAL, name);
+            ObjCClassDescriptor classObject = new ObjCClassDescriptor(descriptor, ClassKind.CLASS_OBJECT, Modality.FINAL, name,
+                    Collections.<JetType>emptyList() /* TODO: does class object need to subclass from anything, e.g. NSObject? */);
             addMethodsToClassScope(classMethods, classObject);
 
             ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
