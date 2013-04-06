@@ -230,7 +230,7 @@ public open class NSCache : objc.NSObject {
     public open fun totalCostLimit() : jet.Long
 }
 
-public trait NSCacheDelegate {
+public trait NSCacheDelegate : objc.NSObjectProtocol {
     public open fun cache(/*0*/ cache : jet.Any?, /*1*/ obj : jet.Any?) : Unit
 }
 
@@ -464,7 +464,7 @@ public open class NSConnection : objc.NSObject {
     }
 }
 
-public trait NSConnectionDelegate {
+public trait NSConnectionDelegate : objc.NSObjectProtocol {
     public open fun authenticateComponents(/*0*/ components : jet.Any?, /*1*/ signature : jet.Any?) : jet.Any?
     public open fun authenticationDataForComponents(/*0*/ components : jet.Any?) : jet.Any?
     public open fun connection(/*0*/ ancestor : jet.Any?, /*1*/ conn : jet.Any?) : jet.Any?
@@ -933,7 +933,7 @@ public open class NSFileManager : objc.NSObject {
     }
 }
 
-public trait NSFileManagerDelegate {
+public trait NSFileManagerDelegate : objc.NSObjectProtocol {
     public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ path : jet.Any?) : jet.Any?
     public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ URL : jet.Any?) : jet.Any?
     public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ srcPath : jet.Any?, /*2*/ dstPath : jet.Any?) : jet.Any?
@@ -952,7 +952,7 @@ public trait NSFileManagerDelegate {
     public open fun fileManager(/*0*/ fileManager : jet.Any?, /*1*/ error : jet.Any?, /*2*/ srcURL : jet.Any?, /*3*/ dstURL : jet.Any?) : jet.Any?
 }
 
-public trait NSFilePresenter {
+public trait NSFilePresenter : objc.NSObjectProtocol {
     public open fun accommodatePresentedItemDeletionWithCompletionHandler(/*0*/ completionHandler : jet.Any?) : Unit
     public open fun accommodatePresentedSubitemDeletionAtURL(/*0*/ url : jet.Any?, /*1*/ completionHandler : jet.Any?) : Unit
     public open fun presentedItemDidChange() : Unit
@@ -1282,7 +1282,7 @@ public open class NSKeyedArchiver : objc.NSCoder {
     }
 }
 
-public trait NSKeyedArchiverDelegate {
+public trait NSKeyedArchiverDelegate : objc.NSObjectProtocol {
     public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
     public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?) : Unit
     public open fun archiver(/*0*/ archiver : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ newObject : jet.Any?) : Unit
@@ -1315,7 +1315,7 @@ public open class NSKeyedUnarchiver : objc.NSCoder {
     }
 }
 
-public trait NSKeyedUnarchiverDelegate {
+public trait NSKeyedUnarchiverDelegate : objc.NSObjectProtocol {
     public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ `object` : jet.Any?) : jet.Any?
     public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ name : jet.Any?, /*2*/ classNames : jet.Any?) : jet.Any?
     public open fun unarchiver(/*0*/ unarchiver : jet.Any?, /*1*/ `object` : jet.Any?, /*2*/ newObject : jet.Any?) : Unit
@@ -1391,7 +1391,7 @@ public open class NSMachPort : objc.NSPort {
     }
 }
 
-public trait NSMachPortDelegate {
+public trait NSMachPortDelegate : objc.NSPortDelegate {
     public open fun handleMachMessage(/*0*/ msg : jet.Any?) : Unit
 }
 
@@ -1474,7 +1474,7 @@ public open class NSMetadataQueryAttributeValueTuple : objc.NSObject {
     public open fun value() : jet.Any?
 }
 
-public trait NSMetadataQueryDelegate {
+public trait NSMetadataQueryDelegate : objc.NSObjectProtocol {
     public open fun metadataQuery(/*0*/ query : jet.Any?, /*1*/ result : jet.Any?) : jet.Any?
     public open fun metadataQuery(/*0*/ query : jet.Any?, /*1*/ attrName : jet.Any?, /*2*/ attrValue : jet.Any?) : jet.Any?
 }
@@ -1628,7 +1628,7 @@ public open class NSNetServiceBrowser : objc.NSObject {
     public open fun stop() : Unit
 }
 
-public trait NSNetServiceBrowserDelegate {
+public trait NSNetServiceBrowserDelegate : objc.NSObjectProtocol {
     public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ errorDict : jet.Any?) : Unit
     public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ domainString : jet.Any?, /*2*/ moreComing : jet.Any?) : Unit
     public open fun netServiceBrowser(/*0*/ aNetServiceBrowser : jet.Any?, /*1*/ aNetService : jet.Any?, /*2*/ moreComing : jet.Any?) : Unit
@@ -1638,7 +1638,7 @@ public trait NSNetServiceBrowserDelegate {
     public open fun netServiceBrowserWillSearch(/*0*/ aNetServiceBrowser : jet.Any?) : Unit
 }
 
-public trait NSNetServiceDelegate {
+public trait NSNetServiceDelegate : objc.NSObjectProtocol {
     public open fun netService(/*0*/ sender : jet.Any?, /*1*/ errorDict : jet.Any?) : Unit
     public open fun netService(/*0*/ sender : jet.Any?, /*1*/ errorDict : jet.Any?) : Unit
     public open fun netService(/*0*/ sender : jet.Any?, /*1*/ data : jet.Any?) : Unit
@@ -2034,7 +2034,7 @@ public open class NSPortCoder : objc.NSCoder {
     }
 }
 
-public trait NSPortDelegate {
+public trait NSPortDelegate : objc.NSObjectProtocol {
     public open fun handlePortMessage(/*0*/ message : jet.Any?) : Unit
 }
 
@@ -2443,7 +2443,7 @@ public open class NSSpellServer : objc.NSObject {
     public open fun setDelegate(/*0*/ anObject : jet.Any?) : Unit
 }
 
-public trait NSSpellServerDelegate {
+public trait NSSpellServerDelegate : objc.NSObjectProtocol {
     public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : jet.Any?
     public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : Unit
     public open fun spellServer(/*0*/ sender : jet.Any?, /*1*/ word : jet.Any?, /*2*/ language : jet.Any?) : Unit
@@ -2467,7 +2467,7 @@ public open class NSStream : objc.NSObject {
     public open fun streamStatus() : jet.Long
 }
 
-public trait NSStreamDelegate {
+public trait NSStreamDelegate : objc.NSObjectProtocol {
     public open fun stream(/*0*/ aStream : jet.Any?, /*1*/ eventCode : jet.Long) : Unit
 }
 
@@ -2631,7 +2631,7 @@ public open class NSURLAuthenticationChallenge : objc.NSObject {
     public open fun sender() : jet.Any?
 }
 
-public trait NSURLAuthenticationChallengeSender {
+public trait NSURLAuthenticationChallengeSender : objc.NSObjectProtocol {
     public open fun cancelAuthenticationChallenge(/*0*/ challenge : jet.Any?) : Unit
     public open fun continueWithoutCredentialForAuthenticationChallenge(/*0*/ challenge : jet.Any?) : Unit
     public open fun performDefaultHandlingForAuthenticationChallenge(/*0*/ challenge : jet.Any?) : Unit
@@ -2673,7 +2673,7 @@ public open class NSURLConnection : objc.NSObject {
     }
 }
 
-public trait NSURLConnectionDelegate {
+public trait NSURLConnectionDelegate : objc.NSObjectProtocol {
     public open fun connection(/*0*/ connection : jet.Any?, /*1*/ request : jet.Any?) : jet.Any?
     public open fun connection(/*0*/ connection : jet.Any?, /*1*/ protectionSpace : jet.Any?) : jet.Any?
     public open fun connection(/*0*/ connection : jet.Any?, /*1*/ challenge : jet.Any?) : Unit
@@ -2721,7 +2721,7 @@ public open class NSURLDownload : objc.NSObject {
     }
 }
 
-public trait NSURLDownloadDelegate {
+public trait NSURLDownloadDelegate : objc.NSObjectProtocol {
     public open fun download(/*0*/ connection : jet.Any?, /*1*/ protectionSpace : jet.Any?) : jet.Any?
     public open fun download(/*0*/ download : jet.Any?, /*1*/ challenge : jet.Any?) : Unit
     public open fun download(/*0*/ download : jet.Any?, /*1*/ challenge : jet.Any?) : Unit
@@ -2809,7 +2809,7 @@ public open class NSURLProtocol : objc.NSObject {
     }
 }
 
-public trait NSURLProtocolClient {
+public trait NSURLProtocolClient : objc.NSObjectProtocol {
     public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ cachedResponse : jet.Any?) : Unit
     public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ data : jet.Any?) : Unit
     public open fun URLProtocol(/*0*/ protocol : jet.Any?, /*1*/ error : jet.Any?) : Unit
@@ -3181,7 +3181,7 @@ public open class NSXMLParser : objc.NSObject {
     public open fun shouldResolveExternalEntities() : jet.Any?
 }
 
-public trait NSXMLParserDelegate {
+public trait NSXMLParserDelegate : objc.NSObjectProtocol {
     public open fun parser(/*0*/ parser : jet.Any?, /*1*/ prefix : jet.Any?) : Unit
     public open fun parser(/*0*/ parser : jet.Any?, /*1*/ string : jet.Any?) : Unit
     public open fun parser(/*0*/ parser : jet.Any?, /*1*/ whitespaceString : jet.Any?) : Unit

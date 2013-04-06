@@ -45,6 +45,7 @@ public class ObjCDescriptorResolver {
     private static final String PROTOCOL_NAME_SUFFIX = "Protocol";
 
     private final NamespaceDescriptorImpl namespace;
+    private final Map<String, Name> protocolNames = new HashMap<String, Name>();
 
     public ObjCDescriptorResolver(@NotNull NamespaceDescriptor rootNamespace) {
         namespace = new NamespaceDescriptorImpl(rootNamespace, Collections.<AnnotationDescriptor>emptyList(), OBJC_NAMESPACE_NAME);
@@ -107,23 +108,33 @@ public class ObjCDescriptorResolver {
     private ClassDescriptor resolveProtocol(@NotNull ObjCProtocol protocol) {
         Name name = nameForProtocol(protocol.getName());
 
-        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name,
-                                                                 Collections.<JetType>emptyList() /* TODO */);
+        List<JetType> supertypes = new ArrayList<JetType>(protocol.getBaseProtocolCount());
+        for (String baseProtocolName : protocol.getBaseProtocolList()) {
+            Name baseName = nameForProtocol(baseProtocolName);
+            JetType supertype = createDeferredSupertype(name, baseName);
+            supertypes.add(supertype);
+        }
+
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name, supertypes);
         processMethodsOfClassOrProtocol(protocol.getMethodList(), descriptor);
         return descriptor;
     }
 
     @NotNull
     private Name nameForProtocol(@NotNull String protocolName) {
-        Name name = Name.identifier(protocolName);
-        if (namespace.getMemberScope().getClassifier(name) == null) {
-            return name;
+        if (protocolNames.containsKey(protocolName)) {
+            return protocolNames.get(protocolName);
         }
 
-        // Since Objective-C classes and protocols exist in different namespaces and Kotlin classes and traits don't,
-        // we invent a new name here for the trait when a class with the same name exists already
-        // TODO: handle collisions (where both classes X and XProtocol and a protocol X exist)
-        name = Name.identifier(protocolName + PROTOCOL_NAME_SUFFIX);
+        Name name = Name.identifier(protocolName);
+        if (namespace.getMemberScope().getClassifier(name) != null) {
+            // Since Objective-C classes and protocols exist in different namespaces and Kotlin classes and traits don't,
+            // we invent a new name here for the trait when a class with the same name exists already
+            // TODO: handle collisions (where both classes X and XProtocol and a protocol X exist)
+            name = Name.identifier(protocolName + PROTOCOL_NAME_SUFFIX);
+        }
+
+        protocolNames.put(protocolName, name);
         return name;
     }
 
