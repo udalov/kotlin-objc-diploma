@@ -40,64 +40,62 @@ import static org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilder.Class
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.*;
 
 public class ObjCDescriptorResolver {
+    private static final Name OBJC_NAMESPACE_NAME = Name.identifier("objc");
+
     private static final String PROTOCOL_NAME_SUFFIX = "Protocol";
 
-    private final NamespaceDescriptor rootNamespace;
+    private final NamespaceDescriptorImpl namespace;
 
     public ObjCDescriptorResolver(@NotNull NamespaceDescriptor rootNamespace) {
-        this.rootNamespace = rootNamespace;
-    }
-
-    @NotNull
-    public NamespaceDescriptor resolveTranslationUnit(@NotNull TranslationUnit translationUnit) {
-        NamespaceDescriptorImpl namespace = new NamespaceDescriptorImpl(rootNamespace,
-                Collections.<AnnotationDescriptor>emptyList(), Name.identifier("objc"));
-        rootNamespace.addNamespace(namespace);
-
+        namespace = new NamespaceDescriptorImpl(rootNamespace, Collections.<AnnotationDescriptor>emptyList(), OBJC_NAMESPACE_NAME);
         WritableScope scope = new WritableScopeImpl(JetScope.EMPTY, namespace, RedeclarationHandler.THROW_EXCEPTION, "objc scope");
         scope.changeLockLevel(WritableScope.LockLevel.BOTH);
         namespace.initialize(scope);
 
+        rootNamespace.addNamespace(namespace);
+    }
+
+    @NotNull
+    public NamespaceDescriptor resolveTranslationUnit(@NotNull TranslationUnit translationUnit) {
+        WritableScope scope = namespace.getMemberScope();
+
         for (ObjCClass clazz : translationUnit.getClassList()) {
-            ClassDescriptor classDescriptor = resolveClass(clazz, namespace);
+            ClassDescriptor classDescriptor = resolveClass(clazz);
             scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
         }
 
         for (ObjCProtocol protocol : translationUnit.getProtocolList()) {
-            ClassDescriptor classDescriptor = resolveProtocol(protocol, namespace);
+            ClassDescriptor classDescriptor = resolveProtocol(protocol);
             scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
         }
+
         return namespace;
     }
 
     @NotNull
-    private ClassDescriptor resolveClass(@NotNull ObjCClass clazz, @NotNull NamespaceDescriptor containingNamespace) {
+    private ClassDescriptor resolveClass(@NotNull ObjCClass clazz) {
         Name name = Name.identifier(clazz.getName());
 
         Collection<JetType> supertypes;
         if (clazz.hasBaseClass()) {
-            JetType supertype = createDeferredSuperclass(name, Name.identifier(clazz.getBaseClass()), containingNamespace);
+            JetType supertype = createDeferredSupertype(name, Name.identifier(clazz.getBaseClass()));
             supertypes = Collections.singletonList(supertype);
         }
         else {
             supertypes = Collections.emptyList();
         }
 
-        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(containingNamespace, ClassKind.CLASS, Modality.OPEN, name, supertypes);
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name, supertypes);
         processMethodsOfClassOrProtocol(clazz.getMethodList(), descriptor);
         return descriptor;
     }
 
     @NotNull
-    private JetType createDeferredSuperclass(
-            @NotNull final Name className,
-            @NotNull final Name baseClassName,
-            @NotNull final NamespaceDescriptor containingNamespace
-    ) {
+    private JetType createDeferredSupertype(@NotNull final Name className, @NotNull final Name baseClassName) {
         return new ObjCDeferredType(new RecursionIntolerantLazyValue<JetType>() {
             @Override
             protected JetType compute() {
-                JetScope scope = containingNamespace.getMemberScope();
+                JetScope scope = namespace.getMemberScope();
                 ClassifierDescriptor classifier = scope.getClassifier(baseClassName);
                 assert classifier != null : "Super class is not resolved for class: " + className + ", base: " + baseClassName;
                 return classifier.getDefaultType();
@@ -106,19 +104,19 @@ public class ObjCDescriptorResolver {
     }
 
     @NotNull
-    private ClassDescriptor resolveProtocol(@NotNull ObjCProtocol protocol, @NotNull NamespaceDescriptor containingNamespace) {
-        Name name = nameForProtocol(protocol.getName(), containingNamespace);
+    private ClassDescriptor resolveProtocol(@NotNull ObjCProtocol protocol) {
+        Name name = nameForProtocol(protocol.getName());
 
-        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(containingNamespace, ClassKind.TRAIT, Modality.ABSTRACT, name,
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name,
                                                                  Collections.<JetType>emptyList() /* TODO */);
         processMethodsOfClassOrProtocol(protocol.getMethodList(), descriptor);
         return descriptor;
     }
 
     @NotNull
-    private Name nameForProtocol(@NotNull String protocolName, @NotNull NamespaceDescriptor containingNamespace) {
+    private Name nameForProtocol(@NotNull String protocolName) {
         Name name = Name.identifier(protocolName);
-        if (containingNamespace.getMemberScope().getClassifier(name) == null) {
+        if (namespace.getMemberScope().getClassifier(name) == null) {
             return name;
         }
 
