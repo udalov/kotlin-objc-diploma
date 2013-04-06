@@ -24,16 +24,17 @@ import org.jetbrains.asm4.commons.InstructionAdapter;
 import org.jetbrains.jet.codegen.signature.JvmMethodSignature;
 import org.jetbrains.jet.codegen.state.JetTypeMapper;
 import org.jetbrains.jet.codegen.state.JetTypeMapperMode;
-import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
-import org.jetbrains.jet.lang.descriptors.ClassKind;
-import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
-import org.jetbrains.jet.lang.descriptors.FunctionDescriptor;
+import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.resolve.java.JvmAbi;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
+import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.TypeProjection;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.jetbrains.asm4.Opcodes.*;
 import static org.jetbrains.jet.codegen.AsmUtil.genInitSingletonField;
@@ -51,6 +52,7 @@ public class ObjCClassCodegen {
 
     private final ClassWriter cw;
     private final Type asmType;
+    private final boolean isClassObject;
 
     public ObjCClassCodegen(@NotNull JetTypeMapper typeMapper, @NotNull ClassDescriptor descriptor, @NotNull File dylib) {
         this.typeMapper = typeMapper;
@@ -59,6 +61,7 @@ public class ObjCClassCodegen {
 
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         asmType = typeMapper.mapType(descriptor.getDefaultType(), JetTypeMapperMode.IMPL);
+        isClassObject = descriptor.getKind() == ClassKind.CLASS_OBJECT;
     }
 
     private interface MethodCodegen {
@@ -75,11 +78,19 @@ public class ObjCClassCodegen {
 
     @NotNull
     public byte[] generateClass() {
-        cw.visit(V1_6, ACC_PUBLIC | ACC_SUPER, asmType.getInternalName(), null, JL_OBJECT_TYPE.getInternalName(), new String[0]);
+        SuperClassInfo superClassInfo = getSuperClassInfo();
+
+        cw.visit(V1_6,
+                 ACC_PUBLIC | ACC_SUPER,
+                 asmType.getInternalName(),
+                 null,
+                 superClassInfo.superClassName,
+                 superClassInfo.superInterfacesNames
+        );
 
         cw.visitSource(null, null);
 
-        if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
+        if (isClassObject) {
             cw.visitField(ACC_PUBLIC | ACC_STATIC | ACC_FINAL, JvmAbi.INSTANCE_FIELD, asmType.getDescriptor(), null, null);
         }
 
@@ -91,7 +102,7 @@ public class ObjCClassCodegen {
         for (DeclarationDescriptor member : scope.getAllDescriptors()) {
             if (member instanceof FunctionDescriptor) {
                 // TODO: other kinds
-                if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
+                if (isClassObject) {
                     generateClassObjectMethod((FunctionDescriptor) member);
                 }
             }
@@ -102,11 +113,54 @@ public class ObjCClassCodegen {
         return cw.toByteArray();
     }
 
+    private static class SuperClassInfo {
+        private final String superClassName;
+        private final String[] superInterfacesNames;
+
+        private SuperClassInfo(@NotNull String superClassName, @NotNull List<String> superInterfacesNames) {
+            this.superClassName = superClassName;
+            this.superInterfacesNames = superInterfacesNames.toArray(new String[superInterfacesNames.size()]);
+        }
+    }
+
+    @NotNull
+    private SuperClassInfo getSuperClassInfo() {
+        Collection<JetType> supertypes = descriptor.getTypeConstructor().getSupertypes();
+
+        String superClassName = null;
+        List<String> superInterfacesNames = new ArrayList<String>(supertypes.size());
+        for (JetType supertype : supertypes) {
+            ClassifierDescriptor superDescriptor = supertype.getConstructor().getDeclarationDescriptor();
+            assert superDescriptor instanceof ClassDescriptor : "Supertype is not a class for Obj-C descriptor: " + descriptor;
+
+            Type type = typeMapper.mapType(superDescriptor.getDefaultType(), JetTypeMapperMode.IMPL);
+
+            ClassDescriptor classDescriptor = (ClassDescriptor) superDescriptor;
+            if (classDescriptor.getKind() == ClassKind.CLASS) {
+                assert superClassName == null : "Duplicate superclass for Obj-C descriptor: "
+                                                + descriptor + " " + superClassName + " " + type;
+                superClassName = type.getInternalName();
+            }
+            else if (classDescriptor.getKind() == ClassKind.TRAIT) {
+                superInterfacesNames.add(type.getInternalName());
+            }
+            else {
+                assert false : "Unknown kind for Obj-C superclass: " + descriptor + " " + classDescriptor;
+            }
+        }
+
+        if (superClassName == null) {
+            superClassName = JL_OBJECT_TYPE.getInternalName();
+        }
+
+        return new SuperClassInfo(superClassName, superInterfacesNames);
+    }
+
     private void generateStaticInitializer() {
         newMethod(ACC_PUBLIC | ACC_STATIC, "<clinit>", "()V", new MethodCodegen() {
             @Override
             public void generate(@NotNull InstructionAdapter v) {
-                if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
+                if (isClassObject) {
                     genInitSingletonField(asmType, v);
                 }
                 v.visitLdcInsn(dylib + "");
