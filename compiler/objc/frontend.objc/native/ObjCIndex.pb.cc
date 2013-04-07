@@ -289,7 +289,8 @@ void protobuf_AddDesc_ObjCIndex_2eproto() {
     "operty\030\005 \003(\0132\r.ObjCProperty\"n\n\017Translati"
     "onUnit\022\031\n\005class\030\001 \003(\0132\n.ObjCClass\022\037\n\010pro"
     "tocol\030\002 \003(\0132\r.ObjCProtocol\022\037\n\010category\030\003"
-    " \003(\0132\r.ObjCCategory", 819);
+    " \003(\0132\r.ObjCCategoryB%\n#org.jetbrains.jet"
+    ".lang.resolve.objc", 858);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ObjCIndex.proto", &protobuf_RegisterTypes);
   Function::default_instance_ = new Function();
