@@ -18,12 +18,17 @@ package org.jetbrains.jet.lang.resolve;
 
 import com.google.common.collect.Lists;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.psi.*;
 import org.jetbrains.jet.lang.resolve.calls.autocasts.DataFlowInfo;
+import org.jetbrains.jet.lang.resolve.calls.context.ResolutionContext;
+import org.jetbrains.jet.lang.resolve.calls.context.ResolutionResultsCache;
+import org.jetbrains.jet.lang.resolve.calls.model.ResolvedCall;
+import org.jetbrains.jet.lang.resolve.calls.model.VariableAsFunctionResolvedCall;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.JetTypeInfo;
@@ -122,7 +127,9 @@ public class BindingContextUtils {
         PsiElement declaration = descriptorToDeclaration(context, descriptor);
         if (declaration == null) return null;
 
-        return (JetFile) declaration.getContainingFile();
+        PsiFile containingFile = declaration.getContainingFile();
+        if (!(containingFile instanceof JetFile)) return null;
+        return (JetFile) containingFile;
     }
 
     // TODO these helper methods are added as a workaround to some compiler bugs in Kotlin...
@@ -170,7 +177,8 @@ public class BindingContextUtils {
     @Nullable
     public static PsiElement callableDescriptorToDeclaration(@NotNull BindingContext context, @NotNull CallableMemberDescriptor callable) {
         if (callable.getKind() == CallableMemberDescriptor.Kind.SYNTHESIZED) {
-            return null;
+            DeclarationDescriptor source = context.get(BindingContext.SOURCE_DESCRIPTOR_FOR_SYNTHESIZED, callable);
+            return source != null ? descriptorToDeclaration(context, source) : null;
         }
 
         if (callable.getKind() == CallableMemberDescriptor.Kind.DECLARATION) {
@@ -189,7 +197,8 @@ public class BindingContextUtils {
     @NotNull
     private static List<PsiElement> callableDescriptorToDeclarations(@NotNull BindingContext context, @NotNull CallableMemberDescriptor callable) {
         if (callable.getKind() == CallableMemberDescriptor.Kind.SYNTHESIZED) {
-            return Collections.emptyList();
+            DeclarationDescriptor source = context.get(BindingContext.SOURCE_DESCRIPTOR_FOR_SYNTHESIZED, callable);
+            return source != null ? descriptorToDeclarations(context, source) : Collections.<PsiElement>emptyList();
         }
 
         if (callable.getKind() == CallableMemberDescriptor.Kind.DECLARATION) {
@@ -271,17 +280,6 @@ public class BindingContextUtils {
         trace.report(AMBIGUOUS_LABEL.on(targetLabel));
     }
 
-    public static void commitResolutionCacheData(@NotNull DelegatingBindingTrace trace, @NotNull BindingTrace traceForResolutionCache) {
-        trace.addAllMyDataTo(traceForResolutionCache, new TraceEntryFilter() {
-            @Override
-            public boolean accept(@NotNull WritableSlice<?, ?> slice, Object key) {
-                return slice == BindingContext.RESOLUTION_RESULTS_FOR_FUNCTION ||
-                       slice == BindingContext.RESOLUTION_RESULTS_FOR_PROPERTY ||
-                       slice == BindingContext.TRACE_DELTAS_CACHE;
-            }
-        }, false);
-    }
-
     public static void recordExpressionType(
             @NotNull JetExpression expression, @NotNull BindingTrace trace,
             @NotNull JetScope resolutionScope, @NotNull JetTypeInfo result
@@ -294,7 +292,7 @@ public class BindingContextUtils {
         if (result.getDataFlowInfo() != DataFlowInfo.EMPTY) {
             trace.record(BindingContext.EXPRESSION_DATA_FLOW_INFO, expression, result.getDataFlowInfo());
         }
-        if (!(expression instanceof JetReferenceExpression)) {
+        if (!isExpressionWithValidReference(expression, trace.getBindingContext())) {
             trace.record(BindingContext.RESOLUTION_SCOPE, expression, resolutionScope);
         }
     }
@@ -308,5 +306,30 @@ public class BindingContextUtils {
         }
         JetType type = context.get(BindingContext.EXPRESSION_TYPE, expression);
         return JetTypeInfo.create(type, dataFlowInfo);
+    }
+
+    public static boolean isExpressionWithValidReference(
+            @NotNull JetExpression expression,
+            @NotNull BindingContext context
+    ) {
+        if (expression instanceof JetCallExpression) {
+            return isCallExpressionWithValidReference(expression, context);
+        }
+
+        return expression instanceof JetReferenceExpression;
+    }
+
+    public static boolean isCallExpressionWithValidReference(
+            @NotNull JetExpression expression,
+            @NotNull BindingContext context
+    ) {
+        if (expression instanceof JetCallExpression) {
+            JetExpression calleeExpression = ((JetCallExpression) expression).getCalleeExpression();
+            ResolvedCall<? extends CallableDescriptor> resolvedCall = context.get(BindingContext.RESOLVED_CALL, calleeExpression);
+            if (resolvedCall instanceof VariableAsFunctionResolvedCall) {
+                return true;
+            }
+        }
+        return false;
     }
 }

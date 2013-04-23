@@ -151,11 +151,6 @@ public class JetVisitorVoid extends PsiElementVisitor {
         visitExpression(expression);
     }
 
-    @Deprecated // Tuples are to be removed in Kotlin M4
-    public void visitTupleExpression(JetTupleExpression expression) {
-        visitExpression(expression);
-    }
-
     public void visitPrefixExpression(JetPrefixExpression expression) {
         visitUnaryExpression(expression);
     }
@@ -229,7 +224,7 @@ public class JetVisitorVoid extends PsiElementVisitor {
     }
 
     public void visitCallExpression(JetCallExpression expression) {
-        visitExpression(expression);
+        visitReferenceExpression(expression);
     }
 
     public void visitArrayAccessExpression(JetArrayAccessExpression expression) {
@@ -240,8 +235,8 @@ public class JetVisitorVoid extends PsiElementVisitor {
         visitExpression(expression);
     }
 
-    public void visitHashQualifiedExpression(JetHashQualifiedExpression expression) {
-        visitQualifiedExpression(expression);
+    public void visitCallableReferenceExpression(JetCallableReferenceExpression expression) {
+        visitExpression(expression);
     }
 
     public void visitDotQualifiedExpression(JetDotQualifiedExpression expression) {
@@ -316,11 +311,6 @@ public class JetVisitorVoid extends PsiElementVisitor {
     }
 
     public void visitUserType(JetUserType type) {
-        visitTypeElement(type);
-    }
-
-    @Deprecated // Tuples are to be removed in Kotlin M4
-    public void visitTupleType(JetTupleType type) {
         visitTypeElement(type);
     }
 

@@ -16,71 +16,67 @@
 
 package org.jetbrains.jet.plugin.caches.resolve;
 
-import com.google.common.base.Predicates;
+import com.google.common.collect.Maps;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.CachedValue;
-import com.intellij.psi.util.CachedValueProvider;
-import com.intellij.psi.util.CachedValuesManager;
-import com.intellij.psi.util.PsiModificationTracker;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.jet.analyzer.AnalyzeExhaust;
-import org.jetbrains.jet.lang.resolve.AnalyzerScriptParameter;
-import org.jetbrains.jet.lang.resolve.java.AnalyzerFacadeForJVM;
-import org.jetbrains.jet.lang.resolve.java.JetFilesProvider;
+import org.jetbrains.jet.plugin.project.TargetPlatform;
 
-import java.util.Collections;
+import java.util.Map;
 
 public class KotlinCacheManager {
-
     public static KotlinCacheManager getInstance(@NotNull Project project) {
         return ServiceManager.getService(project, KotlinCacheManager.class);
     }
 
-    private final Key<CachedValue<KotlinDeclarationsCache>> KOTLIN_DECLARATIONS_CACHE = Key.create("KOTLIN_DECLARATIONS_CACHE");
-
-    private final Project project;
-    private final Object declarationAnalysisLock = new Object();
-
+    private final Map<TargetPlatform, DeclarationsCacheProvider> cacheProviders = Maps.newHashMap();
 
     public KotlinCacheManager(@NotNull Project project) {
-        this.project = project;
+        cacheProviders.put(TargetPlatform.JVM, new JvmDeclarationsCacheProvider(project));
+        cacheProviders.put(TargetPlatform.JS, new JSDeclarationsCacheProvider(project));
+    }
+
+    /**
+     * Should be called under read lock.
+     */
+    @NotNull
+    public KotlinDeclarationsCache getDeclarationsFromProject(@NotNull TargetPlatform platform) {
+        // Computing declarations should be performed under read lock
+        ApplicationManager.getApplication().assertReadAccessAllowed();
+        return getRegisteredProvider(platform).getDeclarations(false);
     }
 
     @NotNull
-    public KotlinDeclarationsCache getDeclarationsFromProject() {
-        // To prevent dead locks, the lock below must be obtained only inside a read action
+    public KotlinDeclarationsCache getPossiblyIncompleteDeclarationsForLightClassGeneration() {
+        // Computing declarations should be performed under read lock
         ApplicationManager.getApplication().assertReadAccessAllowed();
-        synchronized (declarationAnalysisLock) {
-            return CachedValuesManager.getManager(project).getCachedValue(
-                    project,
-                    KOTLIN_DECLARATIONS_CACHE,
-                    new KotlinDeclarationsCacheProvider(),
-                    false
-            );
-        }
+
+        /*
+         * If we have the following classes
+         *
+         *     class A // Kotlin
+         *     class B extends A {} // Java
+         *     class C : B() // Kotlin
+         *
+         *  The analysis runs into infinite recursion, because
+         *      C needs all members of B (to compute overrides),
+         *      and B needs all members of A,
+         *      and A is not available from KotlinCacheManager.getDeclarationsFromProject() -- it is being computed right now,
+         *      so the analysis runs again...
+         *
+         *  Our workaround is to return partially complete results when we generate light classes
+         */
+        return getRegisteredProvider(TargetPlatform.JVM).getDeclarations(true);
     }
 
-    private class KotlinDeclarationsCacheProvider implements CachedValueProvider<KotlinDeclarationsCache> {
-        @Nullable
-        @Override
-        public Result<KotlinDeclarationsCache> compute() {
-            AnalyzeExhaust analyzeExhaust = AnalyzerFacadeForJVM.INSTANCE.analyzeFiles(
-                    project,
-                    JetFilesProvider.getInstance(project).allInScope(GlobalSearchScope.allScope(project)),
-                    Collections.<AnalyzerScriptParameter>emptyList(),
-                    Predicates.<PsiFile>alwaysFalse()
-            );
-            return Result.<KotlinDeclarationsCache>create(
-                    new AnalyzeExhaustAsKotlinDeclarationsCache(analyzeExhaust),
-                    PsiModificationTracker.OUT_OF_CODE_BLOCK_MODIFICATION_COUNT
-            );
+    @NotNull
+    private DeclarationsCacheProvider getRegisteredProvider(TargetPlatform platform) {
+        DeclarationsCacheProvider provider = cacheProviders.get(platform);
+        if (provider == null) {
+            throw new IllegalStateException("Provider isn't registered for platform: " + platform);
         }
 
+        return provider;
     }
 }

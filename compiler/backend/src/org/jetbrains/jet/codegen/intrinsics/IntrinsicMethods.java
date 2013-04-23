@@ -19,7 +19,9 @@ package org.jetbrains.jet.codegen.intrinsics;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.jet.lang.descriptors.*;
+import org.jetbrains.jet.lang.descriptors.CallableMemberDescriptor;
+import org.jetbrains.jet.lang.descriptors.ClassifierDescriptor;
+import org.jetbrains.jet.lang.descriptors.SimpleFunctionDescriptor;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.resolve.java.JvmPrimitiveType;
 import org.jetbrains.jet.lang.resolve.name.FqName;
@@ -35,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.jetbrains.asm4.Opcodes.*;
-import static org.jetbrains.jet.lang.resolve.DescriptorUtils.getClassObjectName;
+import static org.jetbrains.jet.lang.resolve.DescriptorUtils.*;
 
 public class IntrinsicMethods {
     private static final IntrinsicMethod UNARY_MINUS = new UnaryMinus();
@@ -145,15 +147,10 @@ public class IntrinsicMethods {
         declareIntrinsicProperty(Name.identifier("CharSequence"), Name.identifier("length"), new StringLength());
         declareIntrinsicProperty(Name.identifier("String"), Name.identifier("length"), new StringLength());
 
-        Name tuple0Name = KotlinBuiltIns.getInstance().getTuple(0).getName();
-        intrinsicsMap.registerIntrinsic(
-                getClassObjectFqName(tuple0Name),
-                Name.identifier("VALUE"), -1, new UnitValue());
+        registerStaticField(getFQName(KotlinBuiltIns.getInstance().getUnit()).toSafe(), Name.identifier("VALUE"));
 
         for (PrimitiveType type : PrimitiveType.NUMBER_TYPES) {
-            intrinsicsMap.registerIntrinsic(
-                    getClassObjectFqName(type.getRangeTypeName()),
-                    Name.identifier("EMPTY"), -1, new EmptyRange(type));
+            registerStaticField(type.getRangeClassName(), Name.identifier("EMPTY"));
         }
 
         for (PrimitiveType type : PrimitiveType.NUMBER_TYPES) {
@@ -168,13 +165,13 @@ public class IntrinsicMethods {
         declareArrayMethods();
     }
 
-    private void registerRangeOrProgressionProperty(@NotNull FqName ownerClass, @NotNull Name propertyName) {
-        intrinsicsMap.registerIntrinsic(ownerClass, propertyName, -1, new PropertyOfProgressionOrRange(ownerClass, propertyName));
+    private void registerStaticField(@NotNull FqName classFqName, @NotNull Name propertyName) {
+        FqNameUnsafe classObjectFqName = classFqName.toUnsafe().child(getClassObjectName(classFqName.shortName()));
+        intrinsicsMap.registerIntrinsic(classObjectFqName, propertyName, -1, new StaticField(classFqName, propertyName));
     }
 
-    @NotNull
-    private static FqNameUnsafe getClassObjectFqName(@NotNull Name builtinClassName) {
-        return KotlinBuiltIns.getInstance().getBuiltInsPackageFqName().child(builtinClassName).toUnsafe().child(getClassObjectName(builtinClassName));
+    private void registerRangeOrProgressionProperty(@NotNull FqName ownerClass, @NotNull Name propertyName) {
+        intrinsicsMap.registerIntrinsic(ownerClass, propertyName, -1, new PropertyOfProgressionOrRange(ownerClass, propertyName));
     }
 
     private void declareArrayMethods() {
@@ -229,10 +226,11 @@ public class IntrinsicMethods {
             SimpleFunctionDescriptor functionDescriptor = (SimpleFunctionDescriptor) descriptor;
 
             if (isEnumClassObject(functionDescriptor.getContainingDeclaration())) {
-                if ("values".equals(functionDescriptor.getName().getName())) {
+                if (isEnumValuesMethod(functionDescriptor)) {
                     return ENUM_VALUES;
                 }
-                if ("valueOf".equals(functionDescriptor.getName().getName())) {
+
+                if (isEnumValueOfMethod(functionDescriptor)) {
                     return ENUM_VALUE_OF;
                 }
             }
@@ -253,21 +251,5 @@ public class IntrinsicMethods {
             }
         }
         return intrinsicMethod;
-    }
-
-    private static boolean isEnumClassObject(DeclarationDescriptor declaration) {
-        if (declaration instanceof ClassDescriptor) {
-            ClassDescriptor descriptor = (ClassDescriptor) declaration;
-            if (descriptor.getContainingDeclaration() instanceof ClassDescriptor) {
-                ClassDescriptor containingDeclaration = (ClassDescriptor) descriptor.getContainingDeclaration();
-                //noinspection ConstantConditions
-                if (containingDeclaration != null &&
-                    containingDeclaration.getClassObjectDescriptor() != null &&
-                    containingDeclaration.getClassObjectDescriptor().equals(descriptor)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

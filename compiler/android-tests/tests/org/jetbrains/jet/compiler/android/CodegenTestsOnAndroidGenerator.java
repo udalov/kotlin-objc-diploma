@@ -133,7 +133,7 @@ public class CodegenTestsOnAndroidGenerator extends UsefulTestCase {
                     String generatedTestName = generateTestName(file.getName());
                     String packageName = file.getPath().replaceAll("\\\\|-|\\.|/", "_");
                     text = changePackage(packageName, text);
-                    final ClassFileFactory factory;
+                    ClassFileFactory factory;
                     if (filesCompiledWithoutStdLib.contains(file.getName())) {
                         factory = getFactoryFromText(file.getAbsolutePath(), text, environmentWithMockJdk);
                     }
@@ -155,7 +155,7 @@ public class CodegenTestsOnAndroidGenerator extends UsefulTestCase {
     }
 
     private static ClassFileFactory getFactoryFromText(String filePath, String text, JetCoreEnvironment jetEnvironment) {
-        JetFile psiFile = JetPsiFactory.createFile(jetEnvironment.getProject(), text);
+        JetFile psiFile = JetTestUtils.createFile("dummy.jet", text, jetEnvironment.getProject());
         ClassFileFactory factory;
         try {
             factory = GenerationUtils.compileFileGetClassFileFactoryForTest(psiFile);

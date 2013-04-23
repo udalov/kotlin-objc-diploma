@@ -43,7 +43,7 @@ public class ExpressionTypingVisitorDispatcher extends JetVisitor<JetTypeInfo, E
     }
 
     @NotNull
-    public static ExpressionTypingInternals createForBlock(final WritableScope writableScope) {
+    public static ExpressionTypingInternals createForBlock(WritableScope writableScope) {
         return new ExpressionTypingVisitorDispatcher(writableScope);
     }
 
@@ -85,6 +85,7 @@ public class ExpressionTypingVisitorDispatcher extends JetVisitor<JetTypeInfo, E
         return getTypeInfo(expression, context, this);
     }
 
+    @Override
     @NotNull
     public final JetTypeInfo getTypeInfo(@NotNull JetExpression expression, ExpressionTypingContext context, boolean isStatement) {
         if (!isStatement) return getTypeInfo(expression, context);
@@ -131,7 +132,7 @@ public class ExpressionTypingVisitorDispatcher extends JetVisitor<JetTypeInfo, E
             result = JetTypeInfo.create(null, context.dataFlowInfo);
         }
 
-        if (!context.trace.get(BindingContext.PROCESSED, expression) && !(expression instanceof JetReferenceExpression)) {
+        if (!context.trace.get(BindingContext.PROCESSED, expression) && !BindingContextUtils.isExpressionWithValidReference(expression, context.trace.getBindingContext())) {
             context.trace.record(BindingContext.RESOLUTION_SCOPE, expression, context.scope);
         }
         context.trace.record(BindingContext.PROCESSED, expression);

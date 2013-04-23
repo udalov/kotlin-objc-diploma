@@ -19,12 +19,16 @@ package org.jetbrains.jet.plugin.libraries;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.ProjectFileIndex;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -32,19 +36,29 @@ import com.intellij.psi.search.GlobalSearchScopes;
 import com.intellij.psi.stubs.StringStubIndexExtension;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
+import gnu.trove.THashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
+import org.jetbrains.asm4.Type;
+import org.jetbrains.jet.asJava.LightClassUtil;
+import org.jetbrains.jet.codegen.AsmUtil;
+import org.jetbrains.jet.codegen.binding.PsiCodegenPredictor;
 import org.jetbrains.jet.lang.DefaultModuleConfiguration;
+import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
 import org.jetbrains.jet.lang.descriptors.CallableDescriptor;
-import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
+import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.psi.*;
-import org.jetbrains.jet.lang.resolve.lazy.declarations.FileBasedDeclarationProviderFactory;
+import org.jetbrains.jet.lang.resolve.java.JvmClassName;
+import org.jetbrains.jet.lang.resolve.java.KotlinToJavaTypesMap;
 import org.jetbrains.jet.lang.resolve.lazy.KotlinCodeAnalyzer;
-import org.jetbrains.jet.lang.resolve.lazy.storage.LockBasedStorageManager;
 import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
+import org.jetbrains.jet.lang.resolve.lazy.declarations.FileBasedDeclarationProviderFactory;
+import org.jetbrains.jet.lang.resolve.lazy.storage.LockBasedStorageManager;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.Name;
+import org.jetbrains.jet.lang.types.TypeUtils;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 import org.jetbrains.jet.lexer.JetTokens;
 import org.jetbrains.jet.plugin.stubindex.JetFullClassNameIndex;
@@ -208,11 +222,14 @@ public class JetSourceNavigationHelper {
                         return KotlinBuiltIns.BUILT_INS_PACKAGE_FQ_NAME.equals(fqName);
                     }
                 });
+        ModuleDescriptorImpl moduleDescriptor = new ModuleDescriptorImpl(Name.special("<library module>"),
+                                                                         DefaultModuleConfiguration.DEFAULT_JET_IMPORTS,
+                                                                         PlatformToKotlinClassMap.EMPTY);
+        moduleDescriptor.setModuleConfiguration(DefaultModuleConfiguration.INSTANCE);
         KotlinCodeAnalyzer analyzer = new ResolveSession(
                 project,
                 storageManager,
-                new ModuleDescriptor(Name.special("<library module>")),
-                DefaultModuleConfiguration.createStandardConfiguration(),
+                moduleDescriptor,
                 providerFactory);
 
         for (JetNamedDeclaration candidate : candidates) {
@@ -326,5 +343,81 @@ public class JetSourceNavigationHelper {
     @TestOnly
     static void setForceResolve(boolean forceResolve) {
         JetSourceNavigationHelper.forceResolve = forceResolve;
+    }
+
+    @Nullable
+    public static PsiClass getOriginalPsiClassOrCreateLightClass(@NotNull JetClassOrObject classOrObject) {
+        if (LightClassUtil.belongsToKotlinBuiltIns((JetFile) classOrObject.getContainingFile())) {
+            Name className = classOrObject.getNameAsName();
+            assert className != null : "Class from BuiltIns should have a name";
+            ClassDescriptor classDescriptor = KotlinBuiltIns.getInstance().getBuiltInClassByName(className);
+            Type javaAnalog = KotlinToJavaTypesMap.getInstance().getJavaAnalog(classDescriptor.getDefaultType());
+            if (javaAnalog != null) {
+                if (AsmUtil.isPrimitive(javaAnalog)) {
+                    javaAnalog = KotlinToJavaTypesMap.getInstance().getJavaAnalog(TypeUtils.makeNullable(classDescriptor.getDefaultType()));
+                    assert javaAnalog != null : "Java analog should exists for primitive nullable type";
+                }
+                if (javaAnalog.getSort() != Type.OBJECT) {
+                    return null;
+                }
+                String fqName = JvmClassName.byType(javaAnalog).getFqName().getFqName();
+                return JavaPsiFacade.getInstance(classOrObject.getProject()).
+                        findClass(fqName, GlobalSearchScope.allScope(classOrObject.getProject()));
+            }
+        }
+        if (!JetPsiUtil.isLocalClass(classOrObject)) {
+            return LightClassUtil.getPsiClass(classOrObject);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static PsiClass getOriginalClass(@NotNull JetClassOrObject classOrObject) {
+        // Copied from JavaPsiImplementationHelperImpl:getOriginalClass()
+        JvmClassName className = PsiCodegenPredictor.getPredefinedJvmClassName(classOrObject);
+        if (className == null) {
+            return null;
+        }
+        String fqName = className.getFqName().getFqName();
+
+        JetFile file = (JetFile) classOrObject.getContainingFile();
+
+        VirtualFile vFile = file.getVirtualFile();
+        Project project = file.getProject();
+
+        final ProjectFileIndex idx = ProjectRootManager.getInstance(project).getFileIndex();
+
+        if (vFile == null || !idx.isInLibrarySource(vFile)) return null;
+        final Set<OrderEntry> orderEntries = new THashSet<OrderEntry>(idx.getOrderEntriesForFile(vFile));
+
+        PsiClass original = JavaPsiFacade.getInstance(project).findClass(fqName, new GlobalSearchScope(project) {
+            @Override
+            public int compare(VirtualFile file1, VirtualFile file2) {
+                return 0;
+            }
+
+            @Override
+            public boolean contains(VirtualFile file) {
+                List<OrderEntry> entries = idx.getOrderEntriesForFile(file);
+                //noinspection ForLoopReplaceableByForEach
+                for (int i = 0; i < entries.size(); i++) {
+                    final OrderEntry entry = entries.get(i);
+                    if (orderEntries.contains(entry)) return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean isSearchInModuleContent(@NotNull Module aModule) {
+                return false;
+            }
+
+            @Override
+            public boolean isSearchInLibraries() {
+                return true;
+            }
+        });
+
+        return original;
     }
 }

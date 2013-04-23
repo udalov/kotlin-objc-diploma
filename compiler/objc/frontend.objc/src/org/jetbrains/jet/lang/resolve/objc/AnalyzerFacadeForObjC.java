@@ -23,8 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.analyzer.AnalyzeExhaust;
 import org.jetbrains.jet.analyzer.AnalyzerFacade;
 import org.jetbrains.jet.di.InjectorForTopDownAnalyzerForObjC;
-import org.jetbrains.jet.lang.ModuleConfiguration;
+import org.jetbrains.jet.lang.DefaultModuleConfiguration;
+import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
 import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.resolve.*;
 import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
@@ -45,7 +47,11 @@ public enum AnalyzerFacadeForObjC implements AnalyzerFacade {
             @NotNull List<AnalyzerScriptParameter> scriptParameters,
             @NotNull Predicate<PsiFile> filesToAnalyzeCompletely
     ) {
-        ModuleDescriptor owner = new ModuleDescriptor(Name.special("<module>"));
+        ModuleDescriptorImpl owner = new ModuleDescriptorImpl(
+                Name.special("<module>"),
+                DefaultModuleConfiguration.DEFAULT_JET_IMPORTS,
+                PlatformToKotlinClassMap.EMPTY
+        );
 
         TopDownAnalysisParameters topDownAnalysisParameters = new TopDownAnalysisParameters(
                 filesToAnalyzeCompletely, false, false, scriptParameters
@@ -56,10 +62,11 @@ public enum AnalyzerFacadeForObjC implements AnalyzerFacade {
         InjectorForTopDownAnalyzerForObjC injector = new InjectorForTopDownAnalyzerForObjC(
                 project, topDownAnalysisParameters,
                 new ObservableBindingTrace(trace), owner);
+        owner.setModuleConfiguration(injector.getObjCModuleConfiguration());
 
         try {
             injector.getTopDownAnalyzer().analyzeFiles(files, scriptParameters);
-            return AnalyzeExhaust.success(trace.getBindingContext(), null, injector.getModuleConfiguration());
+            return AnalyzeExhaust.success(trace.getBindingContext(), null, owner);
         } finally {
             injector.destroy();
         }
@@ -73,7 +80,7 @@ public enum AnalyzerFacadeForObjC implements AnalyzerFacade {
             @NotNull Predicate<PsiFile> filesForBodiesResolve,
             @NotNull BindingTrace traceContext,
             @NotNull BodiesResolveContext bodiesResolveContext,
-            @NotNull ModuleConfiguration configuration
+            @NotNull ModuleDescriptor moduleDescriptor
     ) {
         throw new UnsupportedOperationException();
     }

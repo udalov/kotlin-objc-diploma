@@ -70,7 +70,7 @@ public class AlternativeMethodSignatureData extends ElementAlternativeSignatureD
         Project project = method.getPsiMethod().getProject();
         altFunDeclaration = JetPsiFactory.createFunction(project, signature);
 
-        originalToAltTypeParameters = SignaturesUtil.recreateTypeParametersAndReturnMapping(methodTypeParameters);
+        originalToAltTypeParameters = SignaturesUtil.recreateTypeParametersAndReturnMapping(methodTypeParameters, null);
 
         try {
             checkForSyntaxErrors(altFunDeclaration);
@@ -97,7 +97,7 @@ public class AlternativeMethodSignatureData extends ElementAlternativeSignatureD
             @NotNull List<TypeParameterDescriptor> methodTypeParameters,
             @Nullable JetType returnType
     ) {
-        TypeSubstitutor substitutor = SignaturesUtil.createSubstitutorForFunctionTypeParameters(originalToAltTypeParameters);
+        TypeSubstitutor substitutor = SignaturesUtil.createSubstitutorForTypeParameters(originalToAltTypeParameters);
 
         for (ValueParameterDescriptor parameter : valueParameterDescriptors.getDescriptors()) {
             int index = parameter.getIndex();
@@ -201,7 +201,6 @@ public class AlternativeMethodSignatureData extends ElementAlternativeSignatureD
                     originalParameterDescriptor.getIndex(),
                     originalParameterDescriptor.getAnnotations(),
                     originalParameterDescriptor.getName(),
-                    originalParameterDescriptor.isVar(),
                     alternativeType,
                     originalParameterDescriptor.declaresDefaultValue(),
                     alternativeVarargElementType));

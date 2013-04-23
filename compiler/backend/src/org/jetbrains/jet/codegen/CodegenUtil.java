@@ -16,9 +16,7 @@
 
 package org.jetbrains.jet.codegen;
 
-import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.util.Condition;
-import com.intellij.psi.PsiElement;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.Stack;
 import org.jetbrains.annotations.NotNull;
@@ -37,11 +35,8 @@ import org.jetbrains.jet.lang.psi.JetClassObject;
 import org.jetbrains.jet.lang.psi.JetClassOrObject;
 import org.jetbrains.jet.lang.psi.JetObjectDeclaration;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
-import org.jetbrains.jet.lang.resolve.java.JvmAbi;
-import org.jetbrains.jet.lang.resolve.java.JvmClassName;
 import org.jetbrains.jet.lang.resolve.java.JvmStdlibNames;
 import org.jetbrains.jet.lang.resolve.name.Name;
-import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.TypeUtils;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
@@ -60,7 +55,7 @@ public class CodegenUtil {
 
     public static boolean isInterface(DeclarationDescriptor descriptor) {
         if (descriptor instanceof ClassDescriptor) {
-            final ClassKind kind = ((ClassDescriptor) descriptor).getKind();
+            ClassKind kind = ((ClassDescriptor) descriptor).getKind();
             return kind == ClassKind.TRAIT || kind == ClassKind.ANNOTATION_CLASS;
         }
         return false;
@@ -116,22 +111,14 @@ public class CodegenUtil {
         else if (visibility == Visibilities.PRIVATE) {
             return JvmStdlibNames.FLAG_PRIVATE_BIT;
         }
+        else if (visibility == Visibilities.PROTECTED) {
+            return JvmStdlibNames.FLAG_PROTECTED_BIT;
+        }
         return 0;
     }
 
     public static int getFlagsForClassKind(@NotNull ClassDescriptor descriptor) {
         return descriptor.getKind() == ClassKind.OBJECT ? JvmStdlibNames.FLAG_CLASS_KIND_OBJECT : JvmStdlibNames.FLAG_CLASS_KIND_DEFAULT;
-    }
-
-    @NotNull
-    public static JvmClassName getInternalClassName(FunctionDescriptor descriptor) {
-        final int paramCount = descriptor.getValueParameters().size();
-        if (descriptor.getReceiverParameter() != null) {
-            return JvmClassName.byInternalName("jet/ExtensionFunction" + paramCount);
-        }
-        else {
-            return JvmClassName.byInternalName("jet/Function" + paramCount);
-        }
     }
 
     public static JvmMethodSignature erasedInvokeSignature(FunctionDescriptor fd) {
@@ -172,18 +159,8 @@ public class CodegenUtil {
         return stack.empty() ? null : stack.peek();
     }
 
-    @Nullable
-    public static String getLocalNameForObject(JetObjectDeclaration object) {
-        PsiElement parent = object.getParent();
-        if (parent instanceof JetClassObject) {
-            return JvmAbi.CLASS_OBJECT_CLASS_NAME;
-        }
-
-        return null;
-    }
-
     public static JetType getSuperClass(ClassDescriptor classDescriptor) {
-        final List<ClassDescriptor> superclassDescriptors = DescriptorUtils.getSuperclassDescriptors(classDescriptor);
+        List<ClassDescriptor> superclassDescriptors = DescriptorUtils.getSuperclassDescriptors(classDescriptor);
         for (ClassDescriptor descriptor : superclassDescriptors) {
             if (descriptor.getKind() != ClassKind.TRAIT) {
                 return descriptor.getDefaultType();
@@ -192,18 +169,13 @@ public class CodegenUtil {
         return KotlinBuiltIns.getInstance().getAnyType();
     }
 
+    @NotNull
     public static <T extends CallableMemberDescriptor> T unwrapFakeOverride(T member) {
         while (member.getKind() == CallableMemberDescriptor.Kind.FAKE_OVERRIDE) {
             //noinspection unchecked
             member = (T) member.getOverriddenDescriptors().iterator().next();
         }
         return member;
-    }
-
-    public static void checkMustGenerateCode(CallableMemberDescriptor descriptor) {
-        if (descriptor.getKind() != CallableMemberDescriptor.Kind.DECLARATION) {
-            throw new IllegalStateException("Must not generate code for descriptor: " + descriptor);
-        }
     }
 
     @Nullable
@@ -243,20 +215,6 @@ public class CodegenUtil {
         return type.getConstructor().getDeclarationDescriptor().getOriginal() == classDescriptor.getOriginal();
     }
 
-    @SuppressWarnings("unchecked")
-    static Collection<ClassDescriptor> getInnerClassesAndObjects(ClassDescriptor classDescriptor) {
-        JetScope innerClassesScope = classDescriptor.getUnsubstitutedInnerClassesScope();
-        Collection<DeclarationDescriptor> inners = innerClassesScope.getAllDescriptors();
-        for (DeclarationDescriptor inner : inners) {
-            assert inner instanceof ClassDescriptor
-                    : "Not a class in inner classes scope of " + classDescriptor + ": " + inner;
-        }
-        return new ImmutableList.Builder<ClassDescriptor>()
-                .addAll((Collection) inners)
-                .addAll(innerClassesScope.getObjectDescriptors())
-                .build();
-    }
-
     public static boolean isCallInsideSameClassAsDeclared(CallableMemberDescriptor declarationDescriptor, CodegenContext context) {
         boolean isFakeOverride = declarationDescriptor.getKind() == CallableMemberDescriptor.Kind.FAKE_OVERRIDE;
         boolean isDelegate = declarationDescriptor.getKind() == CallableMemberDescriptor.Kind.DELEGATION;
@@ -268,6 +226,14 @@ public class CodegenUtil {
                (((context.hasThisDescriptor() && containingDeclaration == context.getThisDescriptor()) ||
                  (context.getParentContext() instanceof NamespaceContext && context.getParentContext().getContextDescriptor() == containingDeclaration))
                 && context.getContextKind() != OwnerKind.TRAIT_IMPL);
+    }
+
+    public static boolean isCallInsideSameModuleAsDeclared(CallableMemberDescriptor declarationDescriptor, CodegenContext context) {
+        if (context == CodegenContext.STATIC) {
+            return true;
+        }
+        DeclarationDescriptor contextDescriptor = context.getContextDescriptor();
+        return DescriptorUtils.isInSameModule(declarationDescriptor, contextDescriptor);
     }
 
     public static boolean hasAbstractMembers(@NotNull ClassDescriptor classDescriptor) {

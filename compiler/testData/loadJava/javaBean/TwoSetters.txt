@@ -1,7 +1,0 @@
-package test
-
-public open class TwoSetters : java.lang.Object {
-    public constructor TwoSetters()
-    public open fun setSize(/*0*/ p0 : jet.Int) : Unit
-    public open fun setSize(/*0*/ p0 : jet.String?) : Unit
-}

@@ -343,14 +343,14 @@ public trait Traversable<T>: Iterable<T> {
     }
 
     /**
-    * Convert collection of arbitrary elements to collection of tuples of the index and the element
+    * Convert collection of arbitrary elements to collection of pairs of the index and the element
     *
     * @includeFunctionBody ../../test/ListTest.kt withIndices
     */
     /*
-        public fun withIndices(): java.lang.Iterable<#(Int, T)> {
-            return object : java.lang.Iterable<#(Int, T)> {
-                public override fun iterator(): Iterator<#(Int, T)> {
+        public fun withIndices(): java.lang.Iterable<Pair(Int, T)> {
+            return object : java.lang.Iterable<Pair(Int, T)> {
+                public override fun iterator(): Iterator<Pair(Int, T)> {
                     return NumberedIterator<T>(iterator())
                 }
             }

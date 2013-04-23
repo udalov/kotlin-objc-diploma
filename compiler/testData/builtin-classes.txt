@@ -21,7 +21,7 @@ public final class Array</*0*/ reified T> {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : T
     public final fun iterator() : jet.Iterator<T>
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : T) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : T) : jet.Unit
 }
 
 public final class Boolean {
@@ -39,7 +39,7 @@ public final class BooleanArray {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : jet.Boolean
     public final fun iterator() : jet.BooleanIterator
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Boolean) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Boolean) : jet.Unit
 }
 
 public abstract class BooleanIterator : jet.Iterator<jet.Boolean> {
@@ -121,7 +121,7 @@ public final class ByteArray {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : jet.Byte
     public final fun iterator() : jet.ByteIterator
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Byte) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Byte) : jet.Unit
 }
 
 public abstract class ByteIterator : jet.Iterator<jet.Byte> {
@@ -215,7 +215,7 @@ public final class CharArray {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : jet.Char
     public final fun iterator() : jet.CharIterator
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Char) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Char) : jet.Unit
 }
 
 public abstract class CharIterator : jet.Iterator<jet.Char> {
@@ -340,7 +340,7 @@ public final class DoubleArray {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : jet.Double
     public final fun iterator() : jet.DoubleIterator
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Double) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Double) : jet.Unit
 }
 
 public abstract class DoubleIterator : jet.Iterator<jet.Double> {
@@ -378,118 +378,95 @@ public abstract class Enum</*0*/ E : jet.Enum<E>> {
     public final fun ordinal() : jet.Int
 }
 
-public abstract class ExtensionFunction0</*0*/ in T, /*1*/ out R> {
-    public constructor ExtensionFunction0</*0*/ in T, /*1*/ out R>()
+public trait ExtensionFunction0</*0*/ in T, /*1*/ out R> {
     public abstract fun T.invoke() : R
 }
 
-public abstract class ExtensionFunction1</*0*/ in T, /*1*/ in P1, /*2*/ out R> {
-    public constructor ExtensionFunction1</*0*/ in T, /*1*/ in P1, /*2*/ out R>()
+public trait ExtensionFunction1</*0*/ in T, /*1*/ in P1, /*2*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1) : R
 }
 
-public abstract class ExtensionFunction10</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ out R> {
-    public constructor ExtensionFunction10</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ out R>()
+public trait ExtensionFunction10</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10) : R
 }
 
-public abstract class ExtensionFunction11</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ out R> {
-    public constructor ExtensionFunction11</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ out R>()
+public trait ExtensionFunction11</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11) : R
 }
 
-public abstract class ExtensionFunction12</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ out R> {
-    public constructor ExtensionFunction12</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ out R>()
+public trait ExtensionFunction12</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12) : R
 }
 
-public abstract class ExtensionFunction13</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ out R> {
-    public constructor ExtensionFunction13</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ out R>()
+public trait ExtensionFunction13</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13) : R
 }
 
-public abstract class ExtensionFunction14</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ out R> {
-    public constructor ExtensionFunction14</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ out R>()
+public trait ExtensionFunction14</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14) : R
 }
 
-public abstract class ExtensionFunction15</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ out R> {
-    public constructor ExtensionFunction15</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ out R>()
+public trait ExtensionFunction15</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15) : R
 }
 
-public abstract class ExtensionFunction16</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ out R> {
-    public constructor ExtensionFunction16</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ out R>()
+public trait ExtensionFunction16</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16) : R
 }
 
-public abstract class ExtensionFunction17</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ out R> {
-    public constructor ExtensionFunction17</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ out R>()
+public trait ExtensionFunction17</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17) : R
 }
 
-public abstract class ExtensionFunction18</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ out R> {
-    public constructor ExtensionFunction18</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ out R>()
+public trait ExtensionFunction18</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18) : R
 }
 
-public abstract class ExtensionFunction19</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ out R> {
-    public constructor ExtensionFunction19</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ out R>()
+public trait ExtensionFunction19</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19) : R
 }
 
-public abstract class ExtensionFunction2</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ out R> {
-    public constructor ExtensionFunction2</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ out R>()
+public trait ExtensionFunction2</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2) : R
 }
 
-public abstract class ExtensionFunction20</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ out R> {
-    public constructor ExtensionFunction20</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ out R>()
+public trait ExtensionFunction20</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20) : R
 }
 
-public abstract class ExtensionFunction21</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ out R> {
-    public constructor ExtensionFunction21</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ out R>()
+public trait ExtensionFunction21</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21) : R
 }
 
-public abstract class ExtensionFunction22</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ in P22, /*23*/ out R> {
-    public constructor ExtensionFunction22</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ in P22, /*23*/ out R>()
+public trait ExtensionFunction22</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ in P22, /*23*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21, /*21*/ p22 : P22) : R
 }
 
-public abstract class ExtensionFunction3</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ out R> {
-    public constructor ExtensionFunction3</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ out R>()
+public trait ExtensionFunction3</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3) : R
 }
 
-public abstract class ExtensionFunction4</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ out R> {
-    public constructor ExtensionFunction4</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ out R>()
+public trait ExtensionFunction4</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4) : R
 }
 
-public abstract class ExtensionFunction5</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ out R> {
-    public constructor ExtensionFunction5</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ out R>()
+public trait ExtensionFunction5</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5) : R
 }
 
-public abstract class ExtensionFunction6</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ out R> {
-    public constructor ExtensionFunction6</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ out R>()
+public trait ExtensionFunction6</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6) : R
 }
 
-public abstract class ExtensionFunction7</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ out R> {
-    public constructor ExtensionFunction7</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ out R>()
+public trait ExtensionFunction7</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7) : R
 }
 
-public abstract class ExtensionFunction8</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ out R> {
-    public constructor ExtensionFunction8</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ out R>()
+public trait ExtensionFunction8</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8) : R
 }
 
-public abstract class ExtensionFunction9</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ out R> {
-    public constructor ExtensionFunction9</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ out R>()
+public trait ExtensionFunction9</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ out R> {
     public abstract fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9) : R
 }
 
@@ -565,7 +542,7 @@ public final class FloatArray {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : jet.Float
     public final fun iterator() : jet.FloatIterator
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Float) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Float) : jet.Unit
 }
 
 public abstract class FloatIterator : jet.Iterator<jet.Float> {
@@ -597,118 +574,95 @@ public final class FloatRange : jet.Range<jet.Float>, jet.Progression<jet.Float>
     }
 }
 
-public abstract class Function0</*0*/ out R> {
-    public constructor Function0</*0*/ out R>()
+public trait Function0</*0*/ out R> {
     public abstract fun invoke() : R
 }
 
-public abstract class Function1</*0*/ in P1, /*1*/ out R> {
-    public constructor Function1</*0*/ in P1, /*1*/ out R>()
+public trait Function1</*0*/ in P1, /*1*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1) : R
 }
 
-public abstract class Function10</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ out R> {
-    public constructor Function10</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ out R>()
+public trait Function10</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10) : R
 }
 
-public abstract class Function11</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ out R> {
-    public constructor Function11</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ out R>()
+public trait Function11</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11) : R
 }
 
-public abstract class Function12</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ out R> {
-    public constructor Function12</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ out R>()
+public trait Function12</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12) : R
 }
 
-public abstract class Function13</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ out R> {
-    public constructor Function13</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ out R>()
+public trait Function13</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13) : R
 }
 
-public abstract class Function14</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ out R> {
-    public constructor Function14</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ out R>()
+public trait Function14</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14) : R
 }
 
-public abstract class Function15</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ out R> {
-    public constructor Function15</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ out R>()
+public trait Function15</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15) : R
 }
 
-public abstract class Function16</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ out R> {
-    public constructor Function16</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ out R>()
+public trait Function16</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16) : R
 }
 
-public abstract class Function17</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ out R> {
-    public constructor Function17</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ out R>()
+public trait Function17</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17) : R
 }
 
-public abstract class Function18</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ out R> {
-    public constructor Function18</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ out R>()
+public trait Function18</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18) : R
 }
 
-public abstract class Function19</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ out R> {
-    public constructor Function19</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ out R>()
+public trait Function19</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19) : R
 }
 
-public abstract class Function2</*0*/ in P1, /*1*/ in P2, /*2*/ out R> {
-    public constructor Function2</*0*/ in P1, /*1*/ in P2, /*2*/ out R>()
+public trait Function2</*0*/ in P1, /*1*/ in P2, /*2*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2) : R
 }
 
-public abstract class Function20</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ out R> {
-    public constructor Function20</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ out R>()
+public trait Function20</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20) : R
 }
 
-public abstract class Function21</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ in P21, /*21*/ out R> {
-    public constructor Function21</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ in P21, /*21*/ out R>()
+public trait Function21</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ in P21, /*21*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21) : R
 }
 
-public abstract class Function22</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ in P21, /*21*/ in P22, /*22*/ out R> {
-    public constructor Function22</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ in P21, /*21*/ in P22, /*22*/ out R>()
+public trait Function22</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ in P21, /*21*/ in P22, /*22*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21, /*21*/ p22 : P22) : R
 }
 
-public abstract class Function3</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ out R> {
-    public constructor Function3</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ out R>()
+public trait Function3</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3) : R
 }
 
-public abstract class Function4</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ out R> {
-    public constructor Function4</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ out R>()
+public trait Function4</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4) : R
 }
 
-public abstract class Function5</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ out R> {
-    public constructor Function5</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ out R>()
+public trait Function5</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5) : R
 }
 
-public abstract class Function6</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ out R> {
-    public constructor Function6</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ out R>()
+public trait Function6</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6) : R
 }
 
-public abstract class Function7</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ out R> {
-    public constructor Function7</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ out R>()
+public trait Function7</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7) : R
 }
 
-public abstract class Function8</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ out R> {
-    public constructor Function8</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ out R>()
+public trait Function8</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8) : R
 }
 
-public abstract class Function9</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ out R> {
-    public constructor Function9</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ out R>()
+public trait Function9</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ out R> {
     public abstract fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9) : R
 }
 
@@ -796,7 +750,7 @@ public final class IntArray {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : jet.Int
     public final fun iterator() : jet.IntIterator
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Int) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Int) : jet.Unit
 }
 
 public abstract class IntIterator : jet.Iterator<jet.Int> {
@@ -835,6 +789,282 @@ public trait Iterable</*0*/ out T> {
 public trait Iterator</*0*/ out T> {
     public abstract fun hasNext() : jet.Boolean
     public abstract fun next() : T
+}
+
+public trait KExtensionFunction0</*0*/ in T, /*1*/ out R> : T.() -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke() : R
+}
+
+public trait KExtensionFunction1</*0*/ in T, /*1*/ in P1, /*2*/ out R> : T.(P1) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1) : R
+}
+
+public trait KExtensionFunction10</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10) : R
+}
+
+public trait KExtensionFunction11</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11) : R
+}
+
+public trait KExtensionFunction12</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12) : R
+}
+
+public trait KExtensionFunction13</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13) : R
+}
+
+public trait KExtensionFunction14</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14) : R
+}
+
+public trait KExtensionFunction15</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15) : R
+}
+
+public trait KExtensionFunction16</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16) : R
+}
+
+public trait KExtensionFunction17</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17) : R
+}
+
+public trait KExtensionFunction18</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18) : R
+}
+
+public trait KExtensionFunction19</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19) : R
+}
+
+public trait KExtensionFunction2</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ out R> : T.(P1, P2) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2) : R
+}
+
+public trait KExtensionFunction20</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20) : R
+}
+
+public trait KExtensionFunction21</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21) : R
+}
+
+public trait KExtensionFunction22</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ in P22, /*23*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21, P22) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21, /*21*/ p22 : P22) : R
+}
+
+public trait KExtensionFunction3</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ out R> : T.(P1, P2, P3) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3) : R
+}
+
+public trait KExtensionFunction4</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ out R> : T.(P1, P2, P3, P4) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4) : R
+}
+
+public trait KExtensionFunction5</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ out R> : T.(P1, P2, P3, P4, P5) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5) : R
+}
+
+public trait KExtensionFunction6</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ out R> : T.(P1, P2, P3, P4, P5, P6) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6) : R
+}
+
+public trait KExtensionFunction7</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7) : R
+}
+
+public trait KExtensionFunction8</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8) : R
+}
+
+public trait KExtensionFunction9</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9) : R
+}
+
+public trait KFunction0</*0*/ out R> : () -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke() : R
+}
+
+public trait KFunction1</*0*/ in P1, /*1*/ out R> : (P1) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1) : R
+}
+
+public trait KFunction10</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10) : R
+}
+
+public trait KFunction11</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11) : R
+}
+
+public trait KFunction12</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12) : R
+}
+
+public trait KFunction13</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13) : R
+}
+
+public trait KFunction14</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14) : R
+}
+
+public trait KFunction15</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15) : R
+}
+
+public trait KFunction16</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16) : R
+}
+
+public trait KFunction17</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17) : R
+}
+
+public trait KFunction18</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18) : R
+}
+
+public trait KFunction19</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19) : R
+}
+
+public trait KFunction2</*0*/ in P1, /*1*/ in P2, /*2*/ out R> : (P1, P2) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2) : R
+}
+
+public trait KFunction20</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20) : R
+}
+
+public trait KFunction21</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ in P21, /*21*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21) : R
+}
+
+public trait KFunction22</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ in P10, /*10*/ in P11, /*11*/ in P12, /*12*/ in P13, /*13*/ in P14, /*14*/ in P15, /*15*/ in P16, /*16*/ in P17, /*17*/ in P18, /*18*/ in P19, /*19*/ in P20, /*20*/ in P21, /*21*/ in P22, /*22*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21, P22) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21, /*21*/ p22 : P22) : R
+}
+
+public trait KFunction3</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ out R> : (P1, P2, P3) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3) : R
+}
+
+public trait KFunction4</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ out R> : (P1, P2, P3, P4) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4) : R
+}
+
+public trait KFunction5</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ out R> : (P1, P2, P3, P4, P5) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5) : R
+}
+
+public trait KFunction6</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ out R> : (P1, P2, P3, P4, P5, P6) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6) : R
+}
+
+public trait KFunction7</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ out R> : (P1, P2, P3, P4, P5, P6, P7) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7) : R
+}
+
+public trait KFunction8</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8) : R
+}
+
+public trait KFunction9</*0*/ in P1, /*1*/ in P2, /*2*/ in P3, /*3*/ in P4, /*4*/ in P5, /*5*/ in P6, /*6*/ in P7, /*7*/ in P8, /*8*/ in P9, /*9*/ out R> : (P1, P2, P3, P4, P5, P6, P7, P8, P9) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9) : R
+}
+
+public trait KMemberFunction0</*0*/ in T, /*1*/ out R> : T.() -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke() : R
+}
+
+public trait KMemberFunction1</*0*/ in T, /*1*/ in P1, /*2*/ out R> : T.(P1) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1) : R
+}
+
+public trait KMemberFunction10</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10) : R
+}
+
+public trait KMemberFunction11</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11) : R
+}
+
+public trait KMemberFunction12</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12) : R
+}
+
+public trait KMemberFunction13</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13) : R
+}
+
+public trait KMemberFunction14</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14) : R
+}
+
+public trait KMemberFunction15</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15) : R
+}
+
+public trait KMemberFunction16</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16) : R
+}
+
+public trait KMemberFunction17</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17) : R
+}
+
+public trait KMemberFunction18</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18) : R
+}
+
+public trait KMemberFunction19</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19) : R
+}
+
+public trait KMemberFunction2</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ out R> : T.(P1, P2) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2) : R
+}
+
+public trait KMemberFunction20</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20) : R
+}
+
+public trait KMemberFunction21</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21) : R
+}
+
+public trait KMemberFunction22</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ in P10, /*11*/ in P11, /*12*/ in P12, /*13*/ in P13, /*14*/ in P14, /*15*/ in P15, /*16*/ in P16, /*17*/ in P17, /*18*/ in P18, /*19*/ in P19, /*20*/ in P20, /*21*/ in P21, /*22*/ in P22, /*23*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21, P22) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9, /*9*/ p10 : P10, /*10*/ p11 : P11, /*11*/ p12 : P12, /*12*/ p13 : P13, /*13*/ p14 : P14, /*14*/ p15 : P15, /*15*/ p16 : P16, /*16*/ p17 : P17, /*17*/ p18 : P18, /*18*/ p19 : P19, /*19*/ p20 : P20, /*20*/ p21 : P21, /*21*/ p22 : P22) : R
+}
+
+public trait KMemberFunction3</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ out R> : T.(P1, P2, P3) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3) : R
+}
+
+public trait KMemberFunction4</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ out R> : T.(P1, P2, P3, P4) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4) : R
+}
+
+public trait KMemberFunction5</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ out R> : T.(P1, P2, P3, P4, P5) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5) : R
+}
+
+public trait KMemberFunction6</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ out R> : T.(P1, P2, P3, P4, P5, P6) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6) : R
+}
+
+public trait KMemberFunction7</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7) : R
+}
+
+public trait KMemberFunction8</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8) : R
+}
+
+public trait KMemberFunction9</*0*/ in T, /*1*/ in P1, /*2*/ in P2, /*3*/ in P3, /*4*/ in P4, /*5*/ in P5, /*6*/ in P6, /*7*/ in P7, /*8*/ in P8, /*9*/ in P9, /*10*/ out R> : T.(P1, P2, P3, P4, P5, P6, P7, P8, P9) -> R {
+    public abstract override /*1*/ /*fake_override*/ fun T.invoke(/*0*/ p1 : P1, /*1*/ p2 : P2, /*2*/ p3 : P3, /*3*/ p4 : P4, /*4*/ p5 : P5, /*5*/ p6 : P6, /*6*/ p7 : P7, /*7*/ p8 : P8, /*8*/ p9 : P9) : R
 }
 
 public trait List</*0*/ out E> : jet.Collection<E> {
@@ -943,7 +1173,7 @@ public final class LongArray {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : jet.Long
     public final fun iterator() : jet.LongIterator
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Long) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Long) : jet.Unit
 }
 
 public abstract class LongIterator : jet.Iterator<jet.Long> {
@@ -996,7 +1226,7 @@ public trait Map</*0*/ K, /*1*/ out V> {
 public trait MutableCollection</*0*/ E> : jet.Collection<E>, jet.MutableIterable<E> {
     public abstract fun add(/*0*/ e : E) : jet.Boolean
     public abstract fun addAll(/*0*/ c : jet.Collection<E>) : jet.Boolean
-    public abstract fun clear() : Unit
+    public abstract fun clear() : jet.Unit
     public abstract override /*1*/ /*fake_override*/ fun contains(/*0*/ o : jet.Any?) : jet.Boolean
     public abstract override /*1*/ /*fake_override*/ fun containsAll(/*0*/ c : jet.Collection<jet.Any?>) : jet.Boolean
     public abstract override /*1*/ /*fake_override*/ fun equals(/*0*/ other : jet.Any?) : jet.Boolean
@@ -1018,15 +1248,15 @@ public trait MutableIterable</*0*/ out T> : jet.Iterable<T> {
 public trait MutableIterator</*0*/ out T> : jet.Iterator<T> {
     public abstract override /*1*/ /*fake_override*/ fun hasNext() : jet.Boolean
     public abstract override /*1*/ /*fake_override*/ fun next() : T
-    public abstract fun remove() : Unit
+    public abstract fun remove() : jet.Unit
 }
 
 public trait MutableList</*0*/ E> : jet.List<E>, jet.MutableCollection<E> {
     public abstract override /*1*/ fun add(/*0*/ e : E) : jet.Boolean
-    public abstract fun add(/*0*/ index : jet.Int, /*1*/ element : E) : Unit
+    public abstract fun add(/*0*/ index : jet.Int, /*1*/ element : E) : jet.Unit
     public abstract override /*1*/ fun addAll(/*0*/ c : jet.Collection<E>) : jet.Boolean
     public abstract fun addAll(/*0*/ index : jet.Int, /*1*/ c : jet.Collection<E>) : jet.Boolean
-    public abstract override /*1*/ fun clear() : Unit
+    public abstract override /*1*/ fun clear() : jet.Unit
     public abstract override /*2*/ /*fake_override*/ fun contains(/*0*/ o : jet.Any?) : jet.Boolean
     public abstract override /*2*/ /*fake_override*/ fun containsAll(/*0*/ c : jet.Collection<jet.Any?>) : jet.Boolean
     public abstract override /*2*/ /*fake_override*/ fun equals(/*0*/ other : jet.Any?) : jet.Boolean
@@ -1050,19 +1280,19 @@ public trait MutableList</*0*/ E> : jet.List<E>, jet.MutableCollection<E> {
 }
 
 public trait MutableListIterator</*0*/ T> : jet.ListIterator<T>, jet.MutableIterator<T> {
-    public abstract fun add(/*0*/ e : T) : Unit
+    public abstract fun add(/*0*/ e : T) : jet.Unit
     public abstract override /*2*/ fun hasNext() : jet.Boolean
     public abstract override /*1*/ /*fake_override*/ fun hasPrevious() : jet.Boolean
     public abstract override /*2*/ fun next() : T
     public abstract override /*1*/ /*fake_override*/ fun nextIndex() : jet.Int
     public abstract override /*1*/ /*fake_override*/ fun previous() : T
     public abstract override /*1*/ /*fake_override*/ fun previousIndex() : jet.Int
-    public abstract override /*1*/ fun remove() : Unit
-    public abstract fun set(/*0*/ e : T) : Unit
+    public abstract override /*1*/ fun remove() : jet.Unit
+    public abstract fun set(/*0*/ e : T) : jet.Unit
 }
 
 public trait MutableMap</*0*/ K, /*1*/ V> : jet.Map<K, V> {
-    public abstract fun clear() : Unit
+    public abstract fun clear() : jet.Unit
     public abstract override /*1*/ /*fake_override*/ fun containsKey(/*0*/ key : jet.Any?) : jet.Boolean
     public abstract override /*1*/ /*fake_override*/ fun containsValue(/*0*/ value : jet.Any?) : jet.Boolean
     public abstract override /*1*/ fun entrySet() : jet.MutableSet<jet.MutableMap.MutableEntry<K, V>>
@@ -1070,7 +1300,7 @@ public trait MutableMap</*0*/ K, /*1*/ V> : jet.Map<K, V> {
     public abstract override /*1*/ /*fake_override*/ fun isEmpty() : jet.Boolean
     public abstract override /*1*/ fun keySet() : jet.MutableSet<K>
     public abstract fun put(/*0*/ key : K, /*1*/ value : V) : V?
-    public abstract fun putAll(/*0*/ m : jet.Map<out K, V>) : Unit
+    public abstract fun putAll(/*0*/ m : jet.Map<out K, V>) : jet.Unit
     public abstract fun remove(/*0*/ key : jet.Any?) : V?
     public abstract override /*1*/ /*fake_override*/ fun size() : jet.Int
     public abstract override /*1*/ fun values() : jet.MutableCollection<V>
@@ -1087,7 +1317,7 @@ public trait MutableMap</*0*/ K, /*1*/ V> : jet.Map<K, V> {
 public trait MutableSet</*0*/ E> : jet.Set<E>, jet.MutableCollection<E> {
     public abstract override /*1*/ fun add(/*0*/ e : E) : jet.Boolean
     public abstract override /*1*/ fun addAll(/*0*/ c : jet.Collection<E>) : jet.Boolean
-    public abstract override /*1*/ fun clear() : Unit
+    public abstract override /*1*/ fun clear() : jet.Unit
     public abstract override /*2*/ /*fake_override*/ fun contains(/*0*/ o : jet.Any?) : jet.Boolean
     public abstract override /*2*/ /*fake_override*/ fun containsAll(/*0*/ c : jet.Collection<jet.Any?>) : jet.Boolean
     public abstract override /*2*/ /*fake_override*/ fun equals(/*0*/ other : jet.Any?) : jet.Boolean
@@ -1216,7 +1446,7 @@ public final class ShortArray {
     public final val size : jet.Int
     public final fun get(/*0*/ index : jet.Int) : jet.Short
     public final fun iterator() : jet.ShortIterator
-    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Short) : Unit
+    public final fun set(/*0*/ index : jet.Int, /*1*/ value : jet.Short) : jet.Unit
 }
 
 public abstract class ShortIterator : jet.Iterator<jet.Short> {
@@ -1262,357 +1492,16 @@ public open class Throwable {
     public constructor Throwable(/*0*/ message : jet.String? = ..., /*1*/ cause : jet.Throwable? = ...)
     public final fun getCause() : jet.Throwable?
     public final fun getMessage() : jet.String?
-    public final fun printStackTrace() : Unit
+    public final fun printStackTrace() : jet.Unit
 }
 
-public final class Tuple0 {
-    private constructor Tuple0()
+public final class Unit {
+    private constructor Unit()
     
-    public class object <class-object-for-Tuple0> {
-        private constructor <class-object-for-Tuple0>()
-        public final val VALUE : Unit
+    public class object <class-object-for-Unit> {
+        private constructor <class-object-for-Unit>()
+        public final val VALUE : jet.Unit
     }
-}
-
-public final class Tuple1</*0*/ out T1> {
-    public constructor Tuple1</*0*/ out T1>(/*0*/ _1 : T1)
-    public final val _1 : T1
-}
-
-public final class Tuple10</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10> {
-    public constructor Tuple10</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple11</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11> {
-    public constructor Tuple11</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple12</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12> {
-    public constructor Tuple12</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple13</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13> {
-    public constructor Tuple13</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple14</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14> {
-    public constructor Tuple14</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple15</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15> {
-    public constructor Tuple15</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14, /*14*/ _15 : T15)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _15 : T15
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple16</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16> {
-    public constructor Tuple16</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14, /*14*/ _15 : T15, /*15*/ _16 : T16)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _15 : T15
-    public final val _16 : T16
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple17</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17> {
-    public constructor Tuple17</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14, /*14*/ _15 : T15, /*15*/ _16 : T16, /*16*/ _17 : T17)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _15 : T15
-    public final val _16 : T16
-    public final val _17 : T17
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple18</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18> {
-    public constructor Tuple18</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14, /*14*/ _15 : T15, /*15*/ _16 : T16, /*16*/ _17 : T17, /*17*/ _18 : T18)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _15 : T15
-    public final val _16 : T16
-    public final val _17 : T17
-    public final val _18 : T18
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple19</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18, /*18*/ out T19> {
-    public constructor Tuple19</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18, /*18*/ out T19>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14, /*14*/ _15 : T15, /*15*/ _16 : T16, /*16*/ _17 : T17, /*17*/ _18 : T18, /*18*/ _19 : T19)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _15 : T15
-    public final val _16 : T16
-    public final val _17 : T17
-    public final val _18 : T18
-    public final val _19 : T19
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple2</*0*/ out T1, /*1*/ out T2> {
-    public constructor Tuple2</*0*/ out T1, /*1*/ out T2>(/*0*/ _1 : T1, /*1*/ _2 : T2)
-    public final val _1 : T1
-    public final val _2 : T2
-}
-
-public final class Tuple20</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18, /*18*/ out T19, /*19*/ out T20> {
-    public constructor Tuple20</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18, /*18*/ out T19, /*19*/ out T20>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14, /*14*/ _15 : T15, /*15*/ _16 : T16, /*16*/ _17 : T17, /*17*/ _18 : T18, /*18*/ _19 : T19, /*19*/ _20 : T20)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _15 : T15
-    public final val _16 : T16
-    public final val _17 : T17
-    public final val _18 : T18
-    public final val _19 : T19
-    public final val _2 : T2
-    public final val _20 : T20
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple21</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18, /*18*/ out T19, /*19*/ out T20, /*20*/ out T21> {
-    public constructor Tuple21</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18, /*18*/ out T19, /*19*/ out T20, /*20*/ out T21>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14, /*14*/ _15 : T15, /*15*/ _16 : T16, /*16*/ _17 : T17, /*17*/ _18 : T18, /*18*/ _19 : T19, /*19*/ _20 : T20, /*20*/ _21 : T21)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _15 : T15
-    public final val _16 : T16
-    public final val _17 : T17
-    public final val _18 : T18
-    public final val _19 : T19
-    public final val _2 : T2
-    public final val _20 : T20
-    public final val _21 : T21
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple22</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18, /*18*/ out T19, /*19*/ out T20, /*20*/ out T21, /*21*/ out T22> {
-    public constructor Tuple22</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9, /*9*/ out T10, /*10*/ out T11, /*11*/ out T12, /*12*/ out T13, /*13*/ out T14, /*14*/ out T15, /*15*/ out T16, /*16*/ out T17, /*17*/ out T18, /*18*/ out T19, /*19*/ out T20, /*20*/ out T21, /*21*/ out T22>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9, /*9*/ _10 : T10, /*10*/ _11 : T11, /*11*/ _12 : T12, /*12*/ _13 : T13, /*13*/ _14 : T14, /*14*/ _15 : T15, /*15*/ _16 : T16, /*16*/ _17 : T17, /*17*/ _18 : T18, /*18*/ _19 : T19, /*19*/ _20 : T20, /*20*/ _21 : T21, /*21*/ _22 : T22)
-    public final val _1 : T1
-    public final val _10 : T10
-    public final val _11 : T11
-    public final val _12 : T12
-    public final val _13 : T13
-    public final val _14 : T14
-    public final val _15 : T15
-    public final val _16 : T16
-    public final val _17 : T17
-    public final val _18 : T18
-    public final val _19 : T19
-    public final val _2 : T2
-    public final val _20 : T20
-    public final val _21 : T21
-    public final val _22 : T22
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
-}
-
-public final class Tuple3</*0*/ out T1, /*1*/ out T2, /*2*/ out T3> {
-    public constructor Tuple3</*0*/ out T1, /*1*/ out T2, /*2*/ out T3>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3)
-    public final val _1 : T1
-    public final val _2 : T2
-    public final val _3 : T3
-}
-
-public final class Tuple4</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4> {
-    public constructor Tuple4</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4)
-    public final val _1 : T1
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-}
-
-public final class Tuple5</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5> {
-    public constructor Tuple5</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5)
-    public final val _1 : T1
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-}
-
-public final class Tuple6</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6> {
-    public constructor Tuple6</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6)
-    public final val _1 : T1
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-}
-
-public final class Tuple7</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7> {
-    public constructor Tuple7</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7)
-    public final val _1 : T1
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-}
-
-public final class Tuple8</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8> {
-    public constructor Tuple8</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8)
-    public final val _1 : T1
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-}
-
-public final class Tuple9</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9> {
-    public constructor Tuple9</*0*/ out T1, /*1*/ out T2, /*2*/ out T3, /*3*/ out T4, /*4*/ out T5, /*5*/ out T6, /*6*/ out T7, /*7*/ out T8, /*8*/ out T9>(/*0*/ _1 : T1, /*1*/ _2 : T2, /*2*/ _3 : T3, /*3*/ _4 : T4, /*4*/ _5 : T5, /*5*/ _6 : T6, /*6*/ _7 : T7, /*7*/ _8 : T8, /*8*/ _9 : T9)
-    public final val _1 : T1
-    public final val _2 : T2
-    public final val _3 : T3
-    public final val _4 : T4
-    public final val _5 : T5
-    public final val _6 : T6
-    public final val _7 : T7
-    public final val _8 : T8
-    public final val _9 : T9
 }
 
 public final annotation class atomic : jet.Annotation {

@@ -16,6 +16,7 @@
 
 package org.jetbrains.jet.lang.resolve.lazy.descriptors;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiElement;
@@ -44,8 +45,8 @@ public class LazyClassMemberScope extends AbstractLazyMemberScope<LazyClassDescr
 
     @NotNull
     private static final Set<ClassKind> GENERATE_CONSTRUCTORS_FOR =
-            EnumSet.of(ClassKind.CLASS, ClassKind.ANNOTATION_CLASS, ClassKind.OBJECT,
-                       ClassKind.ENUM_CLASS, ClassKind.ENUM_ENTRY, ClassKind.CLASS_OBJECT);
+            ImmutableSet.of(ClassKind.CLASS, ClassKind.ANNOTATION_CLASS, ClassKind.OBJECT,
+                            ClassKind.ENUM_CLASS, ClassKind.ENUM_ENTRY, ClassKind.CLASS_OBJECT);
 
     private interface MemberExtractor<T extends CallableMemberDescriptor> {
         MemberExtractor<FunctionDescriptor> EXTRACT_FUNCTIONS = new MemberExtractor<FunctionDescriptor>() {
@@ -145,7 +146,7 @@ public class LazyClassMemberScope extends AbstractLazyMemberScope<LazyClassDescr
     }
 
     @Override
-    protected void getNonDeclaredFunctions(@NotNull Name name, @NotNull final Set<FunctionDescriptor> result) {
+    protected void getNonDeclaredFunctions(@NotNull Name name, @NotNull Set<FunctionDescriptor> result) {
         Collection<FunctionDescriptor> fromSupertypes = Lists.newArrayList();
         for (JetType supertype : thisDescriptor.getTypeConstructor().getSupertypes()) {
             fromSupertypes.addAll(supertype.getMemberScope().getFunctions(name));
@@ -189,7 +190,7 @@ public class LazyClassMemberScope extends AbstractLazyMemberScope<LazyClassDescr
     }
 
     private void generateEnumClassObjectMethods(@NotNull Collection<? super FunctionDescriptor> result, @NotNull Name name) {
-        if (!isEnumClassObject()) return;
+        if (!DescriptorUtils.isEnumClassObject(thisDescriptor)) return;
 
         if (name.equals(DescriptorResolver.VALUES_METHOD_NAME)) {
             SimpleFunctionDescriptor valuesMethod = DescriptorResolver
@@ -201,15 +202,6 @@ public class LazyClassMemberScope extends AbstractLazyMemberScope<LazyClassDescr
                     .createEnumClassObjectValueOfMethod(thisDescriptor, resolveSession.getTrace());
             result.add(valueOfMethod);
         }
-    }
-
-    private boolean isEnumClassObject() {
-        DeclarationDescriptor containingDeclaration = thisDescriptor.getContainingDeclaration();
-        if (!(containingDeclaration instanceof ClassDescriptor)) return false;
-        ClassDescriptor classDescriptor = (ClassDescriptor) containingDeclaration;
-        if (classDescriptor.getKind() != ClassKind.ENUM_CLASS) return false;
-        if (classDescriptor.getClassObjectDescriptor() != thisDescriptor) return false;
-        return true;
     }
 
     @NotNull
@@ -229,7 +221,7 @@ public class LazyClassMemberScope extends AbstractLazyMemberScope<LazyClassDescr
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void getNonDeclaredProperties(@NotNull Name name, @NotNull final Set<VariableDescriptor> result) {
+    protected void getNonDeclaredProperties(@NotNull Name name, @NotNull Set<VariableDescriptor> result) {
         JetClassLikeInfo classInfo = declarationProvider.getOwnerInfo();
 
         // From primary constructor parameters

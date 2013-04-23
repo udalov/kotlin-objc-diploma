@@ -27,7 +27,7 @@ import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.plugin.completion.JetLookupObject;
-import org.jetbrains.jet.plugin.project.JsModuleDetector;
+import org.jetbrains.jet.plugin.framework.KotlinFrameworkDetector;
 import org.jetbrains.jet.plugin.quickfix.ImportInsertHelper;
 
 public class JetClassInsertHandler implements InsertHandler<LookupElement> {
@@ -51,17 +51,17 @@ public class JetClassInsertHandler implements InsertHandler<LookupElement> {
 
                     if (context.getFile() instanceof JetFile && item.getObject() instanceof JetLookupObject) {
                         JetLookupObject lookupObject = (JetLookupObject)item.getObject();
-                        final DeclarationDescriptor descriptor = lookupObject.getDescriptor();
+                        DeclarationDescriptor descriptor = lookupObject.getDescriptor();
                         PsiElement targetElement = lookupObject.getPsiElement();
                         if (descriptor != null) {
-                            final FqName fqn = DescriptorUtils.getFQName(descriptor).toSafe();
+                            FqName fqn = DescriptorUtils.getFQName(descriptor).toSafe();
 
                             // TODO: Find out the way for getting psi element for JS libs
                             if (targetElement != null) {
                                 ImportInsertHelper.addImportDirectiveOrChangeToFqName(fqn, jetFile, context.getStartOffset(), targetElement);
                             }
-                            else if (JsModuleDetector.isJsModule(jetFile)) {
-                                ImportInsertHelper.addImportDirective(fqn, jetFile);
+                            else if (KotlinFrameworkDetector.isJsKotlinModule(jetFile)) {
+                                ImportInsertHelper.addImportDirectiveIfNeeded(fqn, jetFile);
                             }
                         }
                     }

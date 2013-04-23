@@ -46,8 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.jetbrains.asm4.Opcodes.*;
-import static org.jetbrains.jet.codegen.CodegenUtil.isInterface;
-import static org.jetbrains.jet.codegen.CodegenUtil.isNullableType;
+import static org.jetbrains.jet.codegen.CodegenUtil.*;
 import static org.jetbrains.jet.lang.resolve.DescriptorUtils.isClassObject;
 import static org.jetbrains.jet.lang.resolve.java.AsmTypeConstants.JAVA_STRING_TYPE;
 
@@ -63,7 +62,7 @@ public class AsmUtil {
     );
 
     private static final int NO_FLAG_LOCAL = 0;
-    private static final int NO_FLAG_PACKAGE_PRIVATE = 0;
+    public static final int NO_FLAG_PACKAGE_PRIVATE = 0;
 
     @NotNull
     private static final Map<Visibility, Integer> visibilityToAccessFlag = ImmutableMap.<Visibility, Integer>builder()
@@ -121,7 +120,7 @@ public class AsmUtil {
         return Type.getType(internalName.substring(1));
     }
 
-    public static Type unboxType(final Type type) {
+    public static Type unboxType(Type type) {
         JvmPrimitiveType jvmPrimitiveType = JvmPrimitiveType.getByWrapperAsmType(type);
         if (jvmPrimitiveType != null) {
             return jvmPrimitiveType.getAsmType();
@@ -203,15 +202,6 @@ public class AsmUtil {
         return NO_FLAG_PACKAGE_PRIVATE;
     }
 
-    public static int getModalityAccessFlag(@NotNull MemberDescriptor descriptor) {
-        switch (descriptor.getModality()) {
-            case ABSTRACT: return ACC_ABSTRACT;
-            case FINAL: return ACC_FINAL;
-            case OPEN: return 0;
-            default: throw new UnsupportedOperationException("Unknown modality: " + descriptor.getModality());
-        }
-    }
-
     public static int getDeprecatedAccessFlag(@NotNull MemberDescriptor descriptor) {
         if (descriptor instanceof PropertyAccessorDescriptor) {
             return KotlinBuiltIns.getInstance().isDeprecated(descriptor)
@@ -240,9 +230,13 @@ public class AsmUtil {
             return ACC_PUBLIC;
         }
         Visibility memberVisibility = memberDescriptor.getVisibility();
+        if (memberVisibility == Visibilities.LOCAL && memberDescriptor instanceof CallableMemberDescriptor) {
+            return ACC_PUBLIC;
+        }
         if (memberVisibility != Visibilities.PRIVATE) {
             return null;
         }
+        // the following code is only for PRIVATE visibility of member
         if (isClassObject(containingDeclaration)) {
             return NO_FLAG_PACKAGE_PRIVATE;
         }
@@ -268,8 +262,18 @@ public class AsmUtil {
         return null;
     }
 
+    @NotNull
+    public static Type getTraitImplThisParameterType(@NotNull ClassDescriptor traitDescriptor, @NotNull JetTypeMapper typeMapper) {
+        JetType jetType = getSuperClass(traitDescriptor);
+        Type type = typeMapper.mapType(jetType);
+        if (type.getInternalName().equals("java/lang/Object")) {
+            return typeMapper.mapType(traitDescriptor.getDefaultType());
+        }
+        return type;
+    }
+
     private static Type stringValueOfOrStringBuilderAppendType(Type type) {
-        final int sort = type.getSort();
+        int sort = type.getSort();
         return sort == Type.OBJECT || sort == Type.ARRAY
                    ? AsmTypeConstants.OBJECT_TYPE
                    : sort == Type.BYTE || sort == Type.SHORT ? Type.INT_TYPE : type;
@@ -292,30 +296,49 @@ public class AsmUtil {
     }
 
     public static void genClosureFields(CalculatedClosure closure, ClassBuilder v, JetTypeMapper typeMapper) {
-        final ClassifierDescriptor captureThis = closure.getCaptureThis();
-        final int access = NO_FLAG_PACKAGE_PRIVATE | ACC_SYNTHETIC | ACC_FINAL;
+        ClassifierDescriptor captureThis = closure.getCaptureThis();
+        int access = NO_FLAG_PACKAGE_PRIVATE | ACC_SYNTHETIC | ACC_FINAL;
         if (captureThis != null) {
             v.newField(null, access, CAPTURED_THIS_FIELD, typeMapper.mapType(captureThis).getDescriptor(), null,
                        null);
         }
 
-        final ClassifierDescriptor captureReceiver = closure.getCaptureReceiver();
+        ClassifierDescriptor captureReceiver = closure.getCaptureReceiver();
         if (captureReceiver != null) {
             v.newField(null, access, CAPTURED_RECEIVER_FIELD, typeMapper.mapType(captureReceiver).getDescriptor(),
                        null, null);
         }
 
-        final List<Pair<String, Type>> fields = closure.getRecordedFields();
+        List<Pair<String, Type>> fields = closure.getRecordedFields();
         for (Pair<String, Type> field : fields) {
             v.newField(null, access, field.first, field.second.getDescriptor(), null, null);
         }
     }
 
     public static void genInitSingletonField(Type classAsmType, InstructionAdapter iv) {
-        iv.anew(classAsmType);
+        genInitSingletonField(classAsmType, JvmAbi.INSTANCE_FIELD, classAsmType, iv);
+    }
+
+    public static void genInitSingletonField(FieldInfo info, InstructionAdapter iv) {
+        assert info.isStatic();
+        genInitSingletonField(info.getOwnerType(), info.getFieldName(), info.getFieldType(), iv);
+    }
+
+    public static void genInitSingletonField(Type fieldOwnerType, String fieldName, Type fieldAsmType, InstructionAdapter iv) {
+        iv.anew(fieldAsmType);
         iv.dup();
-        iv.invokespecial(classAsmType.getInternalName(), "<init>", "()V");
-        iv.putstatic(classAsmType.getInternalName(), JvmAbi.INSTANCE_FIELD, classAsmType.getDescriptor());
+        iv.invokespecial(fieldAsmType.getInternalName(), "<init>", "()V");
+        iv.putstatic(fieldOwnerType.getInternalName(), fieldName, fieldAsmType.getDescriptor());
+    }
+
+    public static int genAssignInstanceFieldFromParam(FieldInfo info, int index, InstructionAdapter iv) {
+        assert !info.isStatic();
+        Type fieldType = info.getFieldType();
+        iv.load(0, info.getOwnerType());//this
+        iv.load(index, fieldType); //param
+        iv.visitFieldInsn(PUTFIELD, info.getOwnerInternalName(), info.getFieldName(), fieldType.getDescriptor());
+        index += fieldType.getSize();
+        return index;
     }
 
     public static void genStringBuilderConstructor(InstructionAdapter v) {
@@ -330,7 +353,7 @@ public class AsmUtil {
     }
 
     public static StackValue genToString(InstructionAdapter v, StackValue receiver) {
-        final Type type = stringValueOfOrStringBuilderAppendType(receiver.type);
+        Type type = stringValueOfOrStringBuilderAppendType(receiver.type);
         receiver.put(type, v);
         v.invokestatic("java/lang/String", "valueOf", "(" + type.getDescriptor() + ")Ljava/lang/String;");
         return StackValue.onStack(JAVA_STRING_TYPE);
@@ -338,7 +361,7 @@ public class AsmUtil {
 
     static void genHashCode(MethodVisitor mv, InstructionAdapter iv, Type type) {
         if (type.getSort() == Type.ARRAY) {
-            final Type elementType = correctElementType(type);
+            Type elementType = correctElementType(type);
             if (elementType.getSort() == Type.OBJECT || elementType.getSort() == Type.ARRAY) {
                 iv.invokestatic("java/util/Arrays", "hashCode", "([Ljava/lang/Object;)I");
             }
@@ -437,10 +460,6 @@ public class AsmUtil {
         }
         v.neg(expectedType);
         return expectedType;
-    }
-
-    public static void genStubThrow(MethodVisitor mv) {
-        genThrow(mv, STUB_EXCEPTION, STUB_EXCEPTION_MESSAGE);
     }
 
     public static void genStubCode(MethodVisitor mv) {

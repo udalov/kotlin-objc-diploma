@@ -16,6 +16,7 @@
 
 package org.jetbrains.jet.codegen.context;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.codegen.OwnerKind;
 import org.jetbrains.jet.codegen.StackValue;
 import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
@@ -27,13 +28,13 @@ public class ConstructorContext extends MethodContext {
     private static final StackValue local1 = StackValue.local(1, OBJECT_TYPE);
 
     public ConstructorContext(
-            ConstructorDescriptor contextDescriptor,
-            OwnerKind kind,
-            CodegenContext parent
+            @NotNull ConstructorDescriptor contextDescriptor,
+            @NotNull OwnerKind kind,
+            @NotNull CodegenContext parent
     ) {
         super(contextDescriptor, kind, parent);
 
-        final ClassDescriptor type = getEnclosingClass();
+        ClassDescriptor type = getEnclosingClass();
         outerExpression = type != null ? local1 : null;
     }
 
@@ -45,5 +46,12 @@ public class ConstructorContext extends MethodContext {
     @Override
     public String toString() {
         return "Constructor: " + getContextDescriptor().getName();
+    }
+
+    @NotNull
+    @Override
+    public CodegenContext getParentContext() {
+        //noinspection ConstantConditions
+        return super.getParentContext();
     }
 }

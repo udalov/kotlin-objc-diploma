@@ -45,13 +45,19 @@ import static org.jetbrains.jet.lang.resolve.BindingContextUtils.descriptorToDec
 public class CodegenBinding {
     public static final WritableSlice<ClassDescriptor, MutableClosure> CLOSURE = Slices.createSimpleSlice();
 
-    public static final WritableSlice<DeclarationDescriptor, ClassDescriptor> CLASS_FOR_FUNCTION = Slices.createSimpleSlice();
+    public static final WritableSlice<FunctionDescriptor, ClassDescriptor> CLASS_FOR_FUNCTION = Slices.createSimpleSlice();
+
+    public static final WritableSlice<ScriptDescriptor, ClassDescriptor> CLASS_FOR_SCRIPT = Slices.createSimpleSlice();
 
     public static final WritableSlice<DeclarationDescriptor, JvmClassName> FQN = Slices.createSimpleSlice();
+
+    public static final WritableSlice<JetCallExpression, JvmClassName> FQN_FOR_SAM_CONSTRUCTOR = Slices.createSimpleSlice();
 
     public static final WritableSlice<JvmClassName, Boolean> SCRIPT_NAMES = Slices.createSimpleSetSlice();
 
     public static final WritableSlice<ClassDescriptor, Boolean> ENUM_ENTRY_CLASS_NEED_SUBCLASS = Slices.createSimpleSetSlice();
+
+    public static final WritableSlice<ClassDescriptor, Collection<ClassDescriptor>> INNER_CLASSES = Slices.createSimpleSlice();
 
     private CodegenBinding() {
     }
@@ -73,9 +79,9 @@ public class CodegenBinding {
 
     @NotNull
     public static JvmClassName classNameForScriptDescriptor(BindingContext bindingContext, @NotNull ScriptDescriptor scriptDescriptor) {
-        final ClassDescriptor classDescriptor = bindingContext.get(CLASS_FOR_FUNCTION, scriptDescriptor);
+        ClassDescriptor classDescriptor = bindingContext.get(CLASS_FOR_SCRIPT, scriptDescriptor);
         //noinspection ConstantConditions
-        return bindingContext.get(FQN, classDescriptor);
+        return fqn(bindingContext, classDescriptor);
     }
 
     @NotNull
@@ -88,11 +94,27 @@ public class CodegenBinding {
     }
 
     public static ClassDescriptor enclosingClassDescriptor(BindingContext bindingContext, ClassDescriptor descriptor) {
-        final CalculatedClosure closure = bindingContext.get(CLOSURE, descriptor);
+        CalculatedClosure closure = bindingContext.get(CLOSURE, descriptor);
         return closure == null ? null : closure.getEnclosingClass();
     }
 
-    public static JvmClassName classNameForAnonymousClass(BindingContext bindingContext, JetElement expression) {
+    @NotNull
+    public static ClassDescriptor anonymousClassForFunction(
+            @NotNull BindingContext bindingContext,
+            @NotNull FunctionDescriptor descriptor
+    ) {
+        //noinspection ConstantConditions
+        return bindingContext.get(CLASS_FOR_FUNCTION, descriptor);
+    }
+
+    @NotNull
+    private static JvmClassName fqn(@NotNull BindingContext bindingContext, @NotNull ClassDescriptor descriptor) {
+        //noinspection ConstantConditions
+        return bindingContext.get(FQN, descriptor);
+    }
+
+    @NotNull
+    public static JvmClassName classNameForAnonymousClass(@NotNull BindingContext bindingContext, @NotNull JetElement expression) {
         if (expression instanceof JetObjectLiteralExpression) {
             JetObjectLiteralExpression jetObjectLiteralExpression = (JetObjectLiteralExpression) expression;
             expression = jetObjectLiteralExpression.getObjectDeclaration();
@@ -102,9 +124,16 @@ public class CodegenBinding {
         if (descriptor == null) {
             SimpleFunctionDescriptor functionDescriptor = bindingContext.get(FUNCTION, expression);
             assert functionDescriptor != null;
-            descriptor = bindingContext.get(CLASS_FOR_FUNCTION, functionDescriptor);
+            return classNameForAnonymousClass(bindingContext, functionDescriptor);
         }
-        return bindingContext.get(FQN, descriptor);
+
+        return fqn(bindingContext, descriptor);
+    }
+
+    @NotNull
+    public static JvmClassName classNameForAnonymousClass(@NotNull BindingContext bindingContext, @NotNull FunctionDescriptor descriptor) {
+        ClassDescriptor classDescriptor = anonymousClassForFunction(bindingContext, descriptor);
+        return fqn(bindingContext, classDescriptor);
     }
 
     public static void registerClassNameForScript(
@@ -131,7 +160,7 @@ public class CodegenBinding {
         recordClosure(bindingTrace, null, classDescriptor, null, className, false);
 
         assert PsiCodegenPredictor.checkPredictedClassNameForFun(bindingTrace.getBindingContext(), scriptDescriptor, classDescriptor);
-        bindingTrace.record(CLASS_FOR_FUNCTION, scriptDescriptor, classDescriptor);
+        bindingTrace.record(CLASS_FOR_SCRIPT, scriptDescriptor, classDescriptor);
     }
 
     public static boolean canHaveOuter(BindingContext bindingContext, @NotNull ClassDescriptor classDescriptor) {
@@ -157,7 +186,7 @@ public class CodegenBinding {
     }
 
     public static boolean isSingleton(BindingContext bindingContext, @NotNull ClassDescriptor classDescriptor) {
-        final ClassKind kind = classDescriptor.getKind();
+        ClassKind kind = classDescriptor.getKind();
         if (kind == ClassKind.CLASS_OBJECT) {
             return true;
         }
@@ -181,7 +210,7 @@ public class CodegenBinding {
             JvmClassName name,
             boolean functionLiteral
     ) {
-        final JetDelegatorToSuperCall superCall = findSuperCall(bindingTrace.getBindingContext(), element);
+        JetDelegatorToSuperCall superCall = findSuperCall(bindingTrace.getBindingContext(), element);
 
         CallableDescriptor enclosingReceiver = null;
         if (classDescriptor.getContainingDeclaration() instanceof CallableDescriptor) {
@@ -195,7 +224,7 @@ public class CodegenBinding {
             }
         }
 
-        final MutableClosure closure = new MutableClosure(superCall, enclosing, enclosingReceiver);
+        MutableClosure closure = new MutableClosure(superCall, enclosing, enclosingReceiver);
 
         assert PsiCodegenPredictor.checkPredictedNameFromPsi(bindingTrace, classDescriptor, name);
         bindingTrace.record(FQN, classDescriptor, name);
@@ -205,6 +234,23 @@ public class CodegenBinding {
         if (canHaveOuter(bindingTrace.getBindingContext(), classDescriptor) && !functionLiteral) {
             closure.setCaptureThis();
         }
+
+        if (enclosing != null) {
+            recordInnerClass(bindingTrace, enclosing, classDescriptor);
+        }
+    }
+
+    private static void recordInnerClass(
+            @NotNull BindingTrace bindingTrace,
+            @NotNull ClassDescriptor outer,
+            @NotNull ClassDescriptor inner
+    ) {
+        Collection<ClassDescriptor> innerClasses = bindingTrace.get(INNER_CLASSES, outer);
+        if (innerClasses == null) {
+            innerClasses = new ArrayList<ClassDescriptor>();
+            bindingTrace.record(INNER_CLASSES, outer, innerClasses);
+        }
+        innerClasses.add(inner);
     }
 
     public static void registerClassNameForScript(BindingTrace bindingTrace, @NotNull JetScript jetScript, @NotNull JvmClassName className) {
@@ -215,23 +261,24 @@ public class CodegenBinding {
         registerClassNameForScript(bindingTrace, descriptor, className);
     }
 
-    @NotNull public static Collection<JetFile> allFilesInNamespaces(BindingContext bindingContext, Collection<JetFile> files) {
+    @NotNull
+    public static Collection<JetFile> allFilesInNamespaces(BindingContext bindingContext, Collection<JetFile> files) {
         // todo: we use Set and add given files but ignoring other scripts because something non-clear kept in binding
         // for scripts especially in case of REPL
 
-        final HashSet<FqName> names = new HashSet<FqName>();
+        HashSet<FqName> names = new HashSet<FqName>();
         for (JetFile file : files) {
             if (!file.isScript()) {
                 names.add(JetPsiUtil.getFQName(file));
             }
         }
 
-        final HashSet<JetFile> answer = new HashSet<JetFile>();
+        HashSet<JetFile> answer = new HashSet<JetFile>();
         answer.addAll(files);
 
         for (FqName name : names) {
-            final NamespaceDescriptor namespaceDescriptor = bindingContext.get(BindingContext.FQNAME_TO_NAMESPACE_DESCRIPTOR, name);
-            final Collection<JetFile> jetFiles = bindingContext.get(NAMESPACE_TO_FILES, namespaceDescriptor);
+            NamespaceDescriptor namespaceDescriptor = bindingContext.get(BindingContext.FQNAME_TO_NAMESPACE_DESCRIPTOR, name);
+            Collection<JetFile> jetFiles = bindingContext.get(NAMESPACE_TO_FILES, namespaceDescriptor);
             if (jetFiles != null)
                 answer.addAll(jetFiles);
         }
@@ -254,12 +301,6 @@ public class CodegenBinding {
         return sortedAnswer;
     }
 
-    public static boolean isMultiFileNamespace(BindingContext bindingContext, FqName fqName) {
-        final NamespaceDescriptor namespaceDescriptor = bindingContext.get(BindingContext.FQNAME_TO_NAMESPACE_DESCRIPTOR, fqName);
-        final Collection<JetFile> jetFiles = bindingContext.get(NAMESPACE_TO_FILES, namespaceDescriptor);
-        return jetFiles != null && jetFiles.size() > 1;
-    }
-
     public static boolean isObjectLiteral(BindingContext bindingContext, ClassDescriptor declaration) {
         PsiElement psiElement = descriptorToDeclaration(bindingContext, declaration);
         if (psiElement instanceof JetObjectDeclaration && ((JetObjectDeclaration) psiElement).isObjectLiteral()) {
@@ -276,19 +317,10 @@ public class CodegenBinding {
         return false;
     }
 
-    public static boolean isLocalFun(BindingContext bindingContext, DeclarationDescriptor fd) {
-        PsiElement psiElement = descriptorToDeclaration(bindingContext, fd);
-        if (psiElement instanceof JetNamedFunction && psiElement.getParent() instanceof JetBlockExpression) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isLocalNamedFun(BindingContext bindingContext, DeclarationDescriptor fd) {
-        PsiElement psiElement = descriptorToDeclaration(bindingContext, fd);
-        if (psiElement instanceof JetNamedFunction) {
-            final DeclarationDescriptor declaration = fd.getContainingDeclaration();
-            return declaration instanceof FunctionDescriptor || declaration instanceof PropertyDescriptor;
+    public static boolean isLocalNamedFun(DeclarationDescriptor fd) {
+        if (fd instanceof FunctionDescriptor) {
+            FunctionDescriptor descriptor = (FunctionDescriptor) fd;
+            return descriptor.getVisibility() == Visibilities.LOCAL && !descriptor.getName().isSpecial();
         }
         return false;
     }
@@ -360,13 +392,12 @@ public class CodegenBinding {
     public static boolean isVarCapturedInClosure(BindingContext bindingContext, DeclarationDescriptor descriptor) {
         if (!(descriptor instanceof VariableDescriptor) || descriptor instanceof PropertyDescriptor) return false;
         VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
-        return Boolean.TRUE.equals(bindingContext.get(CAPTURED_IN_CLOSURE, variableDescriptor)) &&
-               variableDescriptor.isVar();
+        return bindingContext.get(CAPTURED_IN_CLOSURE, variableDescriptor) != null && variableDescriptor.isVar();
     }
 
     public static boolean hasThis0(BindingContext bindingContext, ClassDescriptor classDescriptor) {
         //noinspection SuspiciousMethodCalls
-        final CalculatedClosure closure = bindingContext.get(CLOSURE, classDescriptor);
+        CalculatedClosure closure = bindingContext.get(CLOSURE, classDescriptor);
         return closure != null && closure.getCaptureThis() != null;
     }
 

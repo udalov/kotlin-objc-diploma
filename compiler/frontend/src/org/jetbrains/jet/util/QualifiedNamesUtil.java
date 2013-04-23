@@ -30,7 +30,7 @@ public final class QualifiedNamesUtil {
     private QualifiedNamesUtil() {
     }
 
-    public static boolean isSubpackageOf(@NotNull final FqName subpackageName, @NotNull FqName packageName) {
+    public static boolean isSubpackageOf(@NotNull FqName subpackageName, @NotNull FqName packageName) {
         if (subpackageName.equals(packageName)) {
             return true;
         }
@@ -45,7 +45,7 @@ public final class QualifiedNamesUtil {
         return (subpackageNameStr.startsWith(packageNameStr) && subpackageNameStr.charAt(packageNameStr.length()) == '.');
     }
 
-    public static boolean isOneSegmentFQN(@NotNull final String fqn) {
+    public static boolean isOneSegmentFQN(@NotNull String fqn) {
         if (fqn.isEmpty()) {
             return false;
         }
@@ -114,7 +114,7 @@ public final class QualifiedNamesUtil {
             return null;
         }
 
-        final String nextSegment = getFirstSegment(tail(fqn, fullFQN));
+        String nextSegment = getFirstSegment(tail(fqn, fullFQN));
 
         if (isOneSegmentFQN(nextSegment)) {
             return combine(fqn, Name.guess(nextSegment));
@@ -141,5 +141,37 @@ public final class QualifiedNamesUtil {
         }
 
         return isImported(alreadyImported, newImport.fqnPart());
+    }
+
+    public static boolean isValidJavaFqName(@Nullable String qualifiedName) {
+        if (qualifiedName == null) return false;
+
+        // Check that it is javaName(\.javaName)* or an empty string
+
+        class State {}
+        State BEGINNING = new State();
+        State MIDDLE = new State();
+        State AFTER_DOT = new State();
+
+        State state = BEGINNING;
+
+        int length = qualifiedName.length();
+        for (int i = 0; i < length; i++) {
+            char c = qualifiedName.charAt(i);
+            if (state == BEGINNING || state == AFTER_DOT) {
+                if (!Character.isJavaIdentifierPart(c)) return false;
+                state = MIDDLE;
+            }
+            else if (state == MIDDLE) {
+                if (c == '.') {
+                    state = AFTER_DOT;
+                }
+                else if (!Character.isJavaIdentifierPart(c)) {
+                    return false;
+                }
+            }
+        }
+
+        return state != AFTER_DOT;
     }
 }

@@ -19,16 +19,13 @@ package org.jetbrains.jet.lang.resolve.objc;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.DefaultModuleConfiguration;
 import org.jetbrains.jet.lang.ModuleConfiguration;
-import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.BindingTrace;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
-import org.jetbrains.jet.lang.resolve.ImportPath;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.List;
 
 public class ObjCModuleConfiguration implements ModuleConfiguration {
     private ObjCResolveFacade resolver;
@@ -41,16 +38,11 @@ public class ObjCModuleConfiguration implements ModuleConfiguration {
 
     @PostConstruct
     public void init() {
-        this.delegateConfiguration = DefaultModuleConfiguration.createStandardConfiguration();
+        this.delegateConfiguration = DefaultModuleConfiguration.INSTANCE;
     }
 
     public ObjCResolveFacade getResolver() {
         return resolver;
-    }
-
-    @Override
-    public List<ImportPath> getDefaultImports() {
-        return delegateConfiguration.getDefaultImports();
     }
 
     @Override
@@ -62,11 +54,5 @@ public class ObjCModuleConfiguration implements ModuleConfiguration {
             resolver.resolve();
         }
         delegateConfiguration.extendNamespaceScope(trace, namespaceDescriptor, namespaceMemberScope);
-    }
-
-    @NotNull
-    @Override
-    public PlatformToKotlinClassMap getPlatformToKotlinClassMap() {
-        return PlatformToKotlinClassMap.EMPTY;
     }
 }

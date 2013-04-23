@@ -24,7 +24,9 @@ import org.jetbrains.jet.JetNodeType;
 import org.jetbrains.jet.lexer.JetToken;
 import org.jetbrains.jet.lexer.JetTokens;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.jetbrains.jet.JetNodeTypes.*;
 import static org.jetbrains.jet.lexer.JetTokens.*;
@@ -55,7 +57,8 @@ public class JetExpressionParsing extends AbstractJetParsing {
             PLUS, MINUS, EXCL, DIV, PERC, LTEQ,
             // TODO GTEQ,   foo<bar, baz>=x
             EQEQEQ, EXCLEQEQEQ, EQEQ, EXCLEQ, ANDAND, OROR, SAFE_ACCESS, ELVIS,
-            SEMICOLON, RANGE, EQ, MULTEQ, DIVEQ, PERCEQ, PLUSEQ, MINUSEQ, NOT_IN, NOT_IS, //HASH,
+            SEMICOLON, RANGE, EQ, MULTEQ, DIVEQ, PERCEQ, PLUSEQ, MINUSEQ, NOT_IN, NOT_IS,
+            COLONCOLON,
             COLON
     );
 
@@ -65,6 +68,8 @@ public class JetExpressionParsing extends AbstractJetParsing {
             EXCL, EXCLEXCL, // Joining complex tokens makes it necessary to put EXCLEXCL here
             LBRACKET, LABEL_IDENTIFIER, AT, ATAT,
             // Atomic
+
+            COLONCOLON, // callable reference
 
             LPAR, // parenthesized
             HASH, // Tuple
@@ -124,9 +129,8 @@ public class JetExpressionParsing extends AbstractJetParsing {
     );
 
     @SuppressWarnings({"UnusedDeclaration"})
-    private enum Precedence {
+    public enum Precedence {
         POSTFIX(PLUSPLUS, MINUSMINUS, EXCLEXCL,
-//                HASH,
                 DOT, SAFE_ACCESS), // typeArguments? valueArguments : typeArguments : arrayAccess
 
         PREFIX(MINUS, PLUS, MINUSMINUS, PLUSPLUS, EXCL, LABEL_IDENTIFIER, AT, ATAT) { // attributes
@@ -242,26 +246,10 @@ public class JetExpressionParsing extends AbstractJetParsing {
 
 
     private final JetParsing myJetParsing;
-    private TokenSet decomposerExpressionFollow = null;
 
     public JetExpressionParsing(SemanticWhitespaceAwarePsiBuilder builder, JetParsing jetParsing) {
         super(builder);
         myJetParsing = jetParsing;
-    }
-
-    private TokenSet getDecomposerExpressionFollow() {
-        // TODO : memoize
-        if (decomposerExpressionFollow == null) {
-            List<IElementType> elvisFollow = new ArrayList<IElementType>();
-            Precedence precedence = Precedence.ELVIS;
-            while (precedence != null) {
-                IElementType[] types = precedence.getOperations().getTypes();
-                Collections.addAll(elvisFollow, types);
-                precedence = precedence.higher;
-            }
-            decomposerExpressionFollow = TokenSet.orSet(EXPRESSION_FOLLOW, TokenSet.create(elvisFollow.toArray(new IElementType[elvisFollow.size()])));
-        }
-        return decomposerExpressionFollow;
     }
 
     /*
@@ -355,7 +343,36 @@ public class JetExpressionParsing extends AbstractJetParsing {
     }
 
     /*
-     * atomicExpression postfixUnaryOperation?
+     * callableReference
+     *   : userType? "::" SimpleName
+     *   ;
+     */
+    private boolean parseCallableReferenceExpression() {
+        PsiBuilder.Marker expression = mark();
+
+        if (!at(COLONCOLON)) {
+            PsiBuilder.Marker typeReference = mark();
+            myJetParsing.parseUserType();
+            typeReference.done(TYPE_REFERENCE);
+            if (!at(COLONCOLON)) {
+                expression.rollbackTo();
+                return false;
+            }
+        }
+
+        advance(); // COLONCOLON
+
+        parseSimpleNameExpression();
+        expression.done(CALLABLE_REFERENCE_EXPRESSION);
+
+        return true;
+    }
+
+    /*
+     * postfixUnaryExpression
+     *   : atomicExpression postfixUnaryOperation*
+     *   : callableReference postfixUnaryOperation*
+     *   ;
      *
      * postfixUnaryOperation
      *   : "++" : "--" : "!!"
@@ -366,10 +383,13 @@ public class JetExpressionParsing extends AbstractJetParsing {
      *   ;
      */
     private void parsePostfixExpression() {
-//        System.out.println("post at "  + myBuilder.getTokenText());
-
         PsiBuilder.Marker expression = mark();
-        parseAtomicExpression();
+
+        boolean callableReference = parseCallableReferenceExpression();
+        if (!callableReference) {
+            parseAtomicExpression();
+        }
+
         while (true) {
             if (interruptedWithNewLine()) {
                 break;
@@ -378,7 +398,7 @@ public class JetExpressionParsing extends AbstractJetParsing {
                 parseArrayAccess();
                 expression.done(ARRAY_ACCESS_EXPRESSION);
             }
-            else if (parseCallSuffix()) {
+            else if (!callableReference && parseCallSuffix()) {
                 expression.done(CALL_EXPRESSION);
             }
             else if (at(DOT)) {
@@ -395,13 +415,6 @@ public class JetExpressionParsing extends AbstractJetParsing {
 
                 expression.done(SAFE_ACCESS_EXPRESSION);
             }
-//            else if (at(HASH)) {
-//                advance(); // HASH
-//
-//                expect(IDENTIFIER, "Expecting property or function name");
-//
-//                expression.done(HASH_QUALIFIED_EXPRESSION);
-//            }
             else if (atSet(Precedence.POSTFIX.getOperations())) {
                 parseOperationReference();
                 expression.done(POSTFIX_EXPRESSION);
@@ -1608,7 +1621,7 @@ public class JetExpressionParsing extends AbstractJetParsing {
      *   : "#" "(" (((SimpleName "=")? expression){","})? ")"
      *   ;
      */
-    @Deprecated // Tuples are to be removed in Kotlin M4
+    @Deprecated // Tuples are dropped, but parsing is left to minimize surprising. This code should be removed some time (in Kotlin 1.0?)
     private void parseTupleExpression() {
         assert _at(HASH);
         PsiBuilder.Marker mark = mark();
@@ -1619,15 +1632,13 @@ public class JetExpressionParsing extends AbstractJetParsing {
         if (!at(RPAR)) {
             while (true) {
                 while (at(COMMA)) {
-                    errorAndAdvance("Expecting a tuple entry (element)");
+                    advance();
                 }
 
                 if (at(IDENTIFIER) && lookahead(1) == EQ) {
-                    PsiBuilder.Marker entry = mark();
                     advance(); // IDENTIFIER
                     advance(); // EQ
                     parseExpression();
-                    entry.done(LABELED_TUPLE_ENTRY);
                 }
                 else {
                     parseExpression();
@@ -1637,16 +1648,15 @@ public class JetExpressionParsing extends AbstractJetParsing {
                 advance(); // COMMA
 
                 if (at(RPAR)) {
-                    error("Expecting a tuple entry (element)");
                     break;
                 }
             }
 
         }
-        expect(RPAR, "Expecting ')'");
+        consumeIf(RPAR);
         myBuilder.restoreNewlinesState();
 
-        mark.done(TUPLE);
+        mark.error("Tuples are not supported. Use data classes instead.");
     }
 
     /*

@@ -19,10 +19,14 @@ package org.jetbrains.jet.lang.resolve.java.resolver;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiMember;
+import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiPackage;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorParent;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
@@ -32,6 +36,7 @@ import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.java.*;
 import org.jetbrains.jet.lang.resolve.java.descriptor.JavaNamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.java.kt.JetPackageClassAnnotation;
+import org.jetbrains.jet.lang.resolve.java.provider.MembersCache;
 import org.jetbrains.jet.lang.resolve.java.scope.JavaBaseScope;
 import org.jetbrains.jet.lang.resolve.java.scope.JavaClassStaticMembersScope;
 import org.jetbrains.jet.lang.resolve.java.scope.JavaPackageScopeWithoutMembers;
@@ -46,7 +51,9 @@ import java.util.Set;
 public final class JavaNamespaceResolver {
 
     @NotNull
-    public static final ModuleDescriptor FAKE_ROOT_MODULE = new ModuleDescriptor(JavaDescriptorResolver.JAVA_ROOT);
+    public static final ModuleDescriptor FAKE_ROOT_MODULE = new ModuleDescriptorImpl(JavaDescriptorResolver.JAVA_ROOT,
+                                                                                     JavaBridgeConfiguration.ALL_JAVA_IMPORTS,
+                                                                                     JavaToKotlinClassMap.getInstance());
     @NotNull
     private final Map<FqName, JavaBaseScope> resolvedNamespaceCache = Maps.newHashMap();
     @NotNull
@@ -165,9 +172,10 @@ public final class JavaNamespaceResolver {
         if (psiClass == null) {
             return null;
         }
-        if (psiClass.isEnum()) {
-            // NOTE: we don't want to create namespace for enum classes because we put
-            // static members of enum class into class object descriptor
+        if (DescriptorResolverUtils.isKotlinClass(psiClass)) {
+            return null;
+        }
+        if (!hasStaticMembers(psiClass)) {
             return null;
         }
         trace.record(JavaBindingContext.JAVA_NAMESPACE_KIND, namespaceDescriptor, JavaNamespaceKind.CLASS_STATICS);
@@ -206,5 +214,24 @@ public final class JavaNamespaceResolver {
     @Nullable
     private PsiClass getPsiClassForJavaPackageScope(@NotNull FqName packageFQN) {
         return psiClassFinder.findPsiClass(PackageClassUtils.getPackageClassFqName(packageFQN), PsiClassFinder.RuntimeClassesHandleMode.IGNORE);
+    }
+
+    private static boolean hasStaticMembers(@NotNull PsiClass psiClass) {
+        for (PsiMember member : ContainerUtil.concat(psiClass.getMethods(), psiClass.getFields())) {
+            if (member.hasModifierProperty(PsiModifier.STATIC) && !DescriptorResolverUtils.shouldBeInEnumClassObject(member)) {
+                return true;
+            }
+        }
+
+        for (PsiClass nestedClass : psiClass.getInnerClasses()) {
+            if (MembersCache.isSamInterface(nestedClass)) {
+                return true;
+            }
+            if (nestedClass.hasModifierProperty(PsiModifier.STATIC) && hasStaticMembers(nestedClass)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

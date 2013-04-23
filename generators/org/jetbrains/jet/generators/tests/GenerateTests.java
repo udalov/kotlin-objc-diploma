@@ -19,17 +19,26 @@ package org.jetbrains.jet.generators.tests;
 import junit.framework.TestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.checkers.AbstractDiagnosticsTestWithEagerResolve;
+import org.jetbrains.jet.checkers.AbstractJetJsCheckerTest;
 import org.jetbrains.jet.checkers.AbstractJetPsiCheckerTest;
 import org.jetbrains.jet.codegen.AbstractBytecodeTextTest;
 import org.jetbrains.jet.codegen.AbstractCheckLocalVariablesTableTest;
+import org.jetbrains.jet.codegen.AbstractTopLevelMembersInvocationTest;
 import org.jetbrains.jet.codegen.defaultConstructor.AbstractDefaultConstructorCodegenTest;
 import org.jetbrains.jet.codegen.flags.AbstractWriteFlagsTest;
 import org.jetbrains.jet.codegen.generated.AbstractBlackBoxCodegenTest;
+import org.jetbrains.jet.completion.AbstractJavaCompletionTest;
+import org.jetbrains.jet.completion.AbstractJavaWithLibCompletionTest;
+import org.jetbrains.jet.completion.AbstractJetJSCompletionTest;
+import org.jetbrains.jet.completion.AbstractKeywordCompletionTest;
 import org.jetbrains.jet.jvm.compiler.*;
 import org.jetbrains.jet.lang.resolve.lazy.AbstractLazyResolveDescriptorRendererTest;
 import org.jetbrains.jet.lang.resolve.lazy.AbstractLazyResolveNamespaceComparingTest;
 import org.jetbrains.jet.lang.resolve.lazy.AbstractLazyResolveTest;
+import org.jetbrains.jet.plugin.codeInsight.codeTransformations.AbstractCodeTransformationTest;
 import org.jetbrains.jet.plugin.codeInsight.surroundWith.AbstractSurroundWithTest;
+import org.jetbrains.jet.plugin.folding.AbstractKotlinFoldingTest;
+import org.jetbrains.jet.plugin.hierarchy.AbstractHierarchyTest;
 import org.jetbrains.jet.plugin.highlighter.AbstractDeprecatedHighlightingTest;
 import org.jetbrains.jet.plugin.quickfix.AbstractQuickFixMultiFileTest;
 import org.jetbrains.jet.plugin.quickfix.AbstractQuickFixTest;
@@ -81,7 +90,7 @@ public class GenerateTests {
                 "compiler/tests/",
                 "BlackBoxMultiFileCodegenTestGenerated",
                 AbstractBlackBoxCodegenTest.class,
-                new SimpleTestClassModel(new File("compiler/testData/codegen/boxMultiFile"), false, Pattern.compile("^(.+)$"), "doTestMultiFile")
+                testModelWithDirectories(("compiler/testData/codegen/boxMultiFile"), "doTestMultiFile")
         );
 
         generateTest(
@@ -103,6 +112,13 @@ public class GenerateTests {
                 "BytecodeTextTestGenerated",
                 AbstractBytecodeTextTest.class,
                 testModel("compiler/testData/codegen/bytecodeText")
+        );
+
+        generateTest(
+                "compiler/tests/",
+                "TopLevelMembersInvocationTestGenerated",
+                AbstractTopLevelMembersInvocationTest.class,
+                testModelWithDirectories("compiler/testData/codegen/topLevelMemberInvocation", "doTest")
         );
 
         generateTest(
@@ -131,14 +147,18 @@ public class GenerateTests {
                 "compiler/tests/",
                 "LoadCompiledKotlinTestGenerated",
                 AbstractLoadCompiledKotlinTest.class,
-                testModel("compiler/testData/loadKotlin")
+                testModel("compiler/testData/loadKotlin", "doTestWithAccessors")
         );
 
         generateTest(
                 "compiler/tests/",
                 "LoadJavaTestGenerated",
                 AbstractLoadJavaTest.class,
-                testModel("compiler/testData/loadJava", true, "java", "doTest")
+                testModel("compiler/testData/loadJava/compiledJavaCompareWithKotlin", true, "java", "doTest"),
+                testModel("compiler/testData/loadJava/compiledJavaIncludeObjectMethods", true, "java", "doTestCompiledJavaIncludeObjectMethods"),
+                testModel("compiler/testData/loadJava/compiledJava", true, "java", "doTestCompiledJava"),
+                testModel("compiler/testData/loadJava/sourceJava", true, "java", "doTestSourceJava"),
+                testModel("compiler/testData/loadJava/javaAgainstKotlin", true, "txt", "doTestJavaAgainstKotlin")
         );
 
         generateTest(
@@ -169,15 +189,6 @@ public class GenerateTests {
                 testModel("compiler/testData/renderer")
         );
 
-        // TODO test is temporarily disabled
-        //generateTest(
-        //        "compiler/tests/",
-        //        "org.jetbrains.jet.lang.resolve.lazy",
-        //        "LazyResolveDiagnosticsTestGenerated",
-        //        AbstractLazyResolveDiagnosticsTest.class,
-        //        new SimpleTestClassModel(AbstractLazyResolveDiagnosticsTest.TEST_DATA_DIR, true, "kt", "doTest")
-        //);
-
         generateTest("compiler/tests",
                      "LazyResolveTestGenerated",
                      AbstractLazyResolveTest.class,
@@ -187,8 +198,8 @@ public class GenerateTests {
                 "compiler/tests/",
                 "LazyResolveNamespaceComparingTestGenerated",
                 AbstractLazyResolveNamespaceComparingTest.class,
-                testModel("compiler/testData/loadKotlin", "doTestCheckingPrimaryConstructors"),
-                testModel("compiler/testData/loadJava", "doTestNotCheckingPrimaryConstructors"),
+                testModel("compiler/testData/loadKotlin", "doTestCheckingPrimaryConstructorsAndAccessors"),
+                testModel("compiler/testData/loadJava/compiledJavaCompareWithKotlin", "doTestNotCheckingPrimaryConstructors"),
                 testModel("compiler/testData/lazyResolve/namespaceComparator", "doTestCheckingPrimaryConstructors")
         );
 
@@ -204,10 +215,46 @@ public class GenerateTests {
 
         generateTest(
                 "idea/tests/",
+                "JetJsCheckerTestGenerated",
+                AbstractJetJsCheckerTest.class,
+                testModel("idea/testData/checker/js", false, "kt", "doTest")
+        );
+
+        generateTest(
+                "idea/tests/",
                 "QuickFixTestGenerated",
                 AbstractQuickFixTest.class,
                 new SimpleTestClassModel(new File("idea/testData/quickfix"), true, Pattern.compile("^before(\\w+)\\.kt$"), "doTest")
         );
+
+        generateTest(
+                "idea/tests/",
+                "JetBasicJSCompletionTestGenerated",
+                AbstractJetJSCompletionTest.class,
+                testModel("idea/testData/completion/basic/common"),
+                testModel("idea/testData/completion/basic/js")
+        );
+
+        generateTest(
+                "idea/tests/",
+                "JetBasicJavaCompletionTestGenerated",
+                AbstractJavaCompletionTest.class,
+                testModel("idea/testData/completion/basic/common"),
+                testModel("idea/testData/completion/basic/java")
+        );
+
+        generateTest(
+                "idea/tests/",
+                "JetKeywordCompletionTestGenerated",
+                AbstractKeywordCompletionTest.class,
+                testModel("idea/testData/completion/keywords", false, "doTest")
+        );
+
+        generateTest(
+                "idea/tests",
+                "JetJavaLibCompletionTestGenerated",
+                AbstractJavaWithLibCompletionTest.class,
+                testModel("idea/testData/completion/basic/custom", false, "doTestWithJar"));
 
         generateTest(
                 "idea/tests/",
@@ -225,6 +272,13 @@ public class GenerateTests {
 
         generateTest(
                 "idea/tests/",
+                "KotlinFoldingTestGenerated",
+                AbstractKotlinFoldingTest.class,
+                testModel("idea/testData/folding")
+        );
+
+        generateTest(
+                "idea/tests/",
                 "SurroundWithTestGenerated",
                 AbstractSurroundWithTest.class,
                 testModel("idea/testData/codeInsight/surroundWith/if", "doTestWithIfSurrounder"),
@@ -238,6 +292,24 @@ public class GenerateTests {
                 testModel("idea/testData/codeInsight/surroundWith/tryFinally", "doTestWithTryFinallySurrounder"),
                 testModel("idea/testData/codeInsight/surroundWith/functionLiteral", "doTestWithFunctionLiteralSurrounder")
         );
+
+        generateTest(
+                "idea/tests/",
+                "CodeTransformationsTestGenerated",
+                AbstractCodeTransformationTest.class,
+                testModel("idea/testData/codeInsight/codeTransformations/ifStatementWithAssignmentsToExpression", "doTestIfStatementWithAssignmentsToExpression"),
+                testModel("idea/testData/codeInsight/codeTransformations/assignmentWithIfExpressionToStatement", "doTestAssignmentWithIfExpressionToStatement"),
+                testModel("idea/testData/codeInsight/codeTransformations/removeUnnecessaryParentheses", "doTestRemoveUnnecessaryParentheses")
+        );
+
+        generateTest(
+                "idea/tests/",
+                "HierarchyTestGenerated",
+                AbstractHierarchyTest.class,
+                testModelWithDirectories("idea/testData/hierarchy/class/type", "doTypeClassHierarchyTest"),
+                testModelWithDirectories("idea/testData/hierarchy/class/super", "doSuperClassHierarchyTest"),
+                testModelWithDirectories("idea/testData/hierarchy/class/sub", "doSubClassHierarchyTest")
+        );
     }
 
     private static SimpleTestClassModel testModel(@NotNull String rootPath) {
@@ -246,6 +318,14 @@ public class GenerateTests {
 
     private static SimpleTestClassModel testModel(@NotNull String rootPath, @NotNull String methodName) {
         return testModel(rootPath, true, "kt", methodName);
+    }
+
+    private static SimpleTestClassModel testModel(@NotNull String rootPath, boolean recursive, @NotNull String methodName) {
+        return testModel(rootPath, recursive, "kt", methodName);
+    }
+
+    private static SimpleTestClassModel testModelWithDirectories(@NotNull String rootPath, @NotNull String methodName) {
+        return new SimpleTestClassModel(new File(rootPath), false,  Pattern.compile("^(.+)$"), methodName);
     }
 
     private static SimpleTestClassModel testModel(

@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.DefaultModuleConfiguration;
 import org.jetbrains.jet.lang.ModuleConfiguration;
-import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.resolve.BindingTrace;
@@ -56,14 +55,9 @@ public class JsConfiguration implements ModuleConfiguration {
     }
 
     @Override
-    public List<ImportPath> getDefaultImports() {
-        return DEFAULT_IMPORT_PATHS;
-    }
-
-    @Override
     public void extendNamespaceScope(@NotNull BindingTrace trace, @NotNull NamespaceDescriptor namespaceDescriptor,
             @NotNull WritableScope namespaceMemberScope) {
-        DefaultModuleConfiguration.createStandardConfiguration()
+        DefaultModuleConfiguration.INSTANCE
                 .extendNamespaceScope(trace, namespaceDescriptor, namespaceMemberScope);
 
         // Extend root namespace with standard classes
@@ -98,11 +92,5 @@ public class JsConfiguration implements ModuleConfiguration {
             }
         }
         return false;
-    }
-
-    @NotNull
-    @Override
-    public PlatformToKotlinClassMap getPlatformToKotlinClassMap() {
-        return PlatformToKotlinClassMap.EMPTY;
     }
 }

@@ -26,10 +26,9 @@ import org.jetbrains.jet.lang.descriptors.TypeParameterDescriptor;
 import org.jetbrains.jet.lang.resolve.BindingTrace;
 import org.jetbrains.jet.lang.resolve.java.DescriptorResolverUtils;
 import org.jetbrains.jet.lang.resolve.java.JavaSemanticServices;
-import org.jetbrains.jet.lang.resolve.java.JvmAbi;
 import org.jetbrains.jet.lang.resolve.java.descriptor.ClassDescriptorFromJvmBytecode;
+import org.jetbrains.jet.lang.resolve.java.kt.JetClassObjectAnnotation;
 import org.jetbrains.jet.lang.resolve.java.provider.ClassPsiDeclarationProvider;
-import org.jetbrains.jet.lang.resolve.java.provider.PsiDeclarationProviderFactory;
 import org.jetbrains.jet.lang.resolve.java.scope.JavaClassNonStaticMembersScope;
 import org.jetbrains.jet.lang.resolve.java.wrapper.PsiClassWrapper;
 import org.jetbrains.jet.lang.resolve.name.FqName;
@@ -101,7 +100,7 @@ public final class JavaClassObjectResolver {
         FqName fqName = new FqName(qualifiedName);
         ClassPsiDeclarationProvider classObjectData = semanticServices.getPsiDeclarationProviderFactory().createBinaryClassData(classObjectPsiClass);
         ClassDescriptorFromJvmBytecode classObjectDescriptor
-                = new ClassDescriptorFromJvmBytecode(containing, ClassKind.CLASS_OBJECT, false);
+                = new ClassDescriptorFromJvmBytecode(containing, ClassKind.CLASS_OBJECT, false, false);
         classObjectDescriptor.setSupertypes(supertypesResolver.getSupertypes(classObjectDescriptor,
                                                                              new PsiClassWrapper(classObjectPsiClass),
                                                                              classObjectData,
@@ -130,7 +129,7 @@ public final class JavaClassObjectResolver {
     ) {
         FqNameUnsafe fqName = DescriptorResolverUtils.getFqNameForClassObject(psiClass);
         ClassDescriptorFromJvmBytecode classObjectDescriptor =
-                new ClassDescriptorFromJvmBytecode(containing, ClassKind.CLASS_OBJECT, false);
+                new ClassDescriptorFromJvmBytecode(containing, ClassKind.CLASS_OBJECT, false, false);
         ClassPsiDeclarationProvider data = semanticServices.getPsiDeclarationProviderFactory().createSyntheticClassObjectClassData(psiClass);
         setUpClassObjectDescriptor(classObjectDescriptor, containing, fqName, data, getClassObjectName(containing.getName().getName()));
         return classObjectDescriptor;
@@ -160,7 +159,7 @@ public final class JavaClassObjectResolver {
     @Nullable
     private static PsiClass getClassObjectPsiClass(@NotNull PsiClass ownerClass) {
         for (PsiClass inner : ownerClass.getInnerClasses()) {
-            if (inner.getName().equals(JvmAbi.CLASS_OBJECT_CLASS_NAME)) {
+            if (JetClassObjectAnnotation.get(inner).isDefined()) {
                 return inner;
             }
         }

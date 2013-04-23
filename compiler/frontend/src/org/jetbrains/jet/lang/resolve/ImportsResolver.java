@@ -19,12 +19,8 @@ package org.jetbrains.jet.lang.resolve;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jet.lang.ModuleConfiguration;
 import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
-import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
-import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
-import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
-import org.jetbrains.jet.lang.descriptors.VariableDescriptor;
+import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.psi.*;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
@@ -42,7 +38,7 @@ public class ImportsResolver {
     @NotNull
     private TopDownAnalysisContext context;
     @NotNull
-    private ModuleConfiguration configuration;
+    private ModuleDescriptor moduleDescriptor;
     @NotNull
     private QualifiedExpressionResolver qualifiedExpressionResolver;
     @NotNull
@@ -56,8 +52,8 @@ public class ImportsResolver {
     }
 
     @Inject
-    public void setConfiguration(@NotNull ModuleConfiguration configuration) {
-        this.configuration = configuration;
+    public void setModuleDescriptor(@NotNull ModuleDescriptor moduleDescriptor) {
+        this.moduleDescriptor = moduleDescriptor;
     }
 
     @Inject
@@ -95,7 +91,7 @@ public class ImportsResolver {
     }
 
     private void processImportsInFile(@NotNull LookupMode lookupMode, WritableScope scope, List<JetImportDirective> directives, JetScope rootScope) {
-        processImportsInFile(lookupMode, scope, directives, rootScope, configuration, trace, qualifiedExpressionResolver, importsFactory);
+        processImportsInFile(lookupMode, scope, directives, rootScope, moduleDescriptor, trace, qualifiedExpressionResolver, importsFactory);
     }
 
     public static void processImportsInFile(
@@ -103,7 +99,7 @@ public class ImportsResolver {
             @NotNull WritableScope namespaceScope,
             @NotNull List<JetImportDirective> importDirectives,
             @NotNull JetScope rootScope,
-            @NotNull ModuleConfiguration configuration,
+            @NotNull ModuleDescriptor module,
             @NotNull BindingTrace trace,
             @NotNull QualifiedExpressionResolver qualifiedExpressionResolver,
             @NotNull JetImportsFactory importsFactory
@@ -114,28 +110,30 @@ public class ImportsResolver {
             namespaceScope.clearImports();
         }
 
-        for (ImportPath defaultImportPath : configuration.getDefaultImports()) {
+        for (ImportPath defaultImportPath : module.getDefaultImports()) {
             TemporaryBindingTrace temporaryTrace = TemporaryBindingTrace.create(
                     trace, "transient trace to resolve default imports"); //not to trace errors of default imports
 
             JetImportDirective defaultImportDirective = importsFactory.createImportDirective(defaultImportPath);
             qualifiedExpressionResolver.processImportReference(defaultImportDirective, rootScope, namespaceScope, delayedImporter,
-                                                               temporaryTrace, configuration, lookupMode);
+                                                               temporaryTrace, module, lookupMode);
         }
 
-        Map<JetImportDirective, DeclarationDescriptor> resolvedDirectives = Maps.newHashMap();
+        Map<JetImportDirective, Collection<? extends DeclarationDescriptor>> resolvedDirectives = Maps.newHashMap();
 
         for (JetImportDirective importDirective : importDirectives) {
             Collection<? extends DeclarationDescriptor> descriptors =
                 qualifiedExpressionResolver.processImportReference(importDirective, rootScope, namespaceScope, delayedImporter,
-                                                                   trace, configuration, lookupMode);
-            if (descriptors.size() == 1) {
-                resolvedDirectives.put(importDirective, descriptors.iterator().next());
+                                                                   trace, module, lookupMode);
+            if (!descriptors.isEmpty()) {
+                resolvedDirectives.put(importDirective, descriptors);
             }
-            for (DeclarationDescriptor descriptor : descriptors) {
-                JetExpression importedReference = importDirective.getImportedReference();
-                if (lookupMode == LookupMode.ONLY_CLASSES || importedReference == null) continue;
-                reportPlatformClassMappedToKotlin(configuration, trace, importedReference, descriptor);
+
+            JetExpression importedReference = importDirective.getImportedReference();
+            if (lookupMode != LookupMode.ONLY_CLASSES && importedReference != null) {
+                for (DeclarationDescriptor descriptor : descriptors) {
+                    reportPlatformClassMappedToKotlin(module, trace, importedReference, descriptor);
+                }
             }
         }
         delayedImporter.processImports();
@@ -148,14 +146,14 @@ public class ImportsResolver {
     }
 
     public static void reportPlatformClassMappedToKotlin(
-            @NotNull ModuleConfiguration configuration,
+            @NotNull ModuleDescriptor module,
             @NotNull BindingTrace trace,
             @NotNull JetElement element,
             @NotNull DeclarationDescriptor descriptor
     ) {
         if (!(descriptor instanceof ClassDescriptor)) return;
 
-        PlatformToKotlinClassMap platformToKotlinMap = configuration.getPlatformToKotlinClassMap();
+        PlatformToKotlinClassMap platformToKotlinMap = module.getPlatformToKotlinClassMap();
         Collection<ClassDescriptor> kotlinAnalogsForClass = platformToKotlinMap.mapPlatformClass((ClassDescriptor) descriptor);
         if (!kotlinAnalogsForClass.isEmpty()) {
             trace.report(PLATFORM_CLASS_MAPPED_TO_KOTLIN.on(element, kotlinAnalogsForClass));
@@ -165,7 +163,7 @@ public class ImportsResolver {
     private static void reportUselessImport(
         @NotNull JetImportDirective importDirective,
         @NotNull WritableScope namespaceScope,
-        @NotNull Map<JetImportDirective, DeclarationDescriptor> resolvedDirectives,
+        @NotNull Map<JetImportDirective, Collection<? extends DeclarationDescriptor>> resolvedDirectives,
         @NotNull BindingTrace trace
     ) {
 
@@ -178,20 +176,26 @@ public class ImportsResolver {
             return;
         }
 
-        DeclarationDescriptor wasResolved = resolvedDirectives.get(importDirective);
-        DeclarationDescriptor isResolved = null;
-        if (wasResolved instanceof ClassDescriptor) {
-            isResolved = namespaceScope.getClassifier(aliasName);
+        boolean uselessHiddenImport = true;
+        for (DeclarationDescriptor wasResolved : resolvedDirectives.get(importDirective)) {
+            DeclarationDescriptor isResolved = null;
+            if (wasResolved instanceof ClassDescriptor) {
+                isResolved = namespaceScope.getClassifier(aliasName);
+            }
+            else if (wasResolved instanceof VariableDescriptor) {
+                isResolved = namespaceScope.getLocalVariable(aliasName);
+            }
+            else if (wasResolved instanceof NamespaceDescriptor) {
+                isResolved = namespaceScope.getNamespace(aliasName);
+            }
+            if (isResolved == null || isResolved == wasResolved) {
+                uselessHiddenImport = false;
+            }
         }
-        else if (wasResolved instanceof VariableDescriptor) {
-            isResolved = namespaceScope.getLocalVariable(aliasName);
-        }
-        else if (wasResolved instanceof NamespaceDescriptor) {
-            isResolved = namespaceScope.getNamespace(aliasName);
-        }
-        if (isResolved != null && isResolved != wasResolved) {
+        if (uselessHiddenImport) {
             trace.report(USELESS_HIDDEN_IMPORT.on(importedReference));
         }
+
         if (!importDirective.isAllUnder() &&
             importedReference instanceof JetSimpleNameExpression &&
             importDirective.getAliasName() == null) {

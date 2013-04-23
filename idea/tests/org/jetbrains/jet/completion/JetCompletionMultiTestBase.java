@@ -32,15 +32,14 @@ public abstract class JetCompletionMultiTestBase extends CompletionTestCase {
             configureByFiles(null, fileNameList);
             complete(completionLevel);
 
-            final String fileText = getFile().getText();
-            final ExpectedCompletionUtils completionUtils = new ExpectedCompletionUtils();
+            String fileText = getFile().getText();
 
             ExpectedCompletionUtils.assertContainsRenderedItems(
-                    completionUtils.itemsShouldExist(fileText), myItems, completionUtils.isWithOrder(fileText));
+                    ExpectedCompletionUtils.itemsShouldExist(fileText), myItems, ExpectedCompletionUtils.isWithOrder(fileText));
 
-            ExpectedCompletionUtils.assertNotContainsRenderedItems(completionUtils.itemsShouldAbsent(fileText), myItems);
+            ExpectedCompletionUtils.assertNotContainsRenderedItems(ExpectedCompletionUtils.itemsShouldAbsent(fileText), myItems);
 
-            Integer itemsNumber = completionUtils.getExpectedNumber(fileText);
+            Integer itemsNumber = ExpectedCompletionUtils.getExpectedNumber(fileText);
             if (itemsNumber != null) {
                 assertEquals(itemsNumber.intValue(), myItems.length);
             }

@@ -31,7 +31,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import static org.jetbrains.jet.InTextDirectivesUtils.findListWithPrefix;
+import static org.jetbrains.jet.InTextDirectivesUtils.findListWithPrefixes;
+import static org.jetbrains.jet.InTextDirectivesUtils.findStringWithPrefixes;
 
 /*
  * Test correctness of written flags in class file
@@ -65,31 +66,35 @@ public abstract class AbstractWriteFlagsTest extends UsefulTestCase {
         JetFile psiFile = JetTestUtils.createFile(ktFile.getName(), fileText, jetCoreEnvironment.getProject());
         assertTrue("Cannot create JetFile from text", psiFile != null);
 
-        final ClassFileFactory factory = GenerationUtils.compileFileGetClassFileFactoryForTest(psiFile);
+        ClassFileFactory factory = GenerationUtils.compileFileGetClassFileFactoryForTest(psiFile);
 
         TestedObject testedObject = parseExpectedTestedObject(fileText);
 
-        boolean isClassFound = false;
+        String className = null;
         for (String filename : factory.files()) {
-            if (filename.equals(testedObject.containingClass + ".class")) {
-                isClassFound = true;
-                ClassReader cr = new ClassReader(factory.asBytes(filename));
-                TestClassVisitor classVisitor;
-                classVisitor = getClassVisitor(testedObject.kind, testedObject.name);
-                cr.accept(classVisitor, ClassReader.SKIP_CODE);
-                int expectedAccess = getExpectedFlags(fileText);
-                assertEquals("Wrong access flag \n" + factory.asText(filename), expectedAccess, classVisitor.getAccess());
+            if (testedObject.isFullContainingClassName && filename.equals(testedObject.containingClass + ".class")) {
+                className = filename;
+            }
+            else if (!testedObject.isFullContainingClassName && filename.startsWith(testedObject.containingClass)) {
+                className = filename;
             }
         }
 
-        if (!isClassFound) {
+        if (className == null) {
             throw new AssertionError("Couldn't find a class file with name " + testedObject.containingClass);
         }
+
+        ClassReader cr = new ClassReader(factory.asBytes(className));
+        TestClassVisitor classVisitor;
+        classVisitor = getClassVisitor(testedObject.kind, testedObject.name);
+        cr.accept(classVisitor, ClassReader.SKIP_CODE);
+        int expectedAccess = getExpectedFlags(fileText);
+        assertEquals("Wrong access flag \n" + factory.asText(className), expectedAccess, classVisitor.getAccess());
     }
 
     private static TestedObject parseExpectedTestedObject(String fileText) {
         TestedObject result = new TestedObject();
-        List<String> testedObjects = findListWithPrefix("// TESTED_OBJECTS: ", fileText);
+        List<String> testedObjects = findListWithPrefixes(fileText, "// TESTED_OBJECTS: ");
         assertTrue("Cannot find TESTED_OBJECTS instruction", !testedObjects.isEmpty());
         result.containingClass = testedObjects.get(0);
         if (testedObjects.size() == 1) {
@@ -103,16 +108,18 @@ public abstract class AbstractWriteFlagsTest extends UsefulTestCase {
                     "TESTED_OBJECTS instruction must contains one (for class) or two (for function and property) values");
         }
 
-        List<String> testedObjectKinds = findListWithPrefix("// TESTED_OBJECT_KIND: ", fileText);
-        assertTrue("TESTED_OBJECT_KIND instruction must contains exactly one value. Actual value is " + testedObjectKinds.size(),
-                   testedObjectKinds.size() == 1);
-        result.kind = testedObjectKinds.get(0);
+        result.kind = findStringWithPrefixes(fileText, "// TESTED_OBJECT_KIND: ");
+        List<String> isFullName = findListWithPrefixes(fileText, "// IS_FULL_CONTAINING_CLASS_NAME: ");
+        if (isFullName.size() == 1) {
+            result.isFullContainingClassName = Boolean.parseBoolean(isFullName.get(0));
+        }
         return result;
     }
 
     private static class TestedObject {
         public String name;
         public String containingClass = "";
+        public boolean isFullContainingClassName = true;
         public String kind;
     }
 
@@ -143,7 +150,7 @@ public abstract class AbstractWriteFlagsTest extends UsefulTestCase {
     private static int getExpectedFlags(String text) {
         int expectedAccess = 0;
         Class klass = Opcodes.class;
-        List<String> flags = findListWithPrefix("// FLAGS: ", text);
+        List<String> flags = findListWithPrefixes(text, "// FLAGS: ");
         for (String flag : flags) {
             try {
                 Field field = klass.getDeclaredField(flag);

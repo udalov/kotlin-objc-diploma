@@ -33,6 +33,7 @@ import org.jetbrains.jet.lang.resolve.java.*;
 import org.jetbrains.jet.lang.resolve.java.descriptor.ClassDescriptorFromJvmBytecode;
 import org.jetbrains.jet.lang.resolve.java.kt.JetClassAnnotation;
 import org.jetbrains.jet.lang.resolve.java.provider.ClassPsiDeclarationProvider;
+import org.jetbrains.jet.lang.resolve.java.provider.MembersCache;
 import org.jetbrains.jet.lang.resolve.java.scope.JavaClassNonStaticMembersScope;
 import org.jetbrains.jet.lang.resolve.java.wrapper.PsiClassWrapper;
 import org.jetbrains.jet.lang.resolve.name.FqName;
@@ -166,13 +167,19 @@ public final class JavaClassResolver {
         return doResolveClass(qualifiedName, tasks);
     }
 
-    @Nullable
     private ClassDescriptor doResolveClass(@NotNull FqName qualifiedName, @NotNull PostponedTasks tasks) {
-        PsiClass psiClass = psiClassFinder.findPsiClass(qualifiedName, PsiClassFinder.RuntimeClassesHandleMode.THROW);
+        PsiClass psiClass = psiClassFinder.findPsiClass(qualifiedName, PsiClassFinder.RuntimeClassesHandleMode.REPORT_ERROR);
         if (psiClass == null) {
             cacheNegativeValue(javaClassToKotlinFqName(qualifiedName));
             return null;
         }
+
+        // Class may have been resolved previously by different Java resolver instance, and we are reusing its trace
+        ClassDescriptor alreadyResolved = trace.get(BindingContext.CLASS, psiClass);
+        if (alreadyResolved != null) {
+            return alreadyResolved;
+        }
+
         return createJavaClassDescriptor(qualifiedName, psiClass, tasks);
     }
 
@@ -190,7 +197,7 @@ public final class JavaClassResolver {
 
     @NotNull
     private ClassDescriptor createJavaClassDescriptor(
-            @NotNull FqName fqName, @NotNull final PsiClass psiClass,
+            @NotNull FqName fqName, @NotNull PsiClass psiClass,
             @NotNull PostponedTasks taskList
     ) {
 
@@ -221,8 +228,8 @@ public final class JavaClassResolver {
 
         ClassKind kind = getClassKind(psiClass, jetClassAnnotation);
         ClassPsiDeclarationProvider classData = semanticServices.getPsiDeclarationProviderFactory().createBinaryClassData(psiClass);
-        ClassDescriptorFromJvmBytecode classDescriptor = new ClassDescriptorFromJvmBytecode(containingDeclaration, kind,
-                                                                                            isInnerClass(psiClass));
+        ClassDescriptorFromJvmBytecode classDescriptor = new ClassDescriptorFromJvmBytecode(
+                containingDeclaration, kind, isInnerClass(psiClass), MembersCache.isSamInterface(psiClass));
 
         cache(javaClassToKotlinFqName(fqName), classDescriptor);
         classDescriptor.setName(Name.identifier(psiClass.getName()));
@@ -292,7 +299,7 @@ public final class JavaClassResolver {
     }
 
     void checkFqNamesAreConsistent(@NotNull PsiClass psiClass, @NotNull FqName desiredFqName) {
-        final String qualifiedName = psiClass.getQualifiedName();
+        String qualifiedName = psiClass.getQualifiedName();
         assert qualifiedName != null;
 
         FqName fqName = new FqName(qualifiedName);
@@ -315,7 +322,7 @@ public final class JavaClassResolver {
 
     @NotNull
     private static FqName getFqName(@NotNull PsiClass psiClass) {
-        final String qualifiedName = psiClass.getQualifiedName();
+        String qualifiedName = psiClass.getQualifiedName();
         assert qualifiedName != null;
         return new FqName(qualifiedName);
     }

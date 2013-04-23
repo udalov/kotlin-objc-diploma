@@ -16,11 +16,12 @@
 
 package org.jetbrains.jet.plugin.quickfix;
 
+import com.intellij.codeInsight.CodeInsightSettings;
+import com.intellij.codeInsight.actions.OptimizeImportsProcessor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.DefaultModuleConfiguration;
 import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
 import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
@@ -36,12 +37,11 @@ import org.jetbrains.jet.lang.types.ErrorUtils;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.TypeUtils;
 import org.jetbrains.jet.plugin.JetPluginUtil;
+import org.jetbrains.jet.plugin.project.AnalyzerFacadeWithCache;
 import org.jetbrains.jet.plugin.references.JetPsiReference;
 import org.jetbrains.jet.util.QualifiedNamesUtil;
 
 import java.util.List;
-
-import static org.jetbrains.jet.plugin.project.AnalyzeSingleFileUtil.getContextForSingleFile;
 
 public class ImportInsertHelper {
     private ImportInsertHelper() {
@@ -57,13 +57,13 @@ public class ImportInsertHelper {
         if (JetPluginUtil.checkTypeIsStandard(type, file.getProject()) || ErrorUtils.isErrorType(type)) {
             return;
         }
-        BindingContext bindingContext = getContextForSingleFile(file);
+        BindingContext bindingContext = AnalyzerFacadeWithCache.analyzeFileWithCache(file).getBindingContext();
         PsiElement element = BindingContextUtils.descriptorToDeclaration(bindingContext, type.getMemberScope().getContainingDeclaration());
         if (element != null && element.getContainingFile() == file) { //declaration is in the same file, so no import is needed
             return;
         }
         for (ClassDescriptor clazz : TypeUtils.getAllClassDescriptors(type)) {
-            addImportDirective(DescriptorUtils.getFQName(getTopLevelClass(clazz)).toSafe(), file);
+            addImportDirectiveIfNeeded(DescriptorUtils.getFQName(getTopLevelClass(clazz)).toSafe(), file);
         }
     }
 
@@ -73,8 +73,8 @@ public class ImportInsertHelper {
      * @param importFqn full name of the import
      * @param file File where directive should be added.
      */
-    public static void addImportDirective(@NotNull FqName importFqn, @NotNull JetFile file) {
-        addImportDirective(new ImportPath(importFqn, false), file);
+    public static void addImportDirectiveIfNeeded(@NotNull FqName importFqn, @NotNull JetFile file) {
+        addImportDirectiveIfNeeded(new ImportPath(importFqn, false), file);
     }
 
     public static void addImportDirectiveOrChangeToFqName(@NotNull FqName importFqn, @NotNull JetFile file, int refOffset, @NotNull PsiElement targetElement) {
@@ -109,14 +109,22 @@ public class ImportInsertHelper {
                 return;
             }
         }
-        addImportDirective(new ImportPath(importFqn, false), file);
+        addImportDirectiveIfNeeded(new ImportPath(importFqn, false), file);
     }
 
-    public static void addImportDirective(@NotNull ImportPath importPath, @NotNull JetFile file) {
+    public static void addImportDirectiveIfNeeded(@NotNull ImportPath importPath, @NotNull JetFile file) {
+        if (CodeInsightSettings.getInstance().OPTIMIZE_IMPORTS_ON_THE_FLY) {
+            new OptimizeImportsProcessor(file.getProject(), file).runWithoutProgress();
+        }
+
         if (!doNeedImport(importPath, file)) {
             return;
         }
 
+        writeImportToFile(importPath, file);
+    }
+
+    public static void writeImportToFile(ImportPath importPath, JetFile file) {
         JetImportDirective newDirective = JetPsiFactory.createImportDirective(file.getProject(), importPath);
         List<JetImportDirective> importDirectives = file.getImportDirectives();
 
@@ -179,6 +187,10 @@ public class ImportInsertHelper {
     }
 
     public static boolean doNeedImport(@NotNull ImportPath importPath, @NotNull JetFile file) {
+        return doNeedImport(importPath, file, file.getImportDirectives());
+    }
+
+    public static boolean doNeedImport(@NotNull ImportPath importPath, @NotNull JetFile file, List<JetImportDirective> importDirectives) {
         if (importPath.fqnPart().firstSegmentIs(JavaDescriptorResolver.JAVA_ROOT)) {
             FqName withoutJavaRoot = QualifiedNamesUtil.withoutFirstSegment(importPath.fqnPart());
             importPath = new ImportPath(withoutJavaRoot, importPath.isAllUnder(), importPath.getAlias());
@@ -187,8 +199,6 @@ public class ImportInsertHelper {
         if (isImportedByDefault(importPath, JetPsiUtil.getFQName(file))) {
             return false;
         }
-
-        List<JetImportDirective> importDirectives = file.getImportDirectives();
 
         if (!importDirectives.isEmpty()) {
             // Check if import is already present

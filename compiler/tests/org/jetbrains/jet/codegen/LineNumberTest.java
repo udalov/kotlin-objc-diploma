@@ -66,8 +66,9 @@ public class LineNumberTest extends TestCaseWithTmpdir {
         super.setUp();
 
         JetCoreEnvironment environment = createEnvironment();
-        JetFile psiFile = JetPsiFactory.createFile(environment.getProject(),
-                                                   "package test;\n\npublic fun " + LINE_NUMBER_FUN + "(): Int = 0\n");
+        JetFile psiFile = JetTestUtils.createFile(LINE_NUMBER_FUN + ".kt",
+                                               "package test;\n\npublic fun " + LINE_NUMBER_FUN + "(): Int = 0\n",
+                                               environment.getProject());
 
         ClassFileFactory classFileFactory = GenerationUtils.compileFileGetClassFileFactoryForTest(psiFile);
         CompileEnvironmentUtil.writeToOutputDirectory(classFileFactory, tmpdir);
@@ -175,7 +176,7 @@ public class LineNumberTest extends TestCaseWithTmpdir {
 
         ClassVisitor visitor = new ClassVisitor(Opcodes.ASM4) {
             @Override
-            public MethodVisitor visitMethod(int access, String name, final String desc, final String signature, String[] exceptions) {
+            public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
                 return new MethodVisitor(Opcodes.ASM4) {
                     private Label lastLabel;
 

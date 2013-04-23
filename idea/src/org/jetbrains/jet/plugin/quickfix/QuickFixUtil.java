@@ -21,17 +21,20 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.CallableDescriptor;
 import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
 import org.jetbrains.jet.lang.diagnostics.Diagnostic;
+import org.jetbrains.jet.lang.psi.JetDeclaration;
 import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.psi.JetNamedDeclaration;
 import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.types.DeferredType;
 import org.jetbrains.jet.lang.types.JetType;
-
-import static org.jetbrains.jet.plugin.project.AnalyzeSingleFileUtil.getContextForSingleFile;
+import org.jetbrains.jet.lang.types.checker.JetTypeChecker;
+import org.jetbrains.jet.plugin.project.AnalyzerFacadeWithCache;
+import org.jetbrains.jet.plugin.references.BuiltInsReferenceResolver;
 
 public class QuickFixUtil {
     private QuickFixUtil() {
@@ -54,7 +57,7 @@ public class QuickFixUtil {
     public static JetType getDeclarationReturnType(JetNamedDeclaration declaration) {
         PsiFile file = declaration.getContainingFile();
         if (!(file instanceof JetFile)) return null;
-        BindingContext bindingContext = getContextForSingleFile((JetFile)file);
+        BindingContext bindingContext = AnalyzerFacadeWithCache.analyzeFileWithCache((JetFile) file).getBindingContext();
         DeclarationDescriptor descriptor = bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, declaration);
         if (!(descriptor instanceof CallableDescriptor)) return null;
         JetType type = ((CallableDescriptor) descriptor).getReturnType();
@@ -62,5 +65,32 @@ public class QuickFixUtil {
             type = ((DeferredType) type).getActualType();
         }
         return type;
+    }
+
+    @Nullable
+    public static JetType findLowerBoundOfOverriddenCallablesReturnTypes(BindingContext context, JetDeclaration callable) {
+        DeclarationDescriptor descriptor = context.get(BindingContext.DECLARATION_TO_DESCRIPTOR, callable);
+        if (!(descriptor instanceof CallableDescriptor)) {
+            return null;
+        }
+
+        JetType matchingReturnType = null;
+        for (CallableDescriptor overriddenDescriptor : ((CallableDescriptor) descriptor).getOverriddenDescriptors()) {
+            JetType overriddenReturnType = overriddenDescriptor.getReturnType();
+            if (overriddenReturnType == null) {
+                return null;
+            }
+            if (matchingReturnType == null || JetTypeChecker.INSTANCE.isSubtypeOf(overriddenReturnType, matchingReturnType)) {
+                matchingReturnType = overriddenReturnType;
+            }
+            else if (!JetTypeChecker.INSTANCE.isSubtypeOf(matchingReturnType, overriddenReturnType)) {
+                return null;
+            }
+        }
+        return matchingReturnType;
+    }
+
+    public static boolean canModifyElement(@NotNull PsiElement element) {
+        return element.isWritable() && !BuiltInsReferenceResolver.isFromBuiltIns(element);
     }
 }

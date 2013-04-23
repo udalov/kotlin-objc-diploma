@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.cli.common.messages.MessageCollector;
 import org.jetbrains.jet.compiler.runner.*;
 import org.jetbrains.jet.plugin.JetFileType;
-import org.jetbrains.jet.plugin.project.JsModuleDetector;
+import org.jetbrains.jet.plugin.framework.KotlinFrameworkDetector;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class JetCompiler implements TranslatingCompiler {
             return false;
         }
         Module module = compileContext.getModuleByFile(virtualFile);
-        if (module != null && JsModuleDetector.isJsModule(module)) {
+        if (module != null && KotlinFrameworkDetector.isJsKotlinModule(module)) {
             return false;
         }
         return true;
@@ -68,16 +68,17 @@ public class JetCompiler implements TranslatingCompiler {
     }
 
     @Override
-    public void compile(final CompileContext compileContext,
+    public void compile(
+            CompileContext compileContext,
             Chunk<Module> moduleChunk,
-            final VirtualFile[] virtualFiles,
+            VirtualFile[] virtualFiles,
             OutputSink outputSink) {
         if (virtualFiles.length == 0) return;
 
         List<VirtualFile> productionFiles = new ArrayList<VirtualFile>();
         List<VirtualFile> testFiles = new ArrayList<VirtualFile>();
         for (VirtualFile file : virtualFiles) {
-            final boolean inTests = ((CompileContextEx)compileContext).isInTestSourceContent(file);
+            boolean inTests = ((CompileContextEx)compileContext).isInTestSourceContent(file);
             if (inTests) {
                 testFiles.add(file);
             }
@@ -86,7 +87,7 @@ public class JetCompiler implements TranslatingCompiler {
             }
         }
 
-        final Module module = compileContext.getModuleByFile(virtualFiles[0]);
+        Module module = compileContext.getModuleByFile(virtualFiles[0]);
 
         doCompile(compileContext, moduleChunk, productionFiles, module, outputSink, false);
         doCompile(compileContext, moduleChunk, testFiles, module, outputSink, true);

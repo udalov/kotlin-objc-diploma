@@ -72,8 +72,6 @@ public class JetCoreEnvironment {
 
     private final CompilerConfiguration configuration;
 
-    private boolean initialized = false;
-
     public JetCoreEnvironment(Disposable parentDisposable, @NotNull CompilerConfiguration configuration) {
         this.configuration = configuration.copy();
         this.configuration.setReadOnly(true);
@@ -119,7 +117,7 @@ public class JetCoreEnvironment {
             addToClasspath(path);
         }
         for (File path : configuration.getList(JVMConfigurationKeys.ANNOTATIONS_PATH_KEY)) {
-            addExternalAnnotationsRoot(PathUtil.jarFileOrDirectoryToVirtualFile(path));
+            addExternalAnnotationsRoot(path);
         }
         for (String path : configuration.getList(CommonConfigurationKeys.SOURCE_ROOTS_KEY)) {
             addSources(path);
@@ -127,8 +125,7 @@ public class JetCoreEnvironment {
 
         JetScriptDefinitionProvider.getInstance(project).addScriptDefinitions(configuration.getList(CommonConfigurationKeys.SCRIPT_DEFINITIONS_KEY));
 
-        KotlinBuiltIns.initialize(project);
-        initialized = true;
+        KotlinBuiltIns.initialize(project, KotlinBuiltIns.InitializationMode.SINGLE_THREADED);
     }
 
     public CompilerConfiguration getConfiguration() {
@@ -145,8 +142,12 @@ public class JetCoreEnvironment {
         return projectEnvironment.getProject();
     }
 
-    private void addExternalAnnotationsRoot(VirtualFile root) {
-        annotationsManager.addExternalAnnotationsRoot(root);
+    private void addExternalAnnotationsRoot(File path) {
+        if (!path.exists()) {
+            report(WARNING, "Annotations path entry points to a non-existent location: " + path);
+            return;
+        }
+        annotationsManager.addExternalAnnotationsRoot(PathUtil.jarFileOrDirectoryToVirtualFile(path));
     }
 
     private void addSources(File file) {
@@ -187,10 +188,7 @@ public class JetCoreEnvironment {
         addSources(new File(path));
     }
 
-    public void addToClasspath(File path) {
-        if (initialized) {
-            throw new IllegalStateException("Cannot add class path when JetCoreEnvironment is already initialized");
-        }
+    private void addToClasspath(File path) {
         if (path.isFile()) {
             VirtualFile jarFile = applicationEnvironment.getJarFileSystem().findFileByPath(path + "!/");
             if (jarFile == null) {
@@ -200,7 +198,7 @@ public class JetCoreEnvironment {
             projectEnvironment.addJarToClassPath(path);
         }
         else {
-            final VirtualFile root = applicationEnvironment.getLocalFileSystem().findFileByPath(path.getAbsolutePath());
+            VirtualFile root = applicationEnvironment.getLocalFileSystem().findFileByPath(path.getAbsolutePath());
             if (root == null) {
                 report(WARNING, "Classpath entry points to a non-existent location: " + path);
                 return;

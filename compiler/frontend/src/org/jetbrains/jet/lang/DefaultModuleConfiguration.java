@@ -33,16 +33,9 @@ public class DefaultModuleConfiguration implements ModuleConfiguration {
             new ImportPath("kotlin.io.*"),
             new ImportPath("jet.*"));
 
-    public static DefaultModuleConfiguration createStandardConfiguration() {
-        return new DefaultModuleConfiguration();
-    }
+    public static final ModuleConfiguration INSTANCE = new DefaultModuleConfiguration();
 
     private DefaultModuleConfiguration() {
-    }
-
-    @Override
-    public List<ImportPath> getDefaultImports() {
-        return DEFAULT_JET_IMPORTS;
     }
 
     @Override
@@ -50,11 +43,5 @@ public class DefaultModuleConfiguration implements ModuleConfiguration {
         if (DescriptorUtils.getFQName(namespaceDescriptor).equalsTo(KotlinBuiltIns.getInstance().getBuiltInsPackageFqName())) {
             namespaceMemberScope.importScope(KotlinBuiltIns.getInstance().getBuiltInsScope());
         }
-    }
-
-    @NotNull
-    @Override
-    public PlatformToKotlinClassMap getPlatformToKotlinClassMap() {
-        return PlatformToKotlinClassMap.EMPTY;
     }
 }

@@ -40,11 +40,6 @@ public class DefaultErrorMessages {
     public static final DiagnosticRenderer<Diagnostic> RENDERER = new DispatchingDiagnosticRenderer(MAP);
 
     static {
-
-        // TODO: remove when tuples are completely dropped
-        MAP.put(TUPLES_ARE_NOT_SUPPORTED, "Tuples are not supported. In the IDE you can use Alt+Enter to replace tuples with library classes");
-        MAP.put(TUPLES_ARE_NOT_SUPPORTED_BIG, "Tuples are not supported. Use data classes instead");
-
         MAP.put(EXCEPTION_WHILE_ANALYZING, "{0}", new Renderer<Throwable>() {
             @NotNull
             @Override
@@ -218,6 +213,7 @@ public class DefaultErrorMessages {
         MAP.put(SETTER_PARAMETER_WITH_DEFAULT_VALUE, "Setter parameters cannot have default values");
         MAP.put(NO_THIS, "'this' is not defined in this context");
         MAP.put(SUPER_NOT_AVAILABLE, "No supertypes are accessible in this context");
+        MAP.put(SUPERCLASS_NOT_ACCESSIBLE_FROM_TRAIT, "Superclass is not accessible from trait");
         MAP.put(AMBIGUOUS_SUPER, "Many supertypes available, please specify the one you mean in angle brackets, e.g. 'super<Foo>'");
         MAP.put(ABSTRACT_SUPER_CALL, "Abstract member cannot be accessed directly");
         MAP.put(NOT_A_SUPERTYPE, "Not a supertype");
@@ -229,6 +225,8 @@ public class DefaultErrorMessages {
         MAP.put(WRONG_SETTER_PARAMETER_TYPE, "Setter parameter type must be equal to the type of the property, i.e. ''{0}''", RENDER_TYPE, RENDER_TYPE);
         MAP.put(WRONG_GETTER_RETURN_TYPE, "Getter return type must be equal to the type of the property, i.e. ''{0}''", RENDER_TYPE, RENDER_TYPE);
         MAP.put(NO_CLASS_OBJECT, "Please specify constructor invocation; classifier ''{0}'' does not have a class object", NAME);
+        MAP.put(TYPE_PARAMETER_IS_NOT_AN_EXPRESSION, "Type parameter ''{0}'' is not an expression", NAME);
+        MAP.put(TYPE_PARAMETER_ON_LHS_OF_DOT, "Type parameter ''{0}'' cannot have or inherit a class object, so it cannot be on the left hand side of dot", NAME);
         MAP.put(NO_GENERICS_IN_SUPERTYPE_SPECIFIER, "Generic arguments of the base type must be specified");
 
         MAP.put(INACCESSIBLE_OUTER_CLASS_EXPRESSION, "Expression is inaccessible from a nested class ''{0}'', use ''inner'' keyword to make the class inner", NAME);
@@ -305,7 +303,7 @@ public class DefaultErrorMessages {
         MAP.put(NOT_A_LOOP_LABEL, "The label ''{0}'' does not denote a loop", TO_STRING);
         MAP.put(NOT_A_RETURN_LABEL, "The label ''{0}'' does not reference to a context from which we can return", TO_STRING);
 
-        MAP.put(ANONYMOUS_INITIALIZER_WITHOUT_CONSTRUCTOR, "Anonymous initializers are only allowed in the presence of a primary constructor");
+        MAP.put(ANONYMOUS_INITIALIZER_IN_TRAIT, "Anonymous initializers are not allowed in traits");
         MAP.put(NULLABLE_SUPERTYPE, "A supertype cannot be nullable");
         MAP.put(REDUNDANT_NULLABLE, "Redundant '?'");
         MAP.put(BASE_WITH_NULLABLE_UPPER_BOUND, "''{0}'' has a nullable upper bound. " +
@@ -441,6 +439,10 @@ public class DefaultErrorMessages {
                     "This may cause problems when calling this function with named arguments.", commaSeparated(TO_STRING), TO_STRING);
 
         MAP.put(AMBIGUOUS_ANONYMOUS_TYPE_INFERRED, "Right-hand side has anonymous type. Please specify type explicitly", TO_STRING);
+
+        MAP.put(EXTENSION_IN_CLASS_REFERENCE_NOT_ALLOWED,
+                "''{0}'' is a member and an extension at the same time. References to such elements are not allowed", TO_STRING);
+        MAP.put(CALLABLE_REFERENCE_LHS_NOT_A_CLASS, "Callable reference left-hand side cannot be a type parameter");
 
         MAP.setImmutable();
 

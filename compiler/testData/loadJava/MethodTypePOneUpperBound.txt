@@ -1,6 +1,0 @@
-package test
-
-public open class MethodTypePOneUpperBound : java.lang.Object {
-    public constructor MethodTypePOneUpperBound()
-    public open fun </*0*/ T : java.lang.Cloneable?> bar() : Unit
-}

@@ -21,7 +21,6 @@ import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
 import org.jetbrains.jet.lang.descriptors.ClassifierDescriptor;
 import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
-import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.java.DescriptorSearchRule;
 import org.jetbrains.jet.lang.resolve.java.JavaSemanticServices;
 import org.jetbrains.jet.lang.resolve.java.provider.PackagePsiDeclarationProvider;
@@ -35,8 +34,6 @@ import static org.jetbrains.jet.lang.resolve.java.scope.ScopeUtils.computeAllPac
 public abstract class JavaPackageScope extends JavaBaseScope {
 
     @NotNull
-    private final PackagePsiDeclarationProvider declarationProvider;
-    @NotNull
     private final FqName packageFQN;
 
     protected JavaPackageScope(
@@ -46,7 +43,6 @@ public abstract class JavaPackageScope extends JavaBaseScope {
             @NotNull JavaSemanticServices semanticServices
     ) {
         super(descriptor, semanticServices, declarationProvider);
-        this.declarationProvider = declarationProvider;
         this.packageFQN = packageFQN;
     }
 
@@ -79,9 +75,7 @@ public abstract class JavaPackageScope extends JavaBaseScope {
     @Override
     protected Collection<DeclarationDescriptor> computeAllDescriptors() {
         Collection<DeclarationDescriptor> result = super.computeAllDescriptors();
-        result.addAll(computeAllPackageDeclarations(declarationProvider.getPsiPackage(),
-                                                    semanticServices,
-                                                    DescriptorUtils.getFQName(descriptor).toSafe()));
+        result.addAll(computeAllPackageDeclarations(((PackagePsiDeclarationProvider) declarationProvider).getPsiPackage(), semanticServices));
         return result;
     }
 }

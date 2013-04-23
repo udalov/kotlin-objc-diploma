@@ -181,7 +181,7 @@ public class JetFunctionInsertHandler implements InsertHandler<LookupElement> {
                 }
 
                 if (context.getFile() instanceof JetFile && item.getObject() instanceof JetLookupObject) {
-                    final DeclarationDescriptor descriptor = ((JetLookupObject) item.getObject()).getDescriptor();
+                    DeclarationDescriptor descriptor = ((JetLookupObject) item.getObject()).getDescriptor();
                     if (descriptor instanceof SimpleFunctionDescriptor) {
 
                         final JetFile file = (JetFile) context.getFile();
@@ -197,8 +197,8 @@ public class JetFunctionInsertHandler implements InsertHandler<LookupElement> {
                             ApplicationManager.getApplication().runWriteAction(new Runnable() {
                                 @Override
                                 public void run() {
-                                    final FqName fqn = DescriptorUtils.getFQName(functionDescriptor).toSafe();
-                                    ImportInsertHelper.addImportDirective(fqn, file);
+                                    FqName fqn = DescriptorUtils.getFQName(functionDescriptor).toSafe();
+                                    ImportInsertHelper.addImportDirectiveIfNeeded(fqn, file);
                                 }
                             });
                         }

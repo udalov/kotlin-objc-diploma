@@ -17,7 +17,6 @@
 package org.jetbrains.jet.lang.types.lang;
 
 import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -26,7 +25,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFileFactory;
-import com.intellij.util.Function;
+import com.intellij.util.LocalTimeCounter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.DefaultModuleConfiguration;
@@ -36,16 +35,17 @@ import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.ValueParameterDescriptorImpl;
 import org.jetbrains.jet.lang.psi.JetFile;
-import org.jetbrains.jet.lang.resolve.*;
-import org.jetbrains.jet.lang.resolve.lazy.declarations.FileBasedDeclarationProviderFactory;
+import org.jetbrains.jet.lang.resolve.AnalyzingUtils;
+import org.jetbrains.jet.lang.resolve.BindingTraceContext;
+import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.lazy.KotlinCodeAnalyzer;
-import org.jetbrains.jet.lang.resolve.lazy.storage.LockBasedStorageManager;
 import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
+import org.jetbrains.jet.lang.resolve.lazy.declarations.FileBasedDeclarationProviderFactory;
+import org.jetbrains.jet.lang.resolve.lazy.storage.LockBasedStorageManager;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.FqNameUnsafe;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
-import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 import org.jetbrains.jet.lang.types.*;
 import org.jetbrains.jet.plugin.JetFileType;
 
@@ -57,7 +57,6 @@ import java.util.*;
 import static org.jetbrains.jet.lang.types.lang.PrimitiveType.*;
 
 public class KotlinBuiltIns {
-    public static final Name UNIT_ALIAS = Name.identifier("Unit");
     public static final JetScope STUB = JetScope.EMPTY;
 
     public static final String BUILT_INS_DIR = "jet";
@@ -77,14 +76,14 @@ public class KotlinBuiltIns {
             BUILT_INS_DIR + "/Any.jet",
             BUILT_INS_DIR + "/ExtensionFunctions.jet",
             BUILT_INS_DIR + "/Functions.jet",
+            BUILT_INS_DIR + "/KFunctions.jet",
+            BUILT_INS_DIR + "/KMemberFunctions.jet",
+            BUILT_INS_DIR + "/KExtensionFunctions.jet",
             BUILT_INS_DIR + "/Nothing.jet",
-            BUILT_INS_DIR + "/Tuples.jet",
             BUILT_INS_DIR + "/Unit.jet"
     );
 
-    private static final Map<FqName, Name> ALIASES = ImmutableMap.<FqName, Name>builder()
-            .put(new FqName("jet.Unit"), Name.identifier("Tuple0"))
-            .build();
+    public static final int FUNCTION_TRAIT_COUNT = 23;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -93,9 +92,16 @@ public class KotlinBuiltIns {
     private static volatile boolean initializing;
     private static Throwable initializationFailed;
 
+    public enum InitializationMode {
+        // Multi-threaded mode is used in the IDE
+        MULTI_THREADED,
+        // Single-threaded mode is used in the compiler and IDE-independent tests
+        SINGLE_THREADED
+    }
+
     // This method must be called at least once per application run, on any project
     // before any type checking is run
-    public static synchronized void initialize(@NotNull Project project) {
+    public static synchronized void initialize(@NotNull Project project, @NotNull InitializationMode initializationMode) {
         if (instance == null) {
             if (initializationFailed != null) {
                 throw new RuntimeException(
@@ -107,7 +113,7 @@ public class KotlinBuiltIns {
             initializing = true;
             try {
                 instance = new KotlinBuiltIns(project);
-                instance.initialize();
+                instance.initialize(initializationMode == InitializationMode.MULTI_THREADED);
             }
             catch (Throwable e) {
                 initializationFailed = e;
@@ -136,16 +142,13 @@ public class KotlinBuiltIns {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private final KotlinCodeAnalyzer analyzer;
-    private final ModuleDescriptor builtInsModule;
+    private final ModuleDescriptorImpl builtInsModule;
 
     private volatile ImmutableSet<ClassDescriptor> nonPhysicalClasses;
 
     private final ImmutableSet<ClassDescriptor> functionClassesSet;
 
     private final ImmutableSet<ClassDescriptor> extensionFunctionClassesSet;
-
-    @Deprecated
-    private final ImmutableSet<ClassDescriptor> tupleClassesSet;
 
     private final EnumMap<PrimitiveType, ClassDescriptor> primitiveTypeToClass;
     private final EnumMap<PrimitiveType, ClassDescriptor> primitiveTypeToArrayClass;
@@ -171,12 +174,14 @@ public class KotlinBuiltIns {
 
     private KotlinBuiltIns(@NotNull Project project) {
         try {
-            this.builtInsModule = new ModuleDescriptor(Name.special("<built-ins lazy module>"));
+            this.builtInsModule = new ModuleDescriptorImpl(Name.special("<built-ins lazy module>"),
+                                                           DefaultModuleConfiguration.DEFAULT_JET_IMPORTS,
+                                                           PlatformToKotlinClassMap.EMPTY);
+            builtInsModule.setModuleConfiguration(ModuleConfiguration.EMPTY);
             this.analyzer = createLazyResolveSession(project);
 
-            this.functionClassesSet = computeIndexedClasses("Function", getFunctionTraitCount());
-            this.extensionFunctionClassesSet = computeIndexedClasses("ExtensionFunction", getFunctionTraitCount());
-            this.tupleClassesSet = computeIndexedClasses("Tuple", getFunctionTraitCount());
+            this.functionClassesSet = computeIndexedClasses("Function", FUNCTION_TRAIT_COUNT);
+            this.extensionFunctionClassesSet = computeIndexedClasses("ExtensionFunction", FUNCTION_TRAIT_COUNT);
 
             this.primitiveTypeToClass = new EnumMap<PrimitiveType, ClassDescriptor>(PrimitiveType.class);
             this.primitiveTypeToJetType = new EnumMap<PrimitiveType, JetType>(PrimitiveType.class);
@@ -190,7 +195,7 @@ public class KotlinBuiltIns {
             this.arrayClass = getBuiltInClassByName("Array");
             this.deprecatedAnnotationClass = getBuiltInClassByName("deprecated");
             this.dataAnnotationClass = getBuiltInClassByName("data");
-            this.functionClasses = new ClassDescriptor[getFunctionTraitCount()];
+            this.functionClasses = new ClassDescriptor[FUNCTION_TRAIT_COUNT];
             for (int i = 0; i < functionClasses.length; i++) {
                 functionClasses[i] = getBuiltInClassByName("Function" + i);
             }
@@ -200,12 +205,12 @@ public class KotlinBuiltIns {
         }
     }
 
-    private void initialize() {
+    private void initialize(boolean forceResolveAll) {
         anyType = getBuiltInTypeByClassName("Any");
         nullableAnyType = TypeUtils.makeNullable(anyType);
         nothingType = getBuiltInTypeByClassName("Nothing");
         nullableNothingType = TypeUtils.makeNullable(nothingType);
-        unitType = getBuiltInTypeByClassName("Tuple0");
+        unitType = getBuiltInTypeByClassName("Unit");
         stringType = getBuiltInTypeByClassName("String");
         annotationType = getBuiltInTypeByClassName("Annotation");
 
@@ -215,7 +220,9 @@ public class KotlinBuiltIns {
 
         nonPhysicalClasses = computeNonPhysicalClasses();
 
-        analyzer.forceResolveAll();
+        if (forceResolveAll) {
+            analyzer.forceResolveAll();
+        }
 
         AnalyzingUtils.throwExceptionOnErrors(analyzer.getBindingContext());
     }
@@ -228,14 +235,8 @@ public class KotlinBuiltIns {
                 project,
                 storageManager,
                 builtInsModule,
-                new SpecialModuleConfiguration(),
                 new FileBasedDeclarationProviderFactory(storageManager, files),
-                new Function<FqName, Name>() {
-                    @Override
-                    public Name fun(FqName name) {
-                        return ALIASES.get(name);
-                    }
-                },
+                ResolveSession.NO_ALIASES,
                 Predicates.in(Sets.newHashSet(new FqNameUnsafe("jet.Any"), new FqNameUnsafe("jet.Nothing"))),
                 new BindingTraceContext());
     }
@@ -255,34 +256,10 @@ public class KotlinBuiltIns {
             //noinspection IOResourceOpenedButNotSafelyClosed
             String text = FileUtil.loadTextAndClose(new InputStreamReader(stream));
             JetFile file = (JetFile) PsiFileFactory.getInstance(project).createFileFromText(path,
-                    JetFileType.INSTANCE, StringUtil.convertLineSeparators(text));
+                    JetFileType.INSTANCE, StringUtil.convertLineSeparators(text), LocalTimeCounter.currentTime(), true, false);
             files.add(file);
         }
         return files;
-    }
-
-    private static class SpecialModuleConfiguration implements ModuleConfiguration {
-
-        private SpecialModuleConfiguration() {
-        }
-
-        @Override
-        public List<ImportPath> getDefaultImports() {
-            return DefaultModuleConfiguration.DEFAULT_JET_IMPORTS;
-        }
-
-        @Override
-        public void extendNamespaceScope(@NotNull BindingTrace trace,
-                @NotNull NamespaceDescriptor namespaceDescriptor,
-                @NotNull WritableScope namespaceMemberScope) {
-            // DO nothing
-        }
-
-        @NotNull
-        @Override
-        public PlatformToKotlinClassMap getPlatformToKotlinClassMap() {
-            return PlatformToKotlinClassMap.EMPTY;
-        }
     }
 
     private void makePrimitive(PrimitiveType primitiveType) {
@@ -303,14 +280,14 @@ public class KotlinBuiltIns {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @NotNull
-    public ModuleDescriptor getBuiltInsModule() {
+    public ModuleDescriptorImpl getBuiltInsModule() {
         return builtInsModule;
     }
 
     @NotNull
     public NamespaceDescriptor getBuiltInsPackage() {
-        NamespaceDescriptor namespace = getBuiltInsModule().getRootNamespace().getMemberScope().getNamespace(BUILT_INS_PACKAGE_NAME);
-        assert namespace != null : "Built ins namespace not found: " + BUILT_INS_PACKAGE_NAME;
+        NamespaceDescriptor namespace = getBuiltInsModule().getNamespace(BUILT_INS_PACKAGE_FQ_NAME);
+        assert namespace != null : "Built ins namespace not found: " + BUILT_INS_PACKAGE_FQ_NAME;
         return namespace;
     }
 
@@ -430,6 +407,11 @@ public class KotlinBuiltIns {
     }
 
     @NotNull
+    public ClassDescriptor getUnit() {
+        return getBuiltInClassByName("Unit");
+    }
+
+    @NotNull
     public ClassDescriptor getFunction(int parameterCount) {
         return getBuiltInClassByName("Function" + parameterCount);
     }
@@ -437,6 +419,21 @@ public class KotlinBuiltIns {
     @NotNull
     public ClassDescriptor getExtensionFunction(int parameterCount) {
         return getBuiltInClassByName("ExtensionFunction" + parameterCount);
+    }
+
+    @NotNull
+    public ClassDescriptor getKFunction(int parameterCount) {
+        return getBuiltInClassByName("KFunction" + parameterCount);
+    }
+
+    @NotNull
+    public ClassDescriptor getKMemberFunction(int parameterCount) {
+        return getBuiltInClassByName("KMemberFunction" + parameterCount);
+    }
+
+    @NotNull
+    public ClassDescriptor getKExtensionFunction(int parameterCount) {
+        return getBuiltInClassByName("KExtensionFunction" + parameterCount);
     }
 
     @NotNull
@@ -796,6 +793,57 @@ public class KotlinBuiltIns {
             @NotNull List<JetType> parameterTypes,
             @NotNull JetType returnType
     ) {
+        List<TypeProjection> arguments = getFunctionTypeArgumentProjections(receiverType, parameterTypes, returnType);
+        int size = parameterTypes.size();
+        ClassDescriptor classDescriptor = receiverType == null ? getFunction(size) : getExtensionFunction(size);
+        TypeConstructor constructor = classDescriptor.getTypeConstructor();
+
+        return new JetTypeImpl(annotations, constructor, false, arguments, classDescriptor.getMemberScope(arguments));
+    }
+
+    @NotNull
+    public JetType getKFunctionType(
+            @NotNull List<AnnotationDescriptor> annotations,
+            @Nullable JetType receiverType,
+            @NotNull List<JetType> parameterTypes,
+            @NotNull JetType returnType,
+            boolean extensionFunction
+    ) {
+        List<TypeProjection> arguments = getFunctionTypeArgumentProjections(receiverType, parameterTypes, returnType);
+        ClassDescriptor classDescriptor = getCorrespondingKFunctionClass(receiverType, extensionFunction, parameterTypes.size());
+
+        return new JetTypeImpl(
+                annotations,
+                classDescriptor.getTypeConstructor(),
+                false,
+                arguments,
+                classDescriptor.getMemberScope(arguments)
+        );
+    }
+
+    @NotNull
+    private ClassDescriptor getCorrespondingKFunctionClass(
+            @Nullable JetType receiverType,
+            boolean extensionFunction,
+            int numberOfParameters
+    ) {
+        if (receiverType == null) {
+            return getKFunction(numberOfParameters);
+        }
+        else if (extensionFunction) {
+            return getKExtensionFunction(numberOfParameters);
+        }
+        else {
+            return getKMemberFunction(numberOfParameters);
+        }
+    }
+
+    @NotNull
+    private static List<TypeProjection> getFunctionTypeArgumentProjections(
+            @Nullable JetType receiverType,
+            @NotNull List<JetType> parameterTypes,
+            @NotNull JetType returnType
+    ) {
         List<TypeProjection> arguments = new ArrayList<TypeProjection>();
         if (receiverType != null) {
             arguments.add(defaultProjection(receiverType));
@@ -804,10 +852,7 @@ public class KotlinBuiltIns {
             arguments.add(defaultProjection(parameterType));
         }
         arguments.add(defaultProjection(returnType));
-        int size = parameterTypes.size();
-        ClassDescriptor classDescriptor = receiverType == null ? getFunction(size) : getExtensionFunction(size);
-        TypeConstructor constructor = classDescriptor.getTypeConstructor();
-        return new JetTypeImpl(annotations, constructor, false, arguments, classDescriptor.getMemberScope(arguments));
+        return arguments;
     }
 
     private static TypeProjection defaultProjection(JetType returnType) {
@@ -830,10 +875,6 @@ public class KotlinBuiltIns {
 
     // Functions
 
-    public int getFunctionTraitCount() {
-        return 23;
-    }
-
     @NotNull
     private ImmutableSet<ClassDescriptor> computeIndexedClasses(@NotNull String prefix, int count) {
         ImmutableSet.Builder<ClassDescriptor> builder = ImmutableSet.builder();
@@ -848,17 +889,29 @@ public class KotlinBuiltIns {
     }
 
     public boolean isFunctionType(@NotNull JetType type) {
-        return setContainsClassOf(functionClassesSet, type);
+        if (setContainsClassOf(functionClassesSet, type)) return true;
+
+        for (JetType superType : type.getConstructor().getSupertypes()) {
+            if (isFunctionType(superType)) return true;
+        }
+
+        return false;
     }
 
     public boolean isExtensionFunctionType(@NotNull JetType type) {
-        return setContainsClassOf(extensionFunctionClassesSet, type);
+        if (setContainsClassOf(extensionFunctionClassesSet, type)) return true;
+
+        for (JetType superType : type.getConstructor().getSupertypes()) {
+            if (isExtensionFunctionType(superType)) return true;
+        }
+
+        return false;
     }
 
     @Nullable
     public JetType getReceiverType(@NotNull JetType type) {
         assert isFunctionOrExtensionFunctionType(type) : type;
-        if (setContainsClassOf(extensionFunctionClassesSet, type)) {
+        if (isExtensionFunctionType(type)) {
             return type.getArguments().get(0).getType();
         }
         return null;
@@ -873,7 +926,7 @@ public class KotlinBuiltIns {
             TypeProjection parameterType = parameterTypes.get(i);
             ValueParameterDescriptorImpl valueParameterDescriptor = new ValueParameterDescriptorImpl(
                     functionDescriptor, i, Collections.<AnnotationDescriptor>emptyList(),
-                    Name.identifier("p" + (i + 1)), false, parameterType.getType(), false, null);
+                    Name.identifier("p" + (i + 1)), parameterType.getType(), false, null);
             valueParameters.add(valueParameterDescriptor);
         }
         return valueParameters;
@@ -890,7 +943,7 @@ public class KotlinBuiltIns {
     public List<TypeProjection> getParameterTypeProjectionsFromFunctionType(@NotNull JetType type) {
         assert isFunctionOrExtensionFunctionType(type);
         List<TypeProjection> arguments = type.getArguments();
-        int first = setContainsClassOf(extensionFunctionClassesSet, type) ? 1 : 0;
+        int first = isExtensionFunctionType(type) ? 1 : 0;
         int last = arguments.size() - 2;
         List<TypeProjection> parameterTypes = Lists.newArrayList();
         for (int i = first; i <= last; i++) {
@@ -955,65 +1008,6 @@ public class KotlinBuiltIns {
     @NotNull
     public JetType getDefaultBound() {
         return getNullableAnyType();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // TUPLES
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    @Deprecated
-    @NotNull
-    public List<JetType> getTupleElementTypes(@NotNull JetType type) {
-        assert isTupleType(type);
-        List<JetType> result = Lists.newArrayList();
-        for (TypeProjection typeProjection : type.getArguments()) {
-            result.add(typeProjection.getType());
-        }
-        return result;
-    }
-
-    @NotNull
-    @Deprecated
-    public ClassDescriptor getTuple(int size) {
-        return getBuiltInClassByName("Tuple" + size);
-    }
-
-    @Deprecated
-    public boolean isTupleType(@NotNull JetType type) {
-        return setContainsClassOf(tupleClassesSet, type);
-    }
-
-    @NotNull
-    @Deprecated
-    public JetType getTupleType(@NotNull List<JetType> arguments) {
-        return getTupleType(Collections.<AnnotationDescriptor>emptyList(), arguments);
-    }
-
-    @NotNull
-    @Deprecated
-    public JetType getTupleType(@NotNull JetType... arguments) {
-        return getTupleType(Collections.<AnnotationDescriptor>emptyList(), Arrays.asList(arguments));
-    }
-
-    @Deprecated
-    private JetType getTupleType(List<AnnotationDescriptor> annotations, List<JetType> arguments) {
-        if (annotations.isEmpty() && arguments.isEmpty()) {
-            return getUnitType();
-        }
-        ClassDescriptor tuple = getTuple(arguments.size());
-        List<TypeProjection> typeArguments = toProjections(arguments);
-        return new JetTypeImpl(annotations, tuple.getTypeConstructor(), false, typeArguments, tuple.getMemberScope(typeArguments));
-    }
-
-    private static List<TypeProjection> toProjections(List<JetType> arguments) {
-        List<TypeProjection> result = new ArrayList<TypeProjection>();
-        for (JetType argument : arguments) {
-            result.add(new TypeProjection(Variance.OUT_VARIANCE, argument));
-        }
-        return result;
     }
 
     private static boolean setContainsClassOf(ImmutableSet<ClassDescriptor> set, JetType type) {

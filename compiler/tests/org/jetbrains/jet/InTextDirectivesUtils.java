@@ -16,16 +16,18 @@
 
 package org.jetbrains.jet;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ArrayUtil;
+import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public final class InTextDirectivesUtils {
 
@@ -34,7 +36,7 @@ public final class InTextDirectivesUtils {
 
     @Nullable
     public static Integer getPrefixedInt(String fileText, String prefix) {
-        final String[] numberStrings = findArrayWithPrefix(prefix, fileText);
+        String[] numberStrings = findArrayWithPrefixes(fileText, prefix);
         if (numberStrings.length > 0) {
             return Integer.parseInt(numberStrings[0]);
         }
@@ -43,15 +45,15 @@ public final class InTextDirectivesUtils {
     }
 
     @NotNull
-    public static String[] findArrayWithPrefix(String prefix, String fileText) {
-        return ArrayUtil.toStringArray(findListWithPrefix(prefix, fileText));
+    public static String[] findArrayWithPrefixes(String fileText, String... prefixes) {
+        return ArrayUtil.toStringArray(findListWithPrefixes(fileText, prefixes));
     }
 
     @NotNull
-    public static List<String> findListWithPrefix(String prefix, String fileText) {
-        ArrayList<String> result = new ArrayList<String>();
+    public static List<String> findListWithPrefixes(String fileText, String... prefixes) {
+        List<String> result = new ArrayList<String>();
 
-        for (String line : findLinesWithPrefixRemoved(prefix, fileText)) {
+        for (String line : findLinesWithPrefixesRemoved(fileText, prefixes)) {
             String[] variants = line.split(",");
 
             for (String variant : variants) {
@@ -63,32 +65,84 @@ public final class InTextDirectivesUtils {
     }
 
     @Nullable
-    public static String findStringWithPrefix(String prefix, String fileText) {
-        List<String> strings = findListWithPrefix(prefix, fileText);
+    public static String findStringWithPrefixes(String fileText, String... prefixes) {
+        List<String> strings = findListWithPrefixes(fileText, prefixes);
         if (strings.isEmpty()) {
             return null;
         }
-        assert strings.size() == 1 : "There is more than one string with given prefix " + prefix + ". Use findListWithPrefix() instead.";
+        assert strings.size() == 1 : "There is more than one string with given prefixes " +
+                                     Arrays.toString(prefixes) + ". Use findListWithPrefixes() instead.";
         return strings.get(0);
     }
 
     @NotNull
-    public static List<String> findLinesWithPrefixRemoved(String prefix, String fileText) {
-        ArrayList<String> result = new ArrayList<String>();
+    public static List<String> findLinesWithPrefixesRemoved(String fileText, String... prefixes) {
+        List<String> result = new ArrayList<String>();
+        List<String> cleanedPrefixes = cleanDirectivesFromComments(Arrays.asList(prefixes));
 
-        for (String line : fileNonEmptyLines(fileText)) {
-            if (line.startsWith(prefix)) {
-                result.add(line.substring(prefix.length()).trim());
+        for (String line : fileNonEmptyCommentedLines(fileText)) {
+            for (String prefix : cleanedPrefixes) {
+                if (line.startsWith(prefix)) {
+                    String noPrefixLine = line.substring(prefix.length());
+
+                    if (noPrefixLine.isEmpty() ||
+                            Character.isWhitespace(noPrefixLine.charAt(0)) ||
+                            Character.isWhitespace(prefix.charAt(prefix.length() - 1))) {
+                        result.add(noPrefixLine.trim());
+                        break;
+                    }
+                }
             }
         }
 
         return result;
     }
 
+    public static void assertHasUnknownPrefixes(String fileText, Collection<String> knownPrefixes) {
+        Set<String> prefixes = Sets.newHashSet();
+
+        for (String line : fileNonEmptyCommentedLines(fileText)) {
+            String prefix = probableDirective(line);
+            if (prefix != null) {
+                prefixes.add(prefix);
+            }
+        }
+
+        prefixes.removeAll(cleanDirectivesFromComments(knownPrefixes));
+
+        Assert.assertTrue("File contains some unexpected directives" + prefixes, prefixes.isEmpty());
+    }
+
+    private static String probableDirective(String line) {
+        String[] arr = line.split(" ", 2);
+        String firstWord = arr[0];
+
+        if (firstWord.length() > 1 && StringUtil.toUpperCase(firstWord).equals(firstWord)) {
+            return firstWord;
+        }
+
+        return null;
+    }
+
+    private static List<String> cleanDirectivesFromComments(Collection<String> prefixes) {
+        List<String> resultPrefixes = Lists.newArrayList();
+
+        for (String prefix : prefixes) {
+            if (prefix.startsWith("//")) {
+                resultPrefixes.add(StringUtil.trimLeading(prefix.substring(2)));
+            }
+            else {
+                resultPrefixes.add(prefix);
+            }
+        }
+
+        return resultPrefixes;
+    }
+
 
     @NotNull
-    private static List<String> fileNonEmptyLines(String fileText) {
-        ArrayList<String> result = new ArrayList<String>();
+    private static List<String> fileNonEmptyCommentedLines(String fileText) {
+        List<String> result = new ArrayList<String>();
 
         try {
             BufferedReader reader = new BufferedReader(new StringReader(fileText));
@@ -96,8 +150,11 @@ public final class InTextDirectivesUtils {
                 String line;
 
                 while ((line = reader.readLine()) != null) {
-                    if (!line.isEmpty()) {
-                        result.add(line.trim());
+                    if (line.startsWith("//")) {
+                        String uncommentedLine = line.substring(2).trim();
+                        if (!uncommentedLine.isEmpty()) {
+                            result.add(uncommentedLine);
+                        }
                     }
                 }
             } finally {

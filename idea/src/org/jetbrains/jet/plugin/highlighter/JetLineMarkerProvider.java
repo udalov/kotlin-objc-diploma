@@ -21,10 +21,10 @@ import com.intellij.codeHighlighting.Pass;
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
+import com.intellij.codeInsight.daemon.impl.LineMarkerNavigator;
 import com.intellij.codeInsight.daemon.impl.MarkerType;
 import com.intellij.codeInsight.hint.HintUtil;
 import com.intellij.codeInsight.navigation.NavigationUtil;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -35,9 +35,10 @@ import com.intellij.psi.search.searches.ClassInheritorsSearch;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.Function;
+import com.intellij.util.NullableFunction;
 import com.intellij.util.PsiNavigateUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jet.asJava.KotlinLightClass;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.asJava.LightClassUtil;
 import org.jetbrains.jet.lang.descriptors.CallableMemberDescriptor;
 import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
@@ -67,54 +68,67 @@ public class JetLineMarkerProvider implements LineMarkerProvider {
 
     private static final Function<PsiElement, String> SUBCLASSED_CLASS_TOOLTIP_ADAPTER = new Function<PsiElement, String>() {
         @Override
-        public String fun(PsiElement element) {
-            PsiElement child = getPsiClassFirstChild(element);
-            // Java puts its marker on a child of the PsiClass, so we must find a child of our own class too
-            return child != null ? MarkerType.SUBCLASSED_CLASS.getTooltip().fun(child) : null;
+        public String fun(@NotNull PsiElement element) {
+            PsiClass psiClass = getPsiClass(element);
+            return psiClass != null ? SUBCLASSED_CLASS.getTooltip().fun(psiClass) : null;
         }
     };
 
-    private static PsiElement getPsiClassFirstChild(PsiElement element) {
+    private static final GutterIconNavigationHandler<PsiElement> SUBCLASSED_CLASS_NAVIGATION_HANDLER = new GutterIconNavigationHandler<PsiElement>() {
+        @Override
+        public void navigate(@Nullable MouseEvent e, @Nullable PsiElement elt) {
+            if (elt == null) return;
+            PsiElement psiClass = getPsiClass(elt);
+            if (psiClass != null) {
+                SUBCLASSED_CLASS.getNavigationHandler().navigate(e, psiClass);
+            }
+        }
+    };
+
+    private static final MarkerType SUBCLASSED_CLASS = new MarkerType(
+            new NullableFunction<PsiElement, String>() {
+                @Override
+                public String fun(@Nullable PsiElement element) {
+                    if (!(element instanceof PsiClass)) return null;
+                    return MarkerType.getSubclassedClassTooltip((PsiClass) element);
+                }
+            },
+            new LineMarkerNavigator() {
+                @Override
+                public void browse(@Nullable MouseEvent e, @Nullable PsiElement element) {
+                    if (!(element instanceof PsiClass)) return;
+                    MarkerType.navigateToSubclassedClass(e, (PsiClass) element);
+                }
+            }
+    );
+
+    @Nullable
+    private static PsiClass getPsiClass(@NotNull PsiElement element) {
         if (!(element instanceof JetClass)) {
             element = element.getParent();
             if (!(element instanceof JetClass)) {
                 return null;
             }
         }
-        KotlinLightClass lightClass = LightClassUtil.createLightClass((JetClass) element);
-        if (lightClass == null) {
-            return null;
-        }
-        final PsiElement[] children = lightClass.getDelegate().getChildren();
-        return children.length > 0 ? children[0] : null;
+        return LightClassUtil.getPsiClass((JetClass) element);
     }
 
-    private static final GutterIconNavigationHandler<PsiElement> SUBCLASSED_CLASS_NAVIGATION_HANDLER = new GutterIconNavigationHandler<PsiElement>() {
-        @Override
-        public void navigate(MouseEvent e, PsiElement elt) {
-            PsiElement child = getPsiClassFirstChild(elt);
-            if (child != null) {
-                MarkerType.SUBCLASSED_CLASS.getNavigationHandler().navigate(e, child);
-            }
-        }
-    };
-
     @Override
-    public LineMarkerInfo getLineMarkerInfo(@NotNull final PsiElement element) {
+    public LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element) {
 
         JetFile file = (JetFile)element.getContainingFile();
         if (file == null) return null;
 
         if (!(element instanceof JetNamedFunction || element instanceof JetProperty))     return null;
 
-        final BindingContext bindingContext = WholeProjectAnalyzerFacade.analyzeProjectWithCacheOnAFile(file).getBindingContext();
+        BindingContext bindingContext = WholeProjectAnalyzerFacade.analyzeProjectWithCacheOnAFile(file).getBindingContext();
 
-        final DeclarationDescriptor descriptor = bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, element);
+        DeclarationDescriptor descriptor = bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, element);
         if (!(descriptor instanceof CallableMemberDescriptor)) {
             return null;
         }
 
-        final Set<? extends CallableMemberDescriptor> overriddenMembers = ((CallableMemberDescriptor)descriptor).getOverriddenDescriptors();
+        Set<? extends CallableMemberDescriptor> overriddenMembers = ((CallableMemberDescriptor)descriptor).getOverriddenDescriptors();
         if (overriddenMembers.size() == 0) {
             return null;
         }
@@ -150,27 +164,27 @@ public class JetLineMarkerProvider implements LineMarkerProvider {
         JetFile file = (JetFile)elt.getContainingFile();
         assert file != null;
 
-        final BindingContext bindingContext = WholeProjectAnalyzerFacade.analyzeProjectWithCacheOnAFile(file).getBindingContext();
-        final DeclarationDescriptor descriptor = bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, elt);
+        BindingContext bindingContext = WholeProjectAnalyzerFacade.analyzeProjectWithCacheOnAFile(file).getBindingContext();
+        DeclarationDescriptor descriptor = bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, elt);
         if (!(descriptor instanceof CallableMemberDescriptor)) {
             return;
         }
 
-        final Set<? extends CallableMemberDescriptor> overriddenMembers = ((CallableMemberDescriptor)descriptor).getOverriddenDescriptors();
+        Set<? extends CallableMemberDescriptor> overriddenMembers = ((CallableMemberDescriptor)descriptor).getOverriddenDescriptors();
         if (overriddenMembers.size() == 0) {
             return;
         }
 
         if (overriddenMembers.isEmpty()) return;
-        final List<PsiElement> list = Lists.newArrayList();
+        List<PsiElement> list = Lists.newArrayList();
         for (CallableMemberDescriptor overriddenMember : overriddenMembers) {
             PsiElement declarationPsiElement = BindingContextUtils.descriptorToDeclaration(bindingContext, overriddenMember);
             list.add(declarationPsiElement);
         }
         if (list.isEmpty()) {
             String myEmptyText = "empty text";
-            final JComponent renderer = HintUtil.createErrorLabel(myEmptyText);
-            final JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(renderer, renderer).createPopup();
+            JComponent renderer = HintUtil.createErrorLabel(myEmptyText);
+            JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(renderer, renderer).createPopup();
             if (event != null) {
                 popup.show(new RelativePoint(event));
             }
@@ -193,14 +207,14 @@ public class JetLineMarkerProvider implements LineMarkerProvider {
         JetFile file = (JetFile)element.getContainingFile();
         if (file == null) return "";
 
-        final BindingContext bindingContext = WholeProjectAnalyzerFacade.analyzeProjectWithCacheOnAFile(file).getBindingContext();
+        BindingContext bindingContext = WholeProjectAnalyzerFacade.analyzeProjectWithCacheOnAFile(file).getBindingContext();
 
-        final DeclarationDescriptor descriptor = bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, element);
+        DeclarationDescriptor descriptor = bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, element);
         if (!(descriptor instanceof CallableMemberDescriptor)) {
             return "";
         }
 
-        final Set<? extends CallableMemberDescriptor> overriddenMembers = ((CallableMemberDescriptor)descriptor).getOverriddenDescriptors();
+        Set<? extends CallableMemberDescriptor> overriddenMembers = ((CallableMemberDescriptor)descriptor).getOverriddenDescriptors();
         if (overriddenMembers.size() == 0) {
             return "";
         }
@@ -210,8 +224,8 @@ public class JetLineMarkerProvider implements LineMarkerProvider {
             allOverriddenAbstract &= function.getModality() == Modality.ABSTRACT;
         }
 
-        final String implementsOrOverrides = allOverriddenAbstract ? "implements" : "overrides";
-        final String memberKind = element instanceof JetNamedFunction ? "function" : "property";
+        String implementsOrOverrides = allOverriddenAbstract ? "implements" : "overrides";
+        String memberKind = element instanceof JetNamedFunction ? "function" : "property";
 
 
         StringBuilder builder = new StringBuilder();
@@ -252,13 +266,13 @@ public class JetLineMarkerProvider implements LineMarkerProvider {
               element.hasModifier(JetTokens.ABSTRACT_KEYWORD))) {
             return;
         }
-        PsiClass lightClass = LightClassUtil.createLightClass(element);
+        PsiClass lightClass = LightClassUtil.getPsiClass(element);
         if (lightClass == null) {
             return;
         }
         PsiClass inheritor = ClassInheritorsSearch.search(lightClass, false).findFirst();
         if (inheritor != null) {
-            final PsiElement nameIdentifier = element.getNameIdentifier();
+            PsiElement nameIdentifier = element.getNameIdentifier();
             PsiElement anchor = nameIdentifier != null ? nameIdentifier : element;
             Icon mark = isTrait ? IMPLEMENTED_MARK : OVERRIDDEN_MARK;
             result.add(new LineMarkerInfo<PsiElement>(anchor, anchor.getTextOffset(), mark, Pass.UPDATE_OVERRIDEN_MARKERS,

@@ -25,13 +25,14 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.analyzer.AnalyzeExhaust;
 import org.jetbrains.jet.analyzer.AnalyzerFacadeForEverything;
 import org.jetbrains.jet.di.InjectorForTopDownAnalyzerForJs;
-import org.jetbrains.jet.lang.ModuleConfiguration;
+import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
 import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.resolve.*;
+import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
 import org.jetbrains.jet.lang.resolve.lazy.declarations.FileBasedDeclarationProviderFactory;
 import org.jetbrains.jet.lang.resolve.lazy.storage.LockBasedStorageManager;
-import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.k2js.config.Config;
@@ -76,7 +77,7 @@ public final class AnalyzerFacadeForJS {
             boolean storeContextForBodiesResolve) {
         Project project = config.getProject();
 
-        final ModuleDescriptor owner = new ModuleDescriptor(Name.special("<module>"));
+        ModuleDescriptorImpl owner = createJsModule("<module>");
 
         Predicate<PsiFile> completely = Predicates.and(notLibFiles(config.getLibFiles()), filesToAnalyzeCompletely);
 
@@ -87,9 +88,8 @@ public final class AnalyzerFacadeForJS {
         BindingTrace trace = libraryBindingContext == null ?
                              new ObservableBindingTrace(new BindingTraceContext()) :
                              new DelegatingBindingTrace(libraryBindingContext, "trace for analyzing library in js");
-        InjectorForTopDownAnalyzerForJs injector = new InjectorForTopDownAnalyzerForJs(
-                project, topDownAnalysisParameters, trace, owner,
-                new JsConfiguration(libraryBindingContext));
+        owner.setModuleConfiguration(new JsConfiguration(libraryBindingContext));
+        InjectorForTopDownAnalyzerForJs injector = new InjectorForTopDownAnalyzerForJs(project, topDownAnalysisParameters, trace, owner);
         try {
             Collection<JetFile> allFiles = libraryBindingContext != null ?
                                            files :
@@ -98,7 +98,7 @@ public final class AnalyzerFacadeForJS {
             BodiesResolveContext bodiesResolveContext = storeContextForBodiesResolve ?
                                                         new CachedBodiesResolveContext(injector.getTopDownAnalysisContext()) :
                                                         null;
-            return AnalyzeExhaust.success(trace.getBindingContext(), bodiesResolveContext, injector.getModuleConfiguration());
+            return AnalyzeExhaust.success(trace.getBindingContext(), bodiesResolveContext, owner);
         }
         finally {
             injector.destroy();
@@ -111,12 +111,12 @@ public final class AnalyzerFacadeForJS {
             @NotNull Config config,
             @NotNull BindingTrace traceContext,
             @NotNull BodiesResolveContext bodiesResolveContext,
-            @NotNull ModuleConfiguration configuration) {
+            @NotNull ModuleDescriptor module) {
         Predicate<PsiFile> completely = Predicates.and(notLibFiles(config.getLibFiles()), filesToAnalyzeCompletely);
 
         return AnalyzerFacadeForEverything.analyzeBodiesInFilesWithJavaIntegration(
                 config.getProject(), Collections.<AnalyzerScriptParameter>emptyList(), completely, traceContext, bodiesResolveContext,
-                configuration);
+                module);
     }
 
     public static void checkForErrors(@NotNull Collection<JetFile> allFiles, @NotNull BindingContext bindingContext) {
@@ -139,11 +139,18 @@ public final class AnalyzerFacadeForJS {
     }
 
     @NotNull
-    public static ResolveSession getLazyResolveSession(Collection<JetFile> files, final Config config) {
+    public static ResolveSession getLazyResolveSession(Collection<JetFile> files, Config config) {
         LockBasedStorageManager storageManager = new LockBasedStorageManager();
         FileBasedDeclarationProviderFactory declarationProviderFactory = new FileBasedDeclarationProviderFactory(
                 storageManager, Config.withJsLibAdded(files, config), Predicates.<FqName>alwaysFalse());
-        ModuleDescriptor lazyModule = new ModuleDescriptor(Name.special("<lazy module>"));
-        return new ResolveSession(config.getProject(), storageManager, lazyModule, new JsConfiguration(null), declarationProviderFactory);
+        ModuleDescriptorImpl lazyModule = createJsModule("<lazy module>");
+        lazyModule.setModuleConfiguration(new JsConfiguration(null));
+        return new ResolveSession(config.getProject(), storageManager, lazyModule, declarationProviderFactory);
     }
+
+    @NotNull
+    private static ModuleDescriptorImpl createJsModule(@NotNull String name) {
+        return new ModuleDescriptorImpl(Name.special(name), JsConfiguration.DEFAULT_IMPORT_PATHS, PlatformToKotlinClassMap.EMPTY);
+    }
+
 }

@@ -39,10 +39,12 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.jet.codegen.binding.PsiCodegenPredictor;
 import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
 import org.jetbrains.jet.lang.psi.*;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.java.JetJavaMirrorMarker;
+import org.jetbrains.jet.lang.resolve.java.JvmClassName;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.FqNameUnsafe;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
@@ -59,11 +61,15 @@ public class KotlinLightClassForExplicitDeclaration extends AbstractLightClass i
     private final static Key<CachedValue<PsiJavaFileStub>> JAVA_API_STUB = Key.create("JAVA_API_STUB");
 
     @Nullable
-    public static KotlinLightClassForExplicitDeclaration create(@NotNull PsiManager manager, @NotNull FqName qualifiedName, @NotNull JetClassOrObject classOrObject) {
+    public static KotlinLightClassForExplicitDeclaration create(@NotNull PsiManager manager, @NotNull JetClassOrObject classOrObject) {
         if (LightClassUtil.belongsToKotlinBuiltIns((JetFile) classOrObject.getContainingFile())) {
             return null;
         }
-        return new KotlinLightClassForExplicitDeclaration(manager, qualifiedName, classOrObject);
+
+        JvmClassName jvmClassName = PsiCodegenPredictor.getPredefinedJvmClassName(classOrObject);
+        if (jvmClassName == null) return null;
+
+        return new KotlinLightClassForExplicitDeclaration(manager, jvmClassName.getFqName(), classOrObject);
     }
 
     private final FqName classFqName; // FqName of (possibly inner) class
@@ -150,25 +156,12 @@ public class KotlinLightClassForExplicitDeclaration extends AbstractLightClass i
 
     @NotNull
     private static JetClassOrObject getOutermostClassOrObject(@NotNull JetClassOrObject classOrObject) {
-        JetClassOrObject current = classOrObject;
-        while (true) {
-            PsiElement parent = current.getParent();
-            assert classOrObject.getParent() != null : "Class with no parent: " + classOrObject.getText();
-
-            if (parent instanceof PsiFile) {
-                return current;
-            }
-            if (parent instanceof JetClassObject) {
-                // current class IS the class object declaration
-                parent = parent.getParent();
-                assert parent instanceof JetClassBody : "Parent of class object is not a class body: " + parent;
-            }
-            if (!(parent instanceof JetClassBody)) {
-                // It is a local class, no legitimate outer
-                throw new IllegalStateException("Attempt to build a light class for a local class: " + classOrObject.getText());
-            }
-
-            current = (JetClassOrObject) parent.getParent();
+        JetClassOrObject outermostClass = JetPsiUtil.getOutermostClassOrObject(classOrObject);
+        if (outermostClass == null) {
+            throw new IllegalStateException("Attempt to build a light class for a local class: " + classOrObject.getText());
+        }
+        else {
+            return outermostClass;
         }
     }
 
@@ -216,7 +209,7 @@ public class KotlinLightClassForExplicitDeclaration extends AbstractLightClass i
     }
 
     @Override
-    public Icon getElementIcon(final int flags) {
+    public Icon getElementIcon(int flags) {
         throw new UnsupportedOperationException("This should be done byt JetIconProvider");
     }
 
@@ -242,6 +235,13 @@ public class KotlinLightClassForExplicitDeclaration extends AbstractLightClass i
     public PsiClass getContainingClass() {
         if (classOrObject.getParent() == classOrObject.getContainingFile()) return null;
         return super.getContainingClass();
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getParent() {
+        if (classOrObject.getParent() == classOrObject.getContainingFile()) return getContainingFile();
+        return getContainingClass();
     }
 
     @Nullable

@@ -179,7 +179,7 @@ fun collections() {
         }
     }
 
-    f("flatMap(transform: (T)-> Iterable<R>)") {
+    f("flatMap(transform: (T)-> Iterable<R>)", "flatMap(Function1)") {
         doc = "Returns the result of transforming each element to one or more values which are concatenated together into a single list"
         typeParam("R")
         returns("List<R>")
@@ -518,7 +518,7 @@ fun collections() {
     f("sortBy(f: (T) -> R)") {
         doc = """
         Copies all elements into a [[List]] and sorts it by value of compare_function(element)
-        E.g. arrayList("two" to 2, "one" to 1).sortBy({it._2}) returns list sorted by second element of tuple
+        E.g. arrayList("two" to 2, "one" to 1).sortBy({it.second}) returns list sorted by second element of pair
         """
         returns("List<T>")
         typeParam("R: Comparable<R>")

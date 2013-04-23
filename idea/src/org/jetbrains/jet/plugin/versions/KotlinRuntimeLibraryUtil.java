@@ -25,23 +25,18 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
-import com.intellij.openapi.roots.*;
-import com.intellij.openapi.roots.impl.libraries.ProjectLibraryTable;
-import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.roots.AnnotationOrderRootType;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.JarFileSystem;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.packaging.impl.elements.ManifestFileUtil;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.ProjectScope;
-import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.indexing.FileBasedIndex;
 import com.intellij.util.indexing.ID;
@@ -55,17 +50,13 @@ import org.jetbrains.jet.utils.PathUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
+import java.util.Collection;
+import java.util.Set;
 
-import static org.jetbrains.jet.plugin.project.JsModuleDetector.isJsModule;
+import static com.intellij.util.PathUtil.getLocalFile;
+import static com.intellij.util.PathUtil.getLocalPath;
 
 public class KotlinRuntimeLibraryUtil {
-    public static final String LIBRARY_NAME = "KotlinRuntime";
-    public static final String KOTLIN_RUNTIME_JAR = "kotlin-runtime.jar";
-    public static final String UNKNOWN_VERSION = "UNKNOWN";
-
     private KotlinRuntimeLibraryUtil() {}
 
     @NotNull
@@ -78,29 +69,20 @@ public class KotlinRuntimeLibraryUtil {
                 return !AbiVersionUtil.isAbiVersionCompatible(abiVersion);
             }
         }));
-        final Collection<VirtualFile> badRoots = Sets.newHashSet();
-        final ProjectFileIndex fileIndex = ProjectFileIndex.SERVICE.getInstance(project);
-        FileBasedIndex.getInstance().getFilesWithKey(
-                id,
-                badAbiVersions,
-                new Processor<VirtualFile>() {
-                    @Override
-                    public boolean process(VirtualFile file) {
-                        assert file != null;
-                        if (!file.isValid()) return true;
-                        VirtualFile root = fileIndex.getClassRootForFile(file);
-                        if (root != null) {
-                            VirtualFile jarFile = JarFileSystem.getInstance().getVirtualFileForJar(root);
-                            badRoots.add(jarFile != null ? jarFile : root);
-                        }
-                        else {
-                            badRoots.add(file);
-                        }
-                        return true;
-                    }
-                },
-                ProjectScope.getLibrariesScope(project)
-        );
+        Set<VirtualFile> badRoots = Sets.newHashSet();
+        ProjectFileIndex fileIndex = ProjectFileIndex.SERVICE.getInstance(project);
+
+        for (Integer version : badAbiVersions) {
+            Collection<VirtualFile> indexedFiles = FileBasedIndex.getInstance().getContainingFiles(id, version, ProjectScope.getLibrariesScope(project));
+
+            for (VirtualFile indexedFile : indexedFiles) {
+                VirtualFile libraryRoot = fileIndex.getClassRootForFile(indexedFile);
+                assert libraryRoot != null : "Only library roots were requested, " +
+                                             "and only class files should be indexed with KotlinAbiVersionIndex key. " +
+                                             "File: " + libraryRoot;
+                badRoots.add(getLocalFile(libraryRoot));
+            }
+        }
 
         return badRoots;
     }
@@ -134,25 +116,8 @@ public class KotlinRuntimeLibraryUtil {
                                     });
     }
 
-    public static boolean isModuleAlreadyConfigured(Module module) {
-        return isMavenModule(module) || isJsModule(module) || isWithJavaModule(module);
-    }
-
-    private static boolean isMavenModule(@NotNull Module module) {
-        // This constant could be acquired from MavenProjectsManager, but we don't want to depend on the Maven plugin...
-        // See MavenProjectsManager.isMavenizedModule()
-        return "true".equals(module.getOptionValue("org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule"));
-    }
-
-    private static boolean isWithJavaModule(Module module) {
-        // Can find a reference to kotlin class in module scope
-        GlobalSearchScope scope = module.getModuleWithDependenciesAndLibrariesScope(false);
-
-        return getKotlinRuntimeMarkerClass(scope) != null;
-    }
-
     @Nullable
-    private static PsiClass getKotlinRuntimeMarkerClass(@NotNull GlobalSearchScope scope) {
+    public static PsiClass getKotlinRuntimeMarkerClass(@NotNull GlobalSearchScope scope) {
         FqName kotlinPackageFqName = FqName.topLevel(Name.identifier("kotlin"));
         String kotlinPackageClassFqName = PackageClassUtils.getPackageClassFqName(kotlinPackageFqName).getFqName();
 
@@ -173,84 +138,7 @@ public class KotlinRuntimeLibraryUtil {
         return null;
     }
 
-    static void setUpKotlinRuntimeLibrary(
-            @NotNull final Module module,
-            @NotNull final Library library,
-            @NotNull final Runnable afterSetUp
-    ) {
-        ApplicationManager.getApplication().runWriteAction(new Runnable() {
-            @Override
-            public void run() {
-                ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
-                if (model.findLibraryOrderEntry(library) == null) {
-                    model.addLibraryEntry(library);
-                    model.commit();
-                }
-                else {
-                    model.dispose();
-                }
-
-                afterSetUp.run();
-
-                if (!jdkAnnotationsArePresent(module)) {
-                    addJdkAnnotations(module);
-                }
-            }
-        });
-    }
-
-    @Nullable
-    static Library findOrCreateRuntimeLibrary(@NotNull Project project, @NotNull FindRuntimeLibraryHandler handler) {
-        final LibraryTable table = ProjectLibraryTable.getInstance(project);
-        final Library kotlinRuntime = table.getLibraryByName(LIBRARY_NAME);
-        if (kotlinRuntime != null) {
-            for (VirtualFile root : kotlinRuntime.getFiles(OrderRootType.CLASSES)) {
-                if (root.getName().equals(KOTLIN_RUNTIME_JAR)) {
-                    return kotlinRuntime;
-                }
-            }
-        }
-
-        File runtimePath = PathUtil.getKotlinPathsForIdeaPlugin().getRuntimePath();
-        if (!runtimePath.exists()) {
-            handler.runtimePathDoesNotExist(runtimePath);
-            return null;
-        }
-
-        final File targetJar = handler.getRuntimeJarPath();
-        if (targetJar == null) return null;
-        try {
-            FileUtil.copy(runtimePath, targetJar);
-            VirtualFile jarVfs = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(targetJar);
-            if (jarVfs != null) {
-                jarVfs.refresh(false, false);
-            }
-        }
-        catch (IOException e) {
-            handler.ioExceptionOnCopyingJar(e);
-            return null;
-        }
-
-        return ApplicationManager.getApplication().runWriteAction(new Computable<Library>() {
-            @Override
-            public Library compute() {
-                Library result = kotlinRuntime == null
-                                 ? table.createLibrary("KotlinRuntime")
-                                 : kotlinRuntime;
-
-                Library.ModifiableModel model = result.getModifiableModel();
-                model.addRoot(VfsUtil.getUrlForLibraryRoot(targetJar), OrderRootType.CLASSES);
-                model.addRoot(VfsUtil.getUrlForLibraryRoot(targetJar) + "src", OrderRootType.SOURCES);
-                model.commit();
-                return result;
-            }
-        });
-    }
-
-    public static void updateRuntime(
-            @NotNull final Project project,
-            @NotNull final Runnable jarNotFoundHandler
-    ) {
+    public static void updateRuntime(@NotNull final Project project, @NotNull final Runnable jarNotFoundHandler) {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -259,32 +147,13 @@ public class KotlinRuntimeLibraryUtil {
                     jarNotFoundHandler.run();
                     return;
                 }
-                VirtualFile runtimeJar = getLocalKotlinRuntimeJar(project);
-                assert runtimeJar != null;
 
-                try {
-                    FileUtil.copy(runtimePath, new File(runtimeJar.getPath()));
-                }
-                catch (IOException e) {
-                    throw new AssertionError(e);
-                }
-                runtimeJar.refresh(true, true);
+                VirtualFile localJar = getLocalKotlinRuntimeJar(project);
+                assert localJar != null;
+
+                replaceFile(runtimePath, localJar);
             }
         });
-    }
-
-    @Nullable
-    public static String getRuntimeVersion(@NotNull Project project) {
-        VirtualFile kotlinRuntimeJar = getKotlinRuntimeJar(project);
-        if (kotlinRuntimeJar == null) return null;
-        VirtualFile manifestFile = kotlinRuntimeJar.findFileByRelativePath(JarFile.MANIFEST_NAME);
-        if (manifestFile != null) {
-            Attributes attributes = ManifestFileUtil.readManifest(manifestFile).getMainAttributes();
-            if (attributes.containsKey(Attributes.Name.IMPLEMENTATION_VERSION)) {
-                return attributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-            }
-        }
-        return UNKNOWN_VERSION;
     }
 
     @Nullable
@@ -294,7 +163,6 @@ public class KotlinRuntimeLibraryUtil {
 
         VirtualFile virtualFile = markerClass.getContainingFile().getVirtualFile();
         if (virtualFile == null) return null;
-
 
         ProjectFileIndex projectFileIndex = ProjectFileIndex.SERVICE.getInstance(project);
         return projectFileIndex.getClassRootForFile(virtualFile);
@@ -312,14 +180,24 @@ public class KotlinRuntimeLibraryUtil {
         return kotlinRuntimeJar;
     }
 
-    public static abstract class FindRuntimeLibraryHandler {
-        @Nullable
-        public abstract File getRuntimeJarPath();
+    static void replaceFile(File updatedFile, VirtualFile replacedJarFile) {
+        try {
+            VirtualFile replacedFile = getLocalFile(replacedJarFile);
 
-        public void runtimePathDoesNotExist(@NotNull File path) {
+            String localPath = getLocalPath(replacedFile);
+            assert localPath != null : "Should be called for replacing valid root file: " + replacedJarFile;
+
+            File libraryJarPath = new File(localPath);
+
+            if (FileUtil.filesEqual(updatedFile, libraryJarPath)) {
+                throw new IllegalArgumentException("Shouldn't be called for updating same file: " + updatedFile);
+            }
+
+            FileUtil.copy(updatedFile, libraryJarPath);
+            replacedFile.refresh(false, true);
         }
-
-        public void ioExceptionOnCopyingJar(@NotNull IOException e) {
+        catch (IOException e) {
+            throw new AssertionError(e);
         }
     }
 }

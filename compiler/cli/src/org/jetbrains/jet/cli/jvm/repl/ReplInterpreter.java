@@ -40,15 +40,15 @@ import org.jetbrains.jet.codegen.CompilationErrorHandler;
 import org.jetbrains.jet.codegen.state.GenerationState;
 import org.jetbrains.jet.config.CompilerConfiguration;
 import org.jetbrains.jet.di.InjectorForTopDownAnalyzerForJvm;
-import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
+import org.jetbrains.jet.lang.descriptors.ScriptDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceLikeBuilderDummy;
-import org.jetbrains.jet.lang.descriptors.ScriptDescriptor;
 import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.resolve.*;
+import org.jetbrains.jet.lang.resolve.java.AnalyzerFacadeForJVM;
 import org.jetbrains.jet.lang.resolve.java.JvmClassName;
 import org.jetbrains.jet.lang.resolve.name.FqName;
-import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
@@ -82,19 +82,20 @@ public class ReplInterpreter {
     @NotNull
     private final BindingTraceContext trace;
     @NotNull
-    private final ModuleDescriptor module;
+    private final ModuleDescriptorImpl module;
 
     public ReplInterpreter(@NotNull Disposable disposable, @NotNull CompilerConfiguration configuration) {
         jetCoreEnvironment = new JetCoreEnvironment(disposable, configuration);
         Project project = jetCoreEnvironment.getProject();
         trace = new BindingTraceContext();
-        module = new ModuleDescriptor(Name.special("<repl>"));
+        module = AnalyzerFacadeForJVM.createJavaModule("<repl>");
         TopDownAnalysisParameters topDownAnalysisParameters = new TopDownAnalysisParameters(
                 Predicates.<PsiFile>alwaysTrue(),
                 false,
                 true,
                 Collections.<AnalyzerScriptParameter>emptyList());
         injector = new InjectorForTopDownAnalyzerForJvm(project, topDownAnalysisParameters, trace, module);
+        module.setModuleConfiguration(injector.getJavaBridgeConfiguration());
 
         List<URL> classpath = Lists.newArrayList();
 
@@ -224,7 +225,7 @@ public class ReplInterpreter {
             earierScripts.add(Pair.create(earlierLine.getScriptDescriptor(), earlierLine.getClassName()));
         }
 
-        BindingContext bindingContext = AnalyzeExhaust.success(trace.getBindingContext(), injector.getModuleConfiguration()).getBindingContext();
+        BindingContext bindingContext = AnalyzeExhaust.success(trace.getBindingContext(), module).getBindingContext();
         GenerationState generationState = new GenerationState(psiFile.getProject(), ClassBuilderFactories.binaries(false),
                                                               bindingContext, Collections.singletonList(psiFile));
         generationState.getScriptCodegen().compileScript(psiFile.getScript(), scriptClassName, earierScripts,
@@ -269,7 +270,7 @@ public class ReplInterpreter {
 
     @Nullable
     private ScriptDescriptor doAnalyze(@NotNull JetFile psiFile, @NotNull MessageCollector messageCollector) {
-        final WritableScope scope = new WritableScopeImpl(
+        WritableScope scope = new WritableScopeImpl(
                 JetScope.EMPTY, module,
                 new TraceBasedRedeclarationHandler(trace), "Root scope in analyzeNamespace");
 

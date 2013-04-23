@@ -17,6 +17,7 @@
 package org.jetbrains.jet.lang.diagnostics;
 
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
@@ -39,31 +40,36 @@ public class PositioningStrategies {
         @NotNull
         @Override
         public List<TextRange> mark(@NotNull JetDeclaration declaration) {
+            return markElement(getElementToMark(declaration));
+        }
+
+        @Override
+        public boolean isValid(@NotNull JetDeclaration declaration) {
+            return !hasSyntaxErrors(getElementToMark(declaration));
+        }
+
+        private PsiElement getElementToMark(@NotNull JetDeclaration declaration) {
             JetTypeReference returnTypeRef = null;
-            ASTNode nameNode = null;
+            PsiElement nameIdentifierOrPlaceholder = null;
             if (declaration instanceof JetNamedFunction) {
                 JetFunction function = (JetNamedFunction) declaration;
                 returnTypeRef = function.getReturnTypeRef();
-                nameNode = getNameNode(function);
+                nameIdentifierOrPlaceholder = function.getNameIdentifier();
             }
             else if (declaration instanceof JetProperty) {
                 JetProperty property = (JetProperty) declaration;
                 returnTypeRef = property.getTypeRef();
-                nameNode = getNameNode(property);
+                nameIdentifierOrPlaceholder = property.getNameIdentifier();
             }
             else if (declaration instanceof JetPropertyAccessor) {
                 JetPropertyAccessor accessor = (JetPropertyAccessor) declaration;
                 returnTypeRef = accessor.getReturnTypeReference();
-                nameNode = accessor.getNamePlaceholder().getNode();
+                nameIdentifierOrPlaceholder = accessor.getNamePlaceholder();
             }
-            if (returnTypeRef != null) return markElement(returnTypeRef);
-            if (nameNode != null) return markNode(nameNode);
-            return markElement(declaration);
-        }
 
-        private ASTNode getNameNode(JetNamedDeclaration function) {
-            PsiElement nameIdentifier = function.getNameIdentifier();
-            return nameIdentifier == null ? null : nameIdentifier.getNode();
+            if (returnTypeRef != null) return returnTypeRef;
+            if (nameIdentifierOrPlaceholder != null) return nameIdentifierOrPlaceholder;
+            return declaration;
         }
     };
 
@@ -139,7 +145,7 @@ public class PositioningStrategies {
         }
         @Override
         public boolean isValid(@NotNull PsiNameIdentifierOwner element) {
-            return element.getNameIdentifier() != null;
+            return element.getNameIdentifier() != null && super.isValid(element);
         }
     };
 
@@ -236,20 +242,45 @@ public class PositioningStrategies {
         @NotNull
         @Override
         public List<TextRange> mark(@NotNull JetModifierListOwner element) {
-            List<JetKeywordToken> visibilityTokens = Lists
-                .newArrayList(JetTokens.PRIVATE_KEYWORD, JetTokens.PROTECTED_KEYWORD, JetTokens.PUBLIC_KEYWORD, JetTokens.INTERNAL_KEYWORD);
+            List<JetKeywordToken> visibilityTokens = Lists.newArrayList(
+                    JetTokens.PRIVATE_KEYWORD, JetTokens.PROTECTED_KEYWORD, JetTokens.PUBLIC_KEYWORD, JetTokens.INTERNAL_KEYWORD);
             List<TextRange> result = Lists.newArrayList();
             for (JetKeywordToken token : visibilityTokens) {
                 if (element.hasModifier(token)) {
+                    //noinspection ConstantConditions
                     result.add(element.getModifierList().getModifierNode(token).getTextRange());
                 }
             }
-            if (result.isEmpty()) {
-                if (element.hasModifier(JetTokens.OVERRIDE_KEYWORD)) {
-                    result.add(element.getModifierList().getModifierNode(JetTokens.OVERRIDE_KEYWORD).getTextRange());
+
+            if (!result.isEmpty()) return result;
+
+            // Try to resolve situation when there's no visibility modifiers written before element
+
+            if (element instanceof PsiNameIdentifierOwner) {
+                PsiElement nameIdentifier = ((PsiNameIdentifierOwner) element).getNameIdentifier();
+                if (nameIdentifier != null) {
+                    return ImmutableList.of(nameIdentifier.getTextRange());
                 }
             }
-            return result;
+
+            if (element instanceof JetPropertyAccessor) {
+                return ImmutableList.of(((JetPropertyAccessor) element).getNamePlaceholder().getTextRange());
+            }
+
+            if (element instanceof JetClassInitializer) {
+                return ImmutableList.of(element.getTextRange());
+            }
+
+            if (element instanceof JetClassObject) {
+                JetObjectDeclaration objectDeclaration = ((JetClassObject) element).getObjectDeclaration();
+                if (objectDeclaration != null) {
+                    return ImmutableList.of(objectDeclaration.getObjectKeyword().getTextRange());
+                }
+            }
+
+            throw new IllegalArgumentException(
+                    String.format("Can't find text range for element '%s' with the text '%s'",
+                                  element.getClass().getCanonicalName(), element.getText()));
         }
     };
 
@@ -299,6 +330,8 @@ public class PositioningStrategies {
 
         @Override
         public boolean isValid(@NotNull JetDeclarationWithBody element) {
+            if (!super.isValid(element)) return false;
+
             JetExpression bodyExpression = element.getBodyExpression();
             if (!(bodyExpression instanceof JetBlockExpression)) return false;
             if (((JetBlockExpression) bodyExpression).getLastBracketRange() == null) return false;

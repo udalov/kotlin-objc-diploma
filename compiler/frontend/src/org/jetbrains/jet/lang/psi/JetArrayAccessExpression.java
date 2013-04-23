@@ -25,6 +25,7 @@ import com.intellij.psi.PsiReferenceService;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.JetNodeTypes;
 import org.jetbrains.jet.lexer.JetTokens;
 
@@ -34,6 +35,14 @@ import java.util.List;
 public class JetArrayAccessExpression extends JetReferenceExpression {
     public JetArrayAccessExpression(@NotNull ASTNode node) {
         super(node);
+    }
+
+    @Nullable
+    @Override
+    public PsiReference getReference() {
+        PsiReference[] references = getReferences();
+        if (references.length == 1) return references[0];
+        else return null;
     }
 
     @NotNull
@@ -52,25 +61,24 @@ public class JetArrayAccessExpression extends JetReferenceExpression {
         return visitor.visitArrayAccessExpression(this, data);
     }
 
-    @NotNull
+    @Nullable @IfNotParsed
     public JetExpression getArrayExpression() {
-        JetExpression baseExpression = findChildByClass(JetExpression.class);
-        assert baseExpression != null;
-        return baseExpression;
+        return findChildByClass(JetExpression.class);
     }
 
     @NotNull
     public List<JetExpression> getIndexExpressions() {
-        PsiElement container = getIndicesNode();
-        if (container == null) return Collections.emptyList();
-        return PsiTreeUtil.getChildrenOfTypeAsList(container, JetExpression.class);
+        return PsiTreeUtil.getChildrenOfTypeAsList(getIndicesNode(), JetExpression.class);
     }
 
     @NotNull
     public JetContainerNode getIndicesNode() {
-        return (JetContainerNode) findChildByType(JetNodeTypes.INDICES);
+        JetContainerNode indicesNode = (JetContainerNode) findChildByType(JetNodeTypes.INDICES);
+        assert indicesNode != null : "Can't be null because of parser";
+        return indicesNode;
     }
-    
+
+    @NotNull
     public List<TextRange> getBracketRanges() {
         PsiElement lBracket = getIndicesNode().findChildByType(JetTokens.LBRACKET);
         PsiElement rBracket = getIndicesNode().findChildByType(JetTokens.RBRACKET);

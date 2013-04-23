@@ -42,7 +42,7 @@ import org.jetbrains.jet.compiler.runner.CompilerEnvironment;
 import org.jetbrains.jet.compiler.runner.CompilerRunnerUtil;
 import org.jetbrains.jet.compiler.runner.OutputItemsCollectorImpl;
 import org.jetbrains.jet.plugin.JetFileType;
-import org.jetbrains.jet.plugin.project.JsModuleDetector;
+import org.jetbrains.jet.plugin.framework.KotlinFrameworkDetector;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -63,11 +63,11 @@ public final class K2JSCompiler implements TranslatingCompiler {
         if (module == null) {
             return false;
         }
-        return JsModuleDetector.isJsModule(module);
+        return KotlinFrameworkDetector.isJsKotlinModule(module);
     }
 
     @Override
-    public void compile(final CompileContext context, Chunk<Module> moduleChunk, final VirtualFile[] files, OutputSink sink) {
+    public void compile(CompileContext context, Chunk<Module> moduleChunk, VirtualFile[] files, OutputSink sink) {
         if (files.length == 0) {
             return;
         }
@@ -178,7 +178,7 @@ public final class K2JSCompiler implements TranslatingCompiler {
     }
 
     private static void addLibLocationAndTarget(@NotNull Module module, @NotNull ArrayList<String> args) {
-        Pair<List<String>, String> libLocationAndTarget = JsModuleDetector.getLibLocationAndTargetForProject(module);
+        Pair<List<String>, String> libLocationAndTarget = KotlinFrameworkDetector.getLibLocationAndTargetForProject(module);
 
         StringBuilder sb = StringBuilderSpinAllocator.alloc();
         AccessToken token = ReadAction.start();

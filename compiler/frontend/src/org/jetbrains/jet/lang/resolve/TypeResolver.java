@@ -19,11 +19,7 @@ package org.jetbrains.jet.lang.resolve;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.jet.lang.ModuleConfiguration;
-import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
-import org.jetbrains.jet.lang.descriptors.ClassifierDescriptor;
-import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
-import org.jetbrains.jet.lang.descriptors.TypeParameterDescriptor;
+import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.psi.*;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
@@ -46,7 +42,7 @@ public class TypeResolver {
     private AnnotationResolver annotationResolver;
     private DescriptorResolver descriptorResolver;
     private QualifiedExpressionResolver qualifiedExpressionResolver;
-    private ModuleConfiguration moduleConfiguration;
+    private ModuleDescriptor moduleDescriptor;
 
     @Inject
     public void setDescriptorResolver(DescriptorResolver descriptorResolver) {
@@ -64,16 +60,16 @@ public class TypeResolver {
     }
 
     @Inject
-    public void setModuleConfiguration(@NotNull ModuleConfiguration moduleConfiguration) {
-        this.moduleConfiguration = moduleConfiguration;
+    public void setModuleDescriptor(@NotNull ModuleDescriptor moduleDescriptor) {
+        this.moduleDescriptor = moduleDescriptor;
     }
 
     @NotNull
-    public JetType resolveType(@NotNull final JetScope scope, @NotNull final JetTypeReference typeReference, BindingTrace trace, boolean checkBounds) {
+    public JetType resolveType(@NotNull JetScope scope, @NotNull JetTypeReference typeReference, BindingTrace trace, boolean checkBounds) {
         JetType cachedType = trace.getBindingContext().get(BindingContext.TYPE, typeReference);
         if (cachedType != null) return cachedType;
 
-        final List<AnnotationDescriptor> annotations = annotationResolver.getResolvedAnnotations(typeReference.getAnnotations(), trace);
+        List<AnnotationDescriptor> annotations = annotationResolver.getResolvedAnnotations(typeReference.getAnnotations(), trace);
 
         JetTypeElement typeElement = typeReference.getTypeElement();
         JetType type = resolveTypeElement(scope, annotations, typeElement, trace, checkBounds);
@@ -193,20 +189,6 @@ public class TypeResolver {
                 }
 
                 @Override
-                public void visitTupleType(JetTupleType type) {
-                    // TODO: remove this method completely when tuples are droppped
-                    if (type.getComponentTypeRefs().size() <= 3) {
-                        trace.report(TUPLES_ARE_NOT_SUPPORTED.on(type));
-                    }
-                    else {
-                        trace.report(TUPLES_ARE_NOT_SUPPORTED_BIG.on(type));
-                    }
-
-                    // TODO labels
-                    result[0] = KotlinBuiltIns.getInstance().getTupleType(resolveTypes(scope, type.getComponentTypeRefs(), trace, checkBounds));
-                }
-
-                @Override
                 public void visitFunctionType(JetFunctionType type) {
                     JetTypeReference receiverTypeRef = type.getReceiverTypeRef();
                     JetType receiverType = receiverTypeRef == null ? null : resolveType(scope, receiverTypeRef, trace, checkBounds);
@@ -276,7 +258,7 @@ public class TypeResolver {
     }
 
     private List<JetType> resolveTypes(JetScope scope, List<JetTypeReference> argumentElements, BindingTrace trace, boolean checkBounds) {
-        final List<JetType> arguments = new ArrayList<JetType>();
+        List<JetType> arguments = new ArrayList<JetType>();
         for (JetTypeReference argumentElement : argumentElements) {
             arguments.add(resolveType(scope, argumentElement, trace, checkBounds));
         }
@@ -285,7 +267,7 @@ public class TypeResolver {
 
     @NotNull
     private List<TypeProjection> resolveTypeProjections(JetScope scope, TypeConstructor constructor, List<JetTypeProjection> argumentElements, BindingTrace trace, boolean checkBounds) {
-        final List<TypeProjection> arguments = new ArrayList<TypeProjection>();
+        List<TypeProjection> arguments = new ArrayList<TypeProjection>();
         for (int i = 0, argumentElementsSize = argumentElements.size(); i < argumentElementsSize; i++) {
             JetTypeProjection argumentElement = argumentElements.get(i);
 
@@ -347,7 +329,7 @@ public class TypeResolver {
         Collection<? extends DeclarationDescriptor> descriptors = qualifiedExpressionResolver.lookupDescriptorsForUserType(userType, scope, trace);
         for (DeclarationDescriptor descriptor : descriptors) {
             if (descriptor instanceof ClassifierDescriptor) {
-                ImportsResolver.reportPlatformClassMappedToKotlin(moduleConfiguration, trace, userType, descriptor);
+                ImportsResolver.reportPlatformClassMappedToKotlin(moduleDescriptor, trace, userType, descriptor);
                 return (ClassifierDescriptor) descriptor;
             }
         }

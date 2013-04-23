@@ -20,12 +20,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.jet.JetTestUtils;
 import org.jetbrains.jet.di.InjectorForJavaSemanticServices;
 import org.jetbrains.jet.di.InjectorForTests;
-import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
-import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
-import org.jetbrains.jet.lang.descriptors.FunctionDescriptor;
-import org.jetbrains.jet.lang.descriptors.ValueParameterDescriptor;
+import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.resolve.BindingTraceContext;
 import org.jetbrains.jet.lang.resolve.calls.autocasts.DataFlowInfo;
 import org.jetbrains.jet.lang.resolve.calls.context.ExpressionPosition;
@@ -117,7 +115,7 @@ public class JetExpectedResolveDataUtil {
     @NotNull
     private static PsiClass findClass(String qualifiedName, Project project) {
         InjectorForJavaSemanticServices injector = new InjectorForJavaSemanticServices(project);
-        PsiClass psiClass = injector.getPsiClassFinder().findPsiClass(new FqName(qualifiedName), PsiClassFinder.RuntimeClassesHandleMode.THROW);
+        PsiClass psiClass = injector.getPsiClassFinder().findPsiClass(new FqName(qualifiedName), PsiClassFinder.RuntimeClassesHandleMode.REPORT_ERROR);
         Assert.assertNotNull("Class wasn't found: " + qualifiedName, psiClass);
         return psiClass;
     }
@@ -129,7 +127,8 @@ public class JetExpectedResolveDataUtil {
             Project project,
             JetType... parameterTypes
     ) {
-        ExpressionTypingServices expressionTypingServices = new InjectorForTests(project).getExpressionTypingServices();
+        ModuleDescriptor emptyModule = JetTestUtils.createEmptyModule();
+        ExpressionTypingServices expressionTypingServices = new InjectorForTests(project, emptyModule).getExpressionTypingServices();
 
         ExpressionTypingContext context = ExpressionTypingContext.newContext(
                 expressionTypingServices, new BindingTraceContext(), classDescriptor.getDefaultType().getMemberScope(),

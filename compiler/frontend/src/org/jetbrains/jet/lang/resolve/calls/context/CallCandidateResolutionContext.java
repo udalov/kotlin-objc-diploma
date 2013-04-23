@@ -22,7 +22,6 @@ import org.jetbrains.jet.lang.psi.Call;
 import org.jetbrains.jet.lang.resolve.BindingTrace;
 import org.jetbrains.jet.lang.resolve.calls.autocasts.DataFlowInfo;
 import org.jetbrains.jet.lang.resolve.calls.model.ResolvedCallImpl;
-import org.jetbrains.jet.lang.resolve.calls.tasks.ResolutionTask;
 import org.jetbrains.jet.lang.resolve.calls.tasks.TracingStrategy;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.resolve.scopes.receivers.ReceiverValue;
@@ -42,23 +41,27 @@ public final class CallCandidateResolutionContext<D extends CallableDescriptor> 
             @NotNull JetType expectedType,
             @NotNull DataFlowInfo dataFlowInfo,
             @NotNull ResolveMode resolveMode,
-            ExpressionPosition expressionPosition
+            @NotNull CheckValueArgumentsMode checkArguments,
+            @NotNull ExpressionPosition expressionPosition,
+            @NotNull ResolutionResultsCache resolutionResultsCache
     ) {
-        super(trace, scope, call, expectedType, dataFlowInfo, resolveMode, expressionPosition);
+        super(trace, scope, call, expectedType, dataFlowInfo, resolveMode, checkArguments, expressionPosition, resolutionResultsCache);
         this.candidateCall = candidateCall;
         this.tracing = tracing;
     }
 
     public static <D extends CallableDescriptor> CallCandidateResolutionContext<D> create(
-            @NotNull ResolvedCallImpl<D> candidateCall, @NotNull CallResolutionContext context, @NotNull BindingTrace trace,
+            @NotNull ResolvedCallImpl<D> candidateCall, @NotNull CallResolutionContext<?> context, @NotNull BindingTrace trace,
             @NotNull TracingStrategy tracing, @NotNull Call call) {
         candidateCall.setInitialDataFlowInfo(context.dataFlowInfo);
-        return new CallCandidateResolutionContext<D>(candidateCall, tracing, trace, context.scope, call, context.expectedType,
-                                                        context.dataFlowInfo, context.resolveMode, context.expressionPosition);
+        return new CallCandidateResolutionContext<D>(
+                candidateCall, tracing, trace, context.scope, call, context.expectedType,
+                context.dataFlowInfo, context.resolveMode, context.checkArguments,
+                context.expressionPosition, context.resolutionResultsCache);
     }
 
     public static <D extends CallableDescriptor> CallCandidateResolutionContext<D> create(
-            @NotNull ResolvedCallImpl<D> candidateCall, @NotNull CallResolutionContext context, @NotNull BindingTrace trace,
+            @NotNull ResolvedCallImpl<D> candidateCall, @NotNull CallResolutionContext<?> context, @NotNull BindingTrace trace,
             @NotNull TracingStrategy tracing) {
         return create(candidateCall, context, trace, tracing, context.call);
     }
@@ -66,15 +69,18 @@ public final class CallCandidateResolutionContext<D extends CallableDescriptor> 
     public static <D extends CallableDescriptor> CallCandidateResolutionContext<D> createForCallBeingAnalyzed(
             @NotNull ResolvedCallImpl<D> candidateCall, @NotNull BasicCallResolutionContext context, @NotNull TracingStrategy tracing
     ) {
-        return createForCallBeingAnalyzed(candidateCall, context, context.call, context.resolveMode, tracing);
+        return createForCallBeingAnalyzed(candidateCall, context, context.call, context.resolveMode,
+                                          context.checkArguments, tracing, context.resolutionResultsCache);
     }
 
     public static <D extends CallableDescriptor> CallCandidateResolutionContext<D> createForCallBeingAnalyzed(
             @NotNull ResolvedCallImpl<D> candidateCall, @NotNull ResolutionContext context, @NotNull Call call,
-            @NotNull ResolveMode resolveMode, @NotNull TracingStrategy tracing
+            @NotNull ResolveMode resolveMode, @NotNull CheckValueArgumentsMode checkArguments, @NotNull TracingStrategy tracing,
+            @NotNull ResolutionResultsCache resolutionResultsCache
     ) {
-        return new CallCandidateResolutionContext<D>(candidateCall, tracing, context.trace, context.scope, call,
-                                                        context.expectedType, context.dataFlowInfo, resolveMode, context.expressionPosition);
+        return new CallCandidateResolutionContext<D>(
+                candidateCall, tracing, context.trace, context.scope, call, context.expectedType,
+                context.dataFlowInfo, resolveMode, checkArguments, context.expressionPosition, resolutionResultsCache);
     }
 
     @Override
@@ -83,10 +89,11 @@ public final class CallCandidateResolutionContext<D extends CallableDescriptor> 
             @NotNull JetScope scope,
             @NotNull DataFlowInfo dataFlowInfo,
             @NotNull JetType expectedType,
-            ExpressionPosition expressionPosition
+            @NotNull ExpressionPosition expressionPosition
     ) {
         return new CallCandidateResolutionContext<D>(
-                candidateCall, tracing, trace, scope, call, expectedType, dataFlowInfo, resolveMode, expressionPosition);
+                candidateCall, tracing, trace, scope, call, expectedType, dataFlowInfo, resolveMode,
+                checkArguments, expressionPosition, resolutionResultsCache);
     }
 
     @Override
@@ -98,6 +105,7 @@ public final class CallCandidateResolutionContext<D extends CallableDescriptor> 
     public CallCandidateResolutionContext<D> replaceResolveMode(@NotNull ResolveMode newResolveMode) {
         if (newResolveMode == resolveMode) return this;
         return new CallCandidateResolutionContext<D>(
-                candidateCall, tracing, trace, scope, call, expectedType, dataFlowInfo, newResolveMode, expressionPosition);
+                candidateCall, tracing, trace, scope, call, expectedType, dataFlowInfo, newResolveMode,
+                checkArguments, expressionPosition, resolutionResultsCache);
     }
 }

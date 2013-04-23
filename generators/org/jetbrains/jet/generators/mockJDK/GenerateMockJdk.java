@@ -31,7 +31,6 @@ import java.util.jar.JarOutputStream;
 public class GenerateMockJdk {
 
     private static final String[] ENTRIES = {
-            "java/awt/Component$FlipBufferStrategy.class",
             "java/awt/Component.class",
             "java/awt/Container.class",
             "java/awt/Dimension.class",
@@ -42,9 +41,6 @@ public class GenerateMockJdk {
             "java/awt/GridBagConstraints.class",
             "java/awt/Window.class",
             "java/beans/beancontext/BeanContextServiceRevokedListener.class",
-            "java/beans/beancontext/BeanContextServicesSupport$BCSSChild$BCSSCServiceClassRef.class",
-            "java/beans/beancontext/BeanContextServicesSupport$BCSSChild$BCSSCServiceRef.class",
-            "java/beans/beancontext/BeanContextServicesSupport$BCSSChild.class",
             "java/beans/beancontext/BeanContextServicesSupport.class",
             "java/io/BufferedInputStream.class",
             "java/io/BufferedOutputStream.class",
@@ -59,6 +55,7 @@ public class GenerateMockJdk {
             "java/io/File.class",
             "java/io/FileInputStream.class",
             "java/io/FilenameFilter.class",
+            "java/io/FileFilter.class",
             "java/io/FileNotFoundException.class",
             "java/io/FileOutputStream.class",
             "java/io/FileReader.class",
@@ -95,7 +92,6 @@ public class GenerateMockJdk {
             "java/lang/ArrayIndexOutOfBoundsException.class",
             "java/lang/ArrayStoreException.class",
             "java/lang/AssertionError.class",
-            "java/lang/AutoCloseable.class",
             "java/lang/Boolean.class",
             "java/lang/Byte.class",
             "java/lang/Character.class",
@@ -129,23 +125,24 @@ public class GenerateMockJdk {
             "java/lang/Object.class",
             "java/lang/Override.class",
             "java/lang/Readable.class",
+            "java/lang/reflect/AccessibleObject.class",
             "java/lang/reflect/AnnotatedElement.class",
             "java/lang/reflect/Array.class",
+            "java/lang/reflect/Constructor.class",
+            "java/lang/reflect/Field.class",
             "java/lang/reflect/GenericDeclaration.class",
+            "java/lang/reflect/Member.class",
+            "java/lang/reflect/Method.class",
             "java/lang/reflect/Type.class",
             "java/lang/Runnable.class",
             "java/lang/RuntimeException.class",
-            "java/lang/SafeVarargs.class",
             "java/lang/Short.class",
-            "java/lang/String$CaseInsensitiveComparator.class",
             "java/lang/String.class",
             "java/lang/StringBuffer.class",
             "java/lang/StringBuilder.class",
             "java/lang/SuppressWarnings.class",
             "java/lang/System.class",
             "java/lang/Thread.class",
-            "java/lang/ThreadLocal$ThreadLocalMap$Entry.class",
-            "java/lang/ThreadLocal$ThreadLocalMap.class",
             "java/lang/ThreadLocal.class",
             "java/lang/Throwable.class",
             "java/lang/UnsupportedOperationException.class",
@@ -204,85 +201,36 @@ public class GenerateMockJdk {
             "java/sql/Timestamp.class",
             "java/sql/Types.class",
             "java/util/AbstractCollection.class",
-            "java/util/AbstractList$Itr.class",
-            "java/util/AbstractList$ListItr.class",
             "java/util/AbstractList.class",
-            "java/util/AbstractMap$SimpleEntry.class",
             "java/util/AbstractMap.class",
             "java/util/AbstractQueue.class",
             "java/util/AbstractSequentialList.class",
             "java/util/AbstractSet.class",
             "java/util/ArrayList.class",
-            "java/util/Arrays$ArrayList.class",
             "java/util/Arrays.class",
             "java/util/Calendar.class",
             "java/util/Collection.class",
-            "java/util/Collections$CopiesList.class",
-            "java/util/Collections$EmptyList.class",
-            "java/util/Collections$EmptyMap.class",
-            "java/util/Collections$EmptySet.class",
-            "java/util/Collections$ReverseComparator.class",
-            "java/util/Collections$ReverseComparator2.class",
-            "java/util/Collections$SelfComparable.class",
-            "java/util/Collections$SingletonList.class",
-            "java/util/Collections$SingletonMap$ImmutableEntry.class",
-            "java/util/Collections$SingletonMap.class",
-            "java/util/Collections$SingletonSet.class",
-            "java/util/Collections$SynchronizedCollection.class",
-            "java/util/Collections$SynchronizedList.class",
-            "java/util/Collections$SynchronizedMap.class",
-            "java/util/Collections$SynchronizedRandomAccessList.class",
-            "java/util/Collections$SynchronizedSet.class",
-            "java/util/Collections$SynchronizedSortedMap.class",
-            "java/util/Collections$SynchronizedSortedSet.class",
-            "java/util/Collections$UnmodifiableCollection.class",
-            "java/util/Collections$UnmodifiableList.class",
-            "java/util/Collections$UnmodifiableMap$UnmodifiableEntrySet$UnmodifiableEntry.class",
-            "java/util/Collections$UnmodifiableMap$UnmodifiableEntrySet.class",
-            "java/util/Collections$UnmodifiableMap.class",
-            "java/util/Collections$UnmodifiableRandomAccessList.class",
-            "java/util/Collections$UnmodifiableSet.class",
-            "java/util/Collections$UnmodifiableSortedMap.class",
-            "java/util/Collections$UnmodifiableSortedSet.class",
             "java/util/Collections.class",
             "java/util/Comparator.class",
             "java/util/concurrent/atomic/AtomicBoolean.class",
             "java/util/concurrent/atomic/AtomicInteger.class",
             "java/util/concurrent/atomic/AtomicIntegerArray.class",
-            "java/util/concurrent/atomic/AtomicIntegerFieldUpdater$AtomicIntegerFieldUpdaterImpl.class",
             "java/util/concurrent/atomic/AtomicIntegerFieldUpdater.class",
             "java/util/concurrent/atomic/AtomicLong.class",
             "java/util/concurrent/atomic/AtomicLongArray.class",
-            "java/util/concurrent/atomic/AtomicLongFieldUpdater$CASUpdater.class",
-            "java/util/concurrent/atomic/AtomicLongFieldUpdater$LockedUpdater.class",
             "java/util/concurrent/atomic/AtomicLongFieldUpdater.class",
-            "java/util/concurrent/atomic/AtomicMarkableReference$ReferenceBooleanPair.class",
             "java/util/concurrent/atomic/AtomicMarkableReference.class",
             "java/util/concurrent/atomic/AtomicReference.class",
             "java/util/concurrent/atomic/AtomicReferenceArray.class",
-            "java/util/concurrent/atomic/AtomicReferenceFieldUpdater$AtomicReferenceFieldUpdaterImpl.class",
             "java/util/concurrent/atomic/AtomicReferenceFieldUpdater.class",
-            "java/util/concurrent/atomic/AtomicStampedReference$ReferenceIntegerPair.class",
             "java/util/concurrent/atomic/AtomicStampedReference.class",
             "java/util/concurrent/Callable.class",
-            "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject.class",
-            "java/util/concurrent/locks/AbstractQueuedSynchronizer$Node.class",
             "java/util/concurrent/locks/AbstractQueuedSynchronizer.class",
             "java/util/concurrent/locks/Condition.class",
             "java/util/concurrent/locks/Lock.class",
             "java/util/concurrent/locks/LockSupport.class",
             "java/util/concurrent/locks/ReadWriteLock.class",
-            "java/util/concurrent/locks/ReentrantLock$FairSync.class",
-            "java/util/concurrent/locks/ReentrantLock$NonfairSync.class",
-            "java/util/concurrent/locks/ReentrantLock$Sync.class",
             "java/util/concurrent/locks/ReentrantLock.class",
-            "java/util/concurrent/locks/ReentrantReadWriteLock$FairSync.class",
-            "java/util/concurrent/locks/ReentrantReadWriteLock$NonfairSync.class",
-            "java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.class",
-            "java/util/concurrent/locks/ReentrantReadWriteLock$Sync$HoldCounter.class",
-            "java/util/concurrent/locks/ReentrantReadWriteLock$Sync$ThreadLocalHoldCounter.class",
-            "java/util/concurrent/locks/ReentrantReadWriteLock$Sync.class",
-            "java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.class",
             "java/util/concurrent/locks/ReentrantReadWriteLock.class",
             "java/util/concurrent/TimeUnit.class",
             "java/util/ConcurrentModificationException.class",
@@ -292,22 +240,13 @@ public class GenerateMockJdk {
             "java/util/GregorianCalendar.class",
             "java/util/HashMap.class",
             "java/util/HashSet.class",
-            "java/util/IdentityHashMap$EntryIterator.class",
-            "java/util/IdentityHashMap$EntrySet.class",
-            "java/util/IdentityHashMap$IdentityHashMapIterator.class",
-            "java/util/IdentityHashMap$KeyIterator.class",
-            "java/util/IdentityHashMap$KeySet.class",
-            "java/util/IdentityHashMap$ValueIterator.class",
-            "java/util/IdentityHashMap$Values.class",
             "java/util/IdentityHashMap.class",
             "java/util/Iterator.class",
             "java/util/List.class",
             "java/util/ListIterator.class",
             "java/util/Locale.class",
-            "java/util/Map$Entry.class",
             "java/util/Map.class",
             "java/util/NoSuchElementException.class",
-            "java/util/Properties$LineReader.class",
             "java/util/Properties.class",
             "java/util/Random.class",
             "java/util/RandomAccess.class",
@@ -318,9 +257,7 @@ public class GenerateMockJdk {
             "javax/swing/AbstractButton.class",
             "javax/swing/Icon.class",
             "javax/swing/JButton.class",
-            "javax/swing/JComponent$AccessibleJComponent.class",
             "javax/swing/JComponent.class",
-            "javax/swing/JDialog$AccessibleJDialog.class",
             "javax/swing/JDialog.class",
             "javax/swing/JFrame.class",
             "javax/swing/JLabel.class",
@@ -337,6 +274,9 @@ public class GenerateMockJdk {
 
 
     private static void generateFilteredJar(File source, File target, Set<String> entryNamesToInclude, boolean assertAllFound) throws IOException {
+        if (!source.exists()) {
+            throw new AssertionError(source + " doesn't exist");
+        }
         JarFile sourceJar = new JarFile(source);
         JarOutputStream targetJar = new JarOutputStream(new FileOutputStream(target));
 
@@ -344,11 +284,13 @@ public class GenerateMockJdk {
 
         List<JarEntry> sourceList = Collections.list(sourceJar.entries());
         for (JarEntry entry : sourceList) {
-            String name = entry.getName();
-            if (entryNamesToInclude.contains(name)) {
+            // For Map$Entry.class we want to check Map.class presense
+            String topLevelClassFile = entry.getName().replaceAll("\\$.+\\.class$", ".class");
+
+            if (entryNamesToInclude.contains(topLevelClassFile)) {
                 targetJar.putNextEntry(entry);
                 FileUtil.copy(sourceJar.getInputStream(entry), (int) entry.getSize(), targetJar);
-                foundEntries.add(name);
+                foundEntries.add(topLevelClassFile);
             }
         }
 
@@ -382,8 +324,14 @@ public class GenerateMockJdk {
     }
 
     public static void main(String[] args) throws IOException {
-        File rtJar = new File("<your jdk rt.jar>");
-        File srcJar = new File("<your jdk src dir>/src.jar");
+        String rtJarPath = System.getProperty("rt.jar");
+        String srcZipPath = System.getProperty("src.zip");
+        if (rtJarPath == null || srcZipPath == null) {
+            throw new AssertionError("Provide path to rt.jar and src.zip in VM options: \"-Drt.jar=... -Dsrc.zip=...\"");
+        }
+
+        File rtJar = new File(rtJarPath);
+        File srcJar = new File(srcZipPath);
 
         generateFilteredJar(
                 rtJar,
@@ -395,5 +343,8 @@ public class GenerateMockJdk {
                 new File("compiler/testData/mockJDK/src.zip"),
                 getSourceFileEntries(),
                 false);
+    }
+
+    private GenerateMockJdk() {
     }
 }

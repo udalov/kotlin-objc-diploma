@@ -100,7 +100,7 @@ public class JetPsiChecker implements Annotator {
     }
 
     @Override
-    public void annotate(@NotNull PsiElement element, @NotNull final AnnotationHolder holder) {
+    public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         for (HighlightingVisitor visitor : getBeforeAnalysisVisitors(holder)) {
             element.accept(visitor);
         }
@@ -134,16 +134,13 @@ public class JetPsiChecker implements Annotator {
                 // For failing tests and to notify about idea internal error in -ea mode
                 holder.createErrorAnnotation(element, e.getClass().getCanonicalName() + ": " + e.getMessage());
                 LOG.error(e);
-                if (ApplicationManager.getApplication().isUnitTestMode()) {
-                    throw ExceptionUtils.rethrow(e);
-                }
             }
         }
     }
 
     private static void registerDiagnosticAnnotations(@NotNull Diagnostic diagnostic,
                                                       @NotNull Set<PsiElement> redeclarations,
-                                                      @NotNull final AnnotationHolder holder) {
+                                                      @NotNull AnnotationHolder holder) {
         if (!diagnostic.isValid()) return;
         List<TextRange> textRanges = diagnostic.getTextRanges();
         if (diagnostic.getSeverity() == Severity.ERROR) {

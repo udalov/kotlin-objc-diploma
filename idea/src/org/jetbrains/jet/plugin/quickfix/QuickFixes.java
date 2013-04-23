@@ -83,7 +83,7 @@ public class QuickFixes {
         factories.put(NON_ABSTRACT_FUNCTION_WITH_NO_BODY, addAbstractModifierFactory);
         factories.put(NON_ABSTRACT_FUNCTION_WITH_NO_BODY, addFunctionBodyFactory);
 
-        factories.put(NON_VARARG_SPREAD, RemoveSpreadFix.createFactory());
+        factories.put(NON_VARARG_SPREAD, RemovePsiElementSimpleFix.createRemoveSpreadFactory());
 
         factories.put(NON_MEMBER_FUNCTION_NO_BODY, addFunctionBodyFactory);
 
@@ -104,7 +104,7 @@ public class QuickFixes {
         factories.put(ABSTRACT_MODIFIER_IN_TRAIT, RemoveModifierFix.createRemoveModifierFromListOwnerFactory(ABSTRACT_KEYWORD, true));
         factories.put(OPEN_MODIFIER_IN_TRAIT, RemoveModifierFix.createRemoveModifierFromListOwnerFactory(OPEN_KEYWORD, true));
         factories.put(TRAIT_CAN_NOT_BE_FINAL, removeFinalModifierFactory);
-        factories.put(REDUNDANT_PROJECTION, RemoveModifierFix.createRemoveProjectionFactory());
+        factories.put(REDUNDANT_PROJECTION, RemoveModifierFix.createRemoveProjectionFactory(true));
         factories.put(INCOMPATIBLE_MODIFIERS, RemoveModifierFix.createRemoveModifierFactory(false));
         factories.put(VARIANCE_ON_TYPE_PARAMETER_OF_FUNCTION_OR_PROPERTY, RemoveModifierFix.createRemoveVarianceFactory());
 
@@ -126,10 +126,10 @@ public class QuickFixes {
         factories.put(NO_BACKING_FIELD_CUSTOM_ACCESSORS, changeToPropertyNameFactory);
         factories.put(INACCESSIBLE_BACKING_FIELD, changeToPropertyNameFactory);
 
-        JetIntentionActionFactory unresolvedReferenceFactory = ImportClassAndFunFix.createFactory();
+        JetIntentionActionFactory unresolvedReferenceFactory = AutoImportFix.createFactory();
         factories.put(UNRESOLVED_REFERENCE, unresolvedReferenceFactory);
 
-        JetIntentionActionFactory removeImportFixFactory = RemoveImportFix.createFactory();
+        JetIntentionActionFactory removeImportFixFactory = RemovePsiElementSimpleFix.createRemoveImportFactory();
         factories.put(USELESS_SIMPLE_IMPORT, removeImportFixFactory);
         factories.put(USELESS_HIDDEN_IMPORT, removeImportFixFactory);
 
@@ -139,12 +139,12 @@ public class QuickFixes {
         factories.put(CANNOT_CHANGE_ACCESS_PRIVILEGE, ChangeVisibilityModifierFix.createFactory());
         factories.put(CANNOT_WEAKEN_ACCESS_PRIVILEGE, ChangeVisibilityModifierFix.createFactory());
 
-        factories.put(TUPLES_ARE_NOT_SUPPORTED, MigrateTuplesInProjectFix.createFactory());
-
         factories.put(UNRESOLVED_REFERENCE, MigrateSureInProjectFix.createFactory());
 
-        factories.put(REDUNDANT_NULLABLE, RemoveNullableFix.createFactory(false));
-        factories.put(NULLABLE_SUPERTYPE, RemoveNullableFix.createFactory(true));
+        factories.put(REDUNDANT_NULLABLE, RemoveNullableFix.createFactory(RemoveNullableFix.NullableKind.REDUNDANT));
+        factories.put(NULLABLE_SUPERTYPE, RemoveNullableFix.createFactory(RemoveNullableFix.NullableKind.SUPERTYPE));
+        factories.put(USELESS_NULLABLE_CHECK, RemoveNullableFix.createFactory(RemoveNullableFix.NullableKind.USELESS));
+
 
         ImplementMethodsHandler implementMethodsHandler = new ImplementMethodsHandler();
         actions.put(ABSTRACT_MEMBER_NOT_IMPLEMENTED, implementMethodsHandler);
@@ -160,7 +160,7 @@ public class QuickFixes {
         actions.put(VAL_OR_VAR_ON_LOOP_PARAMETER, removeValVarFromParametersFix);
         actions.put(VAL_OR_VAR_ON_CATCH_PARAMETER, removeValVarFromParametersFix);
 
-        factories.put(UNUSED_VARIABLE, RemoveVariableFix.createRemoveVariableFactory());
+        factories.put(UNUSED_VARIABLE, RemovePsiElementSimpleFix.createRemoveVariableFactory());
 
         actions.put(UNNECESSARY_SAFE_CALL, ReplaceCallFix.toDotCallFromSafeCall());
         actions.put(UNSAFE_CALL, ReplaceCallFix.toSafeCall());
@@ -181,19 +181,50 @@ public class QuickFixes {
         factories.put(NO_TYPE_ARGUMENTS_ON_RHS_OF_IS_EXPRESSION, AddStarProjectionsFix.createFactoryForIsExpression());
         factories.put(WRONG_NUMBER_OF_TYPE_ARGUMENTS, AddStarProjectionsFix.createFactoryForJavaClass());
 
+        factories.put(TYPE_ARGUMENTS_REDUNDANT_IN_SUPER_QUALIFIER, RemovePsiElementSimpleFix.createRemoveTypeArgumentsFactory());
+
+        JetIntentionActionFactory changeToStarProjectionFactory = ChangeToStarProjectionFix.createFactory();
+        factories.put(UNCHECKED_CAST, changeToStarProjectionFactory);
+        factories.put(CANNOT_CHECK_FOR_ERASED, changeToStarProjectionFactory);
+
         factories.put(INACCESSIBLE_OUTER_CLASS_EXPRESSION, AddModifierFix.createFactory(INNER_KEYWORD, JetClass.class));
 
         JetIntentionActionFactory addOpenModifierToClassDeclarationFix = AddOpenModifierToClassDeclarationFix.createFactory();
         factories.put(FINAL_SUPERTYPE, addOpenModifierToClassDeclarationFix);
         factories.put(FINAL_UPPER_BOUND, addOpenModifierToClassDeclarationFix);
 
+        factories.put(OVERRIDING_FINAL_MEMBER, MakeOverriddenMemberOpenFix.createFactory());
+
         factories.put(PARAMETER_NAME_CHANGED_ON_OVERRIDE, RenameParameterToMatchOverriddenMethodFix.createFactory());
 
         factories.put(OPEN_MODIFIER_IN_ENUM, RemoveModifierFix.createRemoveModifierFromListOwnerFactory(OPEN_KEYWORD));
         factories.put(ILLEGAL_ENUM_ANNOTATION, RemoveModifierFix.createRemoveModifierFromListOwnerFactory(ENUM_KEYWORD));
 
+        factories.put(NESTED_CLASS_NOT_ALLOWED, AddModifierFix.createFactory(INNER_KEYWORD));
+
+        factories.put(CONFLICTING_PROJECTION, RemoveModifierFix.createRemoveProjectionFactory(false));
+        factories.put(PROJECTION_ON_NON_CLASS_TYPE_ARGUMENT, RemoveModifierFix.createRemoveProjectionFactory(false));
+        factories.put(PROJECTION_IN_IMMEDIATE_ARGUMENT_TO_SUPERTYPE, RemoveModifierFix.createRemoveProjectionFactory(false));
+
         factories.put(NOT_AN_ANNOTATION_CLASS, MakeClassAnAnnotationClassFix.createFactory());
 
         factories.put(DANGLING_FUNCTION_LITERAL_ARGUMENT_SUSPECTED, AddSemicolonAfterFunctionCallFix.createFactory());
+
+        JetIntentionActionFactory changeVariableTypeFix = ChangeVariableTypeFix.createFactoryForPropertyOrReturnTypeMismatchOnOverride();
+        factories.put(RETURN_TYPE_MISMATCH_ON_OVERRIDE, changeVariableTypeFix);
+        factories.put(PROPERTY_TYPE_MISMATCH_ON_OVERRIDE, changeVariableTypeFix);
+        factories.put(COMPONENT_FUNCTION_RETURN_TYPE_MISMATCH, ChangeVariableTypeFix.createFactoryForComponentFunctionReturnTypeMismatch());
+
+        factories.put(RETURN_TYPE_MISMATCH_ON_OVERRIDE, ChangeFunctionReturnTypeFix.createFactoryForReturnTypeMismatchOnOverride());
+        factories.put(COMPONENT_FUNCTION_RETURN_TYPE_MISMATCH, ChangeFunctionReturnTypeFix.createFactoryForComponentFunctionReturnTypeMismatch());
+        factories.put(HAS_NEXT_FUNCTION_TYPE_MISMATCH, ChangeFunctionReturnTypeFix.createFactoryForHasNextFunctionTypeMismatch());
+        factories.put(COMPARE_TO_TYPE_MISMATCH, ChangeFunctionReturnTypeFix.createFactoryForCompareToTypeMismatch());
+
+        factories.put(EXPECTED_PARAMETER_TYPE_MISMATCH, ChangeTypeFix.createFactoryForExpectedParameterTypeMismatch());
+        factories.put(EXPECTED_RETURN_TYPE_MISMATCH, ChangeTypeFix.createFactoryForExpectedReturnTypeMismatch());
+
+        factories.put(PLATFORM_CLASS_MAPPED_TO_KOTLIN, MapPlatformClassToKotlinFix.createFactory());
+
+        factories.put(MANY_CLASSES_IN_SUPERTYPE_LIST, RemoveSupertypeFix.createFactory());
     }
 }

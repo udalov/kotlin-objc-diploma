@@ -225,7 +225,6 @@ public class ObjCDescriptorResolver {
                 index,
                 Collections.<AnnotationDescriptor>emptyList(),
                 name,
-                /* isVar */ false,
                 newTempType(parameter.getType()),
                 /* declaresDefaultValue */ false,
                 null

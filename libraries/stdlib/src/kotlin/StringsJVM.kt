@@ -36,7 +36,7 @@ public inline fun String.toCharArray() : CharArray = (this as java.lang.String).
 
 public inline fun String.toCharList(): List<Char> = toCharArray().toList()
 
-public inline fun String.format(format : String, vararg args : Any?) : String = java.lang.String.format(format, args)
+public inline fun String.format(vararg args : Any?) : String = java.lang.String.format(this, *args)
 
 public inline fun String.split(regex : String) : Array<String> = (this as java.lang.String).split(regex)
 
@@ -102,7 +102,7 @@ public inline fun String.getBytes(charset : java.nio.charset.Charset) : ByteArra
 
 public inline fun String.getBytes(charsetName : String) : ByteArray = (this as java.lang.String).getBytes(charsetName)
 
-public inline fun String.getChars(srcBegin : Int, srcEnd : Int, dst : CharArray, dstBegin : Int) : Tuple0 = (this as java.lang.String).getChars(srcBegin, srcEnd, dst, dstBegin)
+public inline fun String.getChars(srcBegin : Int, srcEnd : Int, dst : CharArray, dstBegin : Int) : Unit = (this as java.lang.String).getChars(srcBegin, srcEnd, dst, dstBegin)
 
 public inline fun String.indexOf(ch : Char) : Int = (this as java.lang.String).indexOf(ch.toString())
 
@@ -509,3 +509,23 @@ public inline fun String.toCollection(): Collection<Char> = toCollection(ArrayLi
 
 /** Copies all characters into a [[Set]] */
 public inline fun String.toSet(): Set<Char> = toCollection(HashSet<Char>())
+
+/** Returns a new String containing the everything but the leading whitespace characters */
+public inline fun String.trimLeading(): String {
+    var count = 0
+
+    while ((count < this.length) && (this[count] <= ' ')) {
+        count++
+    }
+    return if (count > 0) substring(count) else this
+}
+
+/** Returns a new String containing the everything but the trailing whitespace characters */
+public inline fun String.trimTrailing(): String {
+    var count = this.length
+
+    while (count > 0 && this[count - 1] <= ' ') {
+        count--
+    }
+    return if (count < this.length) substring(0, count) else this
+}

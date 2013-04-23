@@ -17,6 +17,7 @@
 package org.jetbrains.jet.lang.resolve.java.resolver;
 
 import com.google.common.collect.Sets;
+import com.intellij.psi.PsiEnumConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
@@ -32,10 +33,7 @@ import org.jetbrains.jet.lang.resolve.java.kt.DescriptorKindUtils;
 import org.jetbrains.jet.lang.resolve.java.kt.JetMethodAnnotation;
 import org.jetbrains.jet.lang.resolve.java.provider.NamedMembers;
 import org.jetbrains.jet.lang.resolve.java.provider.PsiDeclarationProvider;
-import org.jetbrains.jet.lang.resolve.java.wrapper.PropertyPsiData;
-import org.jetbrains.jet.lang.resolve.java.wrapper.PropertyPsiDataElement;
-import org.jetbrains.jet.lang.resolve.java.wrapper.PsiFieldWrapper;
-import org.jetbrains.jet.lang.resolve.java.wrapper.PsiMethodWrapper;
+import org.jetbrains.jet.lang.resolve.java.wrapper.*;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
@@ -114,6 +112,10 @@ public final class JavaPropertyResolver {
                 continue;
             }
 
+            if (!DescriptorResolverUtils.isCorrectOwnerForEnumMember(ownerDescriptor, propertyPsiData.getCharacteristicPsi())) {
+                continue;
+            }
+
             propertiesFromCurrent.add(resolveProperty(ownerDescriptor, scopeData, propertyName, context, propertyPsiData));
         }
 
@@ -181,7 +183,7 @@ public final class JavaPropertyResolver {
             kind = DescriptorKindUtils.flagsToKind(methodAnnotation.kind());
         }
 
-        boolean isEnumEntry = DescriptorUtils.isEnumClassObject(owner);
+        boolean isEnumEntry = psiData.getCharacteristicPsi() instanceof PsiEnumConstant;
         PropertyDescriptorImpl propertyDescriptor = new PropertyDescriptorImpl(
                 owner,
                 annotationResolver.resolveAnnotations(psiData.getCharacteristicPsi()),
@@ -196,6 +198,7 @@ public final class JavaPropertyResolver {
         // class descriptor for enum entries is not used by backends so for now this should be safe to use
         // remove this when JavaDescriptorResolver gets rewritten
         if (isEnumEntry) {
+            assert DescriptorUtils.isEnumClassObject(owner) : "Enum entries should be put into class object of enum only: " + owner;
             ClassDescriptorImpl dummyClassDescriptorForEnumEntryObject =
                     new ClassDescriptorImpl(owner, Collections.<AnnotationDescriptor>emptyList(), Modality.FINAL, propertyName);
             dummyClassDescriptorForEnumEntryObject.initialize(
@@ -229,7 +232,7 @@ public final class JavaPropertyResolver {
                 DescriptorUtils.getExpectedThisObjectIfNeeded(owner),
                 receiverType
         );
-        initializeSetterAndGetter(propertyDescriptor, getterDescriptor, setterDescriptor, propertyType);
+        initializeSetterAndGetter(propertyDescriptor, getterDescriptor, setterDescriptor, propertyType, psiData);
 
         if (kind == CallableMemberDescriptor.Kind.DECLARATION) {
             trace.record(BindingContext.VARIABLE, psiData.getCharacteristicPsi(), propertyDescriptor);
@@ -268,21 +271,27 @@ public final class JavaPropertyResolver {
     }
 
     private static void initializeSetterAndGetter(
-            PropertyDescriptor propertyDescriptor,
-            PropertyGetterDescriptorImpl getterDescriptor,
-            PropertySetterDescriptorImpl setterDescriptor,
-            JetType propertyType
+            @NotNull PropertyDescriptor propertyDescriptor,
+            @Nullable PropertyGetterDescriptorImpl getterDescriptor,
+            @Nullable PropertySetterDescriptorImpl setterDescriptor,
+            @NotNull JetType propertyType,
+            @NotNull PropertyPsiData data
     ) {
         if (getterDescriptor != null) {
             getterDescriptor.initialize(propertyType);
         }
         if (setterDescriptor != null) {
+            PropertyPsiDataElement setter = data.getSetter();
+            assert setter != null;
+            List<PsiParameterWrapper> parameters = ((PsiMethodWrapper) setter.getMember()).getParameters();
+            assert parameters.size() != 0;
+            int valueIndex = parameters.size() - 1;
+            PsiParameterWrapper valueParameter = parameters.get(valueIndex);
             setterDescriptor.initialize(new ValueParameterDescriptorImpl(
                     setterDescriptor,
                     0,
                     Collections.<AnnotationDescriptor>emptyList(),
-                    Name.identifier("p0") /*TODO*/,
-                    false,
+                    Name.identifierNoValidate(valueParameter.getJetValueParameter().name()),
                     propertyDescriptor.getType(),
                     false,
                     null));
@@ -320,7 +329,7 @@ public final class JavaPropertyResolver {
         return new PropertyGetterDescriptorImpl(
                 propertyDescriptor,
                 annotationResolver.resolveAnnotations(getter.getMember().getPsiMember()),
-                Modality.OPEN,
+                propertyDescriptor.getModality(),
                 visibility,
                 true,
                 false,
@@ -347,7 +356,7 @@ public final class JavaPropertyResolver {
         return new PropertySetterDescriptorImpl(
                 propertyDescriptor,
                 annotationResolver.resolveAnnotations(setter.getMember().getPsiMember()),
-                Modality.OPEN,
+                propertyDescriptor.getModality(),
                 setterVisibility,
                 true,
                 false,

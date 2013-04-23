@@ -16,13 +16,12 @@
 
 package org.jetbrains.jet.lang.resolve.java.provider;
 
+import com.google.common.collect.ImmutableSet;
 import com.intellij.psi.*;
+import com.intellij.psi.util.PsiFormatUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.jet.lang.resolve.java.JvmAbi;
-import org.jetbrains.jet.lang.resolve.java.JvmStdlibNames;
-import org.jetbrains.jet.lang.resolve.java.PsiClassFinder;
-import org.jetbrains.jet.lang.resolve.java.TypeSource;
+import org.jetbrains.jet.lang.resolve.java.*;
 import org.jetbrains.jet.lang.resolve.java.kt.JetClassAnnotation;
 import org.jetbrains.jet.lang.resolve.java.prop.PropertyNameUtils;
 import org.jetbrains.jet.lang.resolve.java.prop.PropertyParseResult;
@@ -34,7 +33,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.intellij.psi.util.PsiFormatUtilBase.*;
+
 public final class MembersCache {
+    private static final ImmutableSet<String> OBJECT_METHODS = ImmutableSet.of("hashCode()", "equals(java.lang.Object)", "toString()");
+
     @NotNull
     private final Map<Name, NamedMembers> namedMembersMap = new HashMap<Name, NamedMembers>();
 
@@ -73,27 +76,28 @@ public final class MembersCache {
 
         //TODO:
         List<PsiClass> classes = psiPackage != null ? finder.findPsiClasses(psiPackage) : finder.findInnerPsiClasses(psiClass);
-        membersCache.new ObjectClassProcessor(classes).process();
+        membersCache.new ExtraPackageMembersProcessor(classes).process();
         return membersCache;
     }
 
-    private class ObjectClassProcessor {
+    private class ExtraPackageMembersProcessor { // 'extra' means that PSI elements for these members are not just top-level classes
         @NotNull
         private final List<PsiClass> psiClasses;
 
-        private ObjectClassProcessor(@NotNull List<PsiClass> classes) {
+        private ExtraPackageMembersProcessor(@NotNull List<PsiClass> classes) {
             psiClasses = classes;
         }
 
         private void process() {
             for (PsiClass psiClass : psiClasses) {
-                if (!psiClass.isPhysical()) { // to filter out JetLightClasses
-                    continue;
+                if (!(psiClass instanceof JetJavaMirrorMarker)) { // to filter out JetLightClasses
+                    if (JetClassAnnotation.get(psiClass).kind() == JvmStdlibNames.FLAG_CLASS_KIND_OBJECT) {
+                        processObjectClass(psiClass);
+                    }
+                    if (!DescriptorResolverUtils.isKotlinClass(psiClass) && isSamInterface(psiClass)) {
+                        processSamInterface(psiClass);
+                    }
                 }
-                if (JetClassAnnotation.get(psiClass).kind() != JvmStdlibNames.FLAG_CLASS_KIND_OBJECT) {
-                    continue;
-                }
-                processObjectClass(psiClass);
             }
         }
 
@@ -105,6 +109,11 @@ public final class MembersCache {
                 TypeSource type = new TypeSource("", instanceField.getType(), instanceField);
                 namedMembers.addPropertyAccessor(new PropertyPsiDataElement(new PsiFieldWrapper(instanceField), type, null));
             }
+        }
+
+        private void processSamInterface(@NotNull PsiClass psiClass) {
+            NamedMembers namedMembers = getOrCreateEmpty(Name.identifier(psiClass.getName()));
+            namedMembers.setSamInterface(psiClass);
         }
     }
 
@@ -123,6 +132,7 @@ public final class MembersCache {
         public void process() {
             processFields();
             processMethods();
+            processNestedClasses();
         }
 
         private boolean includeMember(PsiMemberWrapper member) {
@@ -138,7 +148,13 @@ public final class MembersCache {
                 return false;
             }
 
-            if (member.isPrivate()) {
+            //process private accessors
+            if (member.isPrivate()
+                && !(member instanceof PsiMethodWrapper && ((PsiMethodWrapper)member).getJetMethodAnnotation().hasPropertyFlag())) {
+                return false;
+            }
+
+            if (isObjectMethodInInterface(member.getPsiMember())) {
                 return false;
             }
 
@@ -263,7 +279,7 @@ public final class MembersCache {
                 }
 
                 // TODO: what if returnType == null?
-                final PsiType returnType = method.getReturnType();
+                PsiType returnType = method.getReturnType();
                 assert returnType != null;
                 TypeSource propertyType = new TypeSource(method.getJetMethodAnnotation().propertyType(), returnType, method.getPsiMethod());
 
@@ -285,5 +301,59 @@ public final class MembersCache {
         private void createEmptyEntry(@NotNull Name identifier) {
             getOrCreateEmpty(identifier);
         }
+
+        private void processNestedClasses() {
+            if (!staticMembers) {
+                return;
+            }
+            for (PsiClass nested : psiClass.getPsiClass().getInnerClasses()) {
+                if (isSamInterface(nested)) {
+                    NamedMembers namedMembers = getOrCreateEmpty(Name.identifier(nested.getName()));
+                    namedMembers.setSamInterface(nested);
+                }
+            }
+        }
     }
+
+    public static boolean isObjectMethodInInterface(@NotNull PsiMember member) {
+        if (!(member instanceof PsiMethod)) {
+            return false;
+        }
+        PsiClass containingClass = member.getContainingClass();
+        assert containingClass != null : "containing class is null for " + member;
+
+        if (!containingClass.isInterface()) {
+            return false;
+        }
+
+        return isObjectMethod((PsiMethod) member);
+    }
+
+    private static boolean isObjectMethod(PsiMethod method) {
+        String formattedMethod = PsiFormatUtil.formatMethod(
+                method, PsiSubstitutor.EMPTY, SHOW_NAME | SHOW_PARAMETERS, SHOW_TYPE | SHOW_FQ_CLASS_NAMES);
+        return OBJECT_METHODS.contains(formattedMethod);
+    }
+
+    public static boolean isSamInterface(@NotNull PsiClass psiClass) {
+        if (DescriptorResolverUtils.isKotlinClass(psiClass)) {
+            return false;
+        }
+        if (!psiClass.isInterface() || psiClass.isAnnotationType()) {
+            return false;
+        }
+
+        int foundAbstractMethods = 0;
+        for (PsiMethod method : psiClass.getAllMethods()) {
+            if (!isObjectMethod(method) && method.hasModifierProperty(PsiModifier.ABSTRACT)) {
+                foundAbstractMethods++;
+
+                if (method.hasTypeParameters()) {
+                    return false;
+                }
+            }
+        }
+        return foundAbstractMethods == 1;
+    }
+
 }

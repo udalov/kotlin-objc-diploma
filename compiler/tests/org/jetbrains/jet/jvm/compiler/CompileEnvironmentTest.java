@@ -56,9 +56,9 @@ public class CompileEnvironmentTest extends TestCase {
             try {
                 JarInputStream is = new JarInputStream(fileInputStream);
                 try {
-                    final List<String> entries = listEntries(is);
+                    List<String> entries = listEntries(is);
                     assertTrue(entries.contains("Smoke/" + PackageClassUtils.getPackageClassName(new FqName("Smoke")) + ".class"));
-                    assertEquals(1, entries.size());
+                    assertEquals(2, entries.size());
                 }
                 finally {
                     is.close();
@@ -88,7 +88,7 @@ public class CompileEnvironmentTest extends TestCase {
                           "-annotations", jdkAnnotations.getAbsolutePath());
             Assert.assertEquals(ExitCode.OK, exitCode);
             assertEquals(1, out.listFiles().length);
-            assertEquals(1, out.listFiles()[0].listFiles().length);
+            assertEquals(2, out.listFiles()[0].listFiles().length);
         } finally {
             FileUtil.delete(tempDir);
         }
@@ -97,7 +97,7 @@ public class CompileEnvironmentTest extends TestCase {
     private static List<String> listEntries(JarInputStream is) throws IOException {
         List<String> entries = new ArrayList<String>();
         while (true) {
-            final JarEntry jarEntry = is.getNextJarEntry();
+            JarEntry jarEntry = is.getNextJarEntry();
             if (jarEntry == null) {
                 break;
             }

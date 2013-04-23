@@ -31,7 +31,6 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.HelpID;
 import com.intellij.refactoring.introduce.inplace.OccurrencesChooser;
-import com.intellij.refactoring.util.CommonRefactoringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.analyzer.AnalyzeExhaust;
@@ -51,7 +50,7 @@ import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 import org.jetbrains.jet.lexer.JetTokens;
 import org.jetbrains.jet.plugin.codeInsight.CodeInsightUtils;
 import org.jetbrains.jet.plugin.codeInsight.ReferenceToClassesShortening;
-import org.jetbrains.jet.plugin.project.AnalyzeSingleFileUtil;
+import org.jetbrains.jet.plugin.project.AnalyzerFacadeWithCache;
 import org.jetbrains.jet.plugin.refactoring.*;
 import org.jetbrains.jet.renderer.DescriptorRenderer;
 
@@ -66,7 +65,7 @@ public class JetIntroduceVariableHandler extends JetIntroduceHandlerBase {
     private static final String INTRODUCE_VARIABLE = JetRefactoringBundle.message("introduce.variable");
 
     @Override
-    public void invoke(@NotNull final Project project, final Editor editor, final PsiFile file, DataContext dataContext) {
+    public void invoke(@NotNull final Project project, final Editor editor, PsiFile file, DataContext dataContext) {
         JetRefactoringUtil.SelectExpressionCallback callback = new JetRefactoringUtil.SelectExpressionCallback() {
             @Override
             public void run(@Nullable JetExpression expression) {
@@ -117,7 +116,7 @@ public class JetIntroduceVariableHandler extends JetIntroduceHandlerBase {
                 return;
             }
         }
-        AnalyzeExhaust analyzeExhaust = AnalyzeSingleFileUtil.analyzeSingleFileWithCache((JetFile) expression.getContainingFile());
+        AnalyzeExhaust analyzeExhaust = AnalyzerFacadeWithCache.analyzeFileWithCache((JetFile) expression.getContainingFile());
         BindingContext bindingContext = analyzeExhaust.getBindingContext();
         final JetType expressionType = bindingContext.get(BindingContext.EXPRESSION_TYPE, expression); //can be null or error type
         JetScope scope = bindingContext.get(BindingContext.RESOLUTION_SCOPE, expression);
@@ -128,7 +127,7 @@ public class JetIntroduceVariableHandler extends JetIntroduceHandlerBase {
             }
 
             ObservableBindingTrace bindingTrace = new ObservableBindingTrace(new BindingTraceContext());
-            InjectorForMacros injector = new InjectorForMacros(project, analyzeExhaust.getModuleConfiguration());
+            InjectorForMacros injector = new InjectorForMacros(project, analyzeExhaust.getModuleDescriptor());
             JetType typeNoExpectedType = injector.getExpressionTypingServices().getType(scope, expression,
                                                                                 TypeUtils.NO_EXPECTED_TYPE, dataFlowInfo,
                                                                                 bindingTrace);
@@ -151,7 +150,7 @@ public class JetIntroduceVariableHandler extends JetIntroduceHandlerBase {
             return;
         }
         final PsiElement container = getContainer(expression);
-        final PsiElement occurrenceContainer = getOccurrenceContainer(expression);
+        PsiElement occurrenceContainer = getOccurrenceContainer(expression);
         if (container == null) {
             showErrorHint(project, editor, JetRefactoringBundle.message("cannot.refactor.no.container"));
             return;
@@ -166,7 +165,7 @@ public class JetIntroduceVariableHandler extends JetIntroduceHandlerBase {
             @Override
             public void pass(OccurrencesChooser.ReplaceChoice replaceChoice) {
                 boolean replaceOccurrence = container != expression.getParent();
-                final List<JetExpression> allReplaces;
+                List<JetExpression> allReplaces;
                 if (OccurrencesChooser.ReplaceChoice.ALL == replaceChoice) {
                     if (allOccurrences.size() > 1) replaceOccurrence = true;
                     allReplaces = allOccurrences;
@@ -434,7 +433,7 @@ public class JetIntroduceVariableHandler extends JetIntroduceHandlerBase {
 
         final ArrayList<JetExpression> result = new ArrayList<JetExpression>();
 
-        final BindingContext bindingContext = AnalyzeSingleFileUtil.getContextForSingleFile((JetFile)expression.getContainingFile());
+        final BindingContext bindingContext = AnalyzerFacadeWithCache.analyzeFileWithCache((JetFile) expression.getContainingFile()).getBindingContext();
 
         JetVisitorVoid visitor = new JetVisitorVoid() {
             @Override
@@ -444,7 +443,7 @@ public class JetIntroduceVariableHandler extends JetIntroduceHandlerBase {
             }
 
             @Override
-            public void visitExpression(final JetExpression expression) {
+            public void visitExpression(JetExpression expression) {
                 if (PsiEquivalenceUtil.areElementsEquivalent(expression, actualExpression, null, new Comparator<PsiElement>() {
                     @Override
                     public int compare(PsiElement element1, PsiElement element2) {
@@ -524,6 +523,9 @@ public class JetIntroduceVariableHandler extends JetIntroduceHandlerBase {
         }
         else if (parent.getParent() instanceof JetLoopExpression &&
                  ((JetLoopExpression)parent.getParent()).getBody() != place) {
+            return true;
+        }
+        else if (parent.getParent() instanceof JetArrayAccessExpression) {
             return true;
         }
         return false;

@@ -25,7 +25,9 @@ import org.jetbrains.jet.lang.descriptors.CallableDescriptor;
 import org.jetbrains.jet.lang.descriptors.FunctionDescriptor;
 import org.jetbrains.jet.lang.descriptors.VariableDescriptor;
 import org.jetbrains.jet.lang.psi.*;
-import org.jetbrains.jet.lang.resolve.*;
+import org.jetbrains.jet.lang.resolve.ChainedTemporaryBindingTrace;
+import org.jetbrains.jet.lang.resolve.DelegatingBindingTrace;
+import org.jetbrains.jet.lang.resolve.TemporaryBindingTrace;
 import org.jetbrains.jet.lang.resolve.calls.context.BasicCallResolutionContext;
 import org.jetbrains.jet.lang.resolve.calls.context.CallCandidateResolutionContext;
 import org.jetbrains.jet.lang.resolve.calls.model.ResolvedCallImpl;
@@ -173,10 +175,10 @@ public class CallTransformer<D extends CallableDescriptor, F extends D> {
 
         @NotNull
         @Override
-        public Collection<ResolvedCallWithTrace<FunctionDescriptor>> transformCall(@NotNull final CallCandidateResolutionContext<CallableDescriptor> context,
-                @NotNull CallResolver callResolver, @NotNull final ResolutionTask<CallableDescriptor, FunctionDescriptor> task) {
+        public Collection<ResolvedCallWithTrace<FunctionDescriptor>> transformCall(@NotNull CallCandidateResolutionContext<CallableDescriptor> context,
+                @NotNull CallResolver callResolver, @NotNull ResolutionTask<CallableDescriptor, FunctionDescriptor> task) {
 
-            final CallableDescriptor descriptor = context.candidateCall.getCandidateDescriptor();
+            CallableDescriptor descriptor = context.candidateCall.getCandidateDescriptor();
             if (descriptor instanceof FunctionDescriptor) {
                 return super.transformCall(context, callResolver, task);
             }
@@ -189,11 +191,12 @@ public class CallTransformer<D extends CallableDescriptor, F extends D> {
 
             final ResolvedCallWithTrace<VariableDescriptor> variableResolvedCall = (ResolvedCallWithTrace)context.candidateCall;
 
-            Call functionCall = createFunctionCall(context, task, returnType);
+            Call functionCall = new CallForImplicitInvoke(context, task, returnType);
 
-            final DelegatingBindingTrace variableCallTrace = context.candidateCall.getTrace();
+            DelegatingBindingTrace variableCallTrace = context.candidateCall.getTrace();
             BasicCallResolutionContext basicCallResolutionContext = BasicCallResolutionContext.create(
-                    variableCallTrace, context.scope, functionCall, context.expectedType, context.dataFlowInfo, context.resolveMode, context.expressionPosition);
+                    variableCallTrace, context.scope, functionCall, context.expectedType, context.dataFlowInfo,
+                    context.resolveMode, context.checkArguments, context.expressionPosition, context.resolutionResultsCache);
 
             // 'invoke' call resolve
             OverloadResolutionResults<FunctionDescriptor> results = callResolver.resolveCallWithGivenName(basicCallResolutionContext, task.reference, Name.identifier("invoke"));
@@ -206,51 +209,61 @@ public class CallTransformer<D extends CallableDescriptor, F extends D> {
                 }
             });
         }
-
-        private Call createFunctionCall(final CallCandidateResolutionContext<CallableDescriptor> context,
-                final ResolutionTask<CallableDescriptor, FunctionDescriptor> task, JetType returnType) {
-
-            final ExpressionReceiver receiverFromVariable = new ExpressionReceiver(task.reference, returnType);
-            final JetSimpleNameExpression invokeExpression = (JetSimpleNameExpression) JetPsiFactory.createExpression(
-                    task.call.getCallElement().getProject(), "invoke");
-
-            return new CallForImplicitInvoke(task.call) {
-                @NotNull
-                @Override
-                public ReceiverValue getExplicitReceiver() {
-                    return context.receiverForVariableAsFunctionSecondCall;
-                }
-
-                @NotNull
-                @Override
-                public ReceiverValue getThisObject() {
-                    return receiverFromVariable;
-                }
-
-                @Override
-                public JetExpression getCalleeExpression() {
-                    return invokeExpression;
-                }
-
-                @NotNull
-                @Override
-                public PsiElement getCallElement() {
-                    if (task.call.getCallElement() instanceof JetCallElement) {
-                        //to report errors properly
-                        JetValueArgumentList list = ((JetCallElement)task.call.getCallElement()).getValueArgumentList();
-                        if (list != null) {
-                            return list;
-                        }
-                    }
-                    return invokeExpression;
-                }
-            };
-        }
     };
 
     public static class CallForImplicitInvoke extends DelegatingCall {
-        public CallForImplicitInvoke(@NotNull Call delegate) {
-            super(delegate);
+        final Call outerCall;
+        final CallCandidateResolutionContext<CallableDescriptor> context;
+        final ExpressionReceiver receiverFromVariable;
+        final JetSimpleNameExpression invokeExpression;
+
+        private CallForImplicitInvoke(CallCandidateResolutionContext<CallableDescriptor> context,
+                        ResolutionTask<CallableDescriptor, FunctionDescriptor> task, JetType returnType) {
+            super(task.call);
+            this.outerCall = task.call;
+            this.context = context;
+            this.receiverFromVariable = new ExpressionReceiver(task.reference, returnType);
+            this.invokeExpression = (JetSimpleNameExpression) JetPsiFactory.createExpression(task.call.getCallElement().getProject(), "invoke");
+        }
+        @NotNull
+        @Override
+        public ReceiverValue getExplicitReceiver() {
+            return context.receiverForVariableAsFunctionSecondCall;
+        }
+
+        @NotNull
+        @Override
+        public ReceiverValue getThisObject() {
+            return receiverFromVariable;
+        }
+
+        @Override
+        public JetExpression getCalleeExpression() {
+            return invokeExpression;
+        }
+
+        @NotNull
+        @Override
+        public PsiElement getCallElement() {
+            if (outerCall.getCallElement() instanceof JetCallElement) {
+                //to report errors properly
+                JetValueArgumentList list = ((JetCallElement)outerCall.getCallElement()).getValueArgumentList();
+                if (list != null) {
+                    return list;
+                }
+            }
+            return invokeExpression;
+        }
+
+        @NotNull
+        @Override
+        public CallType getCallType() {
+            return CallType.INVOKE;
+        }
+
+        @NotNull
+        public Call getOuterCall() {
+            return outerCall;
         }
     }
 }

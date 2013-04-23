@@ -16,15 +16,19 @@
 
 package org.jetbrains.jet.plugin.compilerMessages;
 
+import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.ui.configuration.libraryEditor.NewLibraryEditor;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.util.PathUtil;
 import jet.Function1;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.plugin.PluginTestCaseBase;
 import org.jetbrains.jet.plugin.compiler.K2JSCompiler;
-import org.jetbrains.jet.plugin.project.K2JSModuleComponent;
+import org.jetbrains.jet.testing.ConfigLibraryUtil;
 
-import static org.jetbrains.jet.plugin.compilerMessages.Message.error;
-import static org.jetbrains.jet.plugin.compilerMessages.Message.stats;
-import static org.jetbrains.jet.plugin.compilerMessages.Message.warning;
+import java.io.File;
+
+import static org.jetbrains.jet.plugin.compilerMessages.Message.*;
 
 public final class K2JSCompilerMessagingTest extends IDECompilerMessagingTest {
 
@@ -63,16 +67,31 @@ public final class K2JSCompilerMessagingTest extends IDECompilerMessagingTest {
     }
 
     public void testLib() {
-        K2JSModuleComponent component = myModule.getComponent(K2JSModuleComponent.class);
-        component.setJavaScriptModule(true);
-        component.setPathToJavaScriptLibrary("/lib.zip");
-        doTest(new Function1<MessageChecker, Void>() {
-            @Override
-            public Void invoke(MessageChecker checker) {
-                //nothing apart from header
-                return null;
-            }
-        });
+        NewLibraryEditor editor = new NewLibraryEditor(null, null);
+        editor.setName("testLib");
+
+        String path = PathUtil.getLocalPath(getFile(TEST_DATA_PATH, "/src/lib.zip"));
+        assert path != null : "Can't get local path";
+
+        String libUrl = VfsUtil.getUrlForLibraryRoot(new File(path));
+
+        editor.addRoot(libUrl, OrderRootType.CLASSES);
+        editor.addRoot(libUrl, OrderRootType.SOURCES);
+
+        try {
+            ConfigLibraryUtil.addLibrary(editor, myModule);
+
+            doTest(new Function1<MessageChecker, Void>() {
+                @Override
+                public Void invoke(MessageChecker checker) {
+                    //nothing apart from header
+                    return null;
+                }
+            });
+        }
+        finally {
+            ConfigLibraryUtil.removeLibrary(myModule, "testLib");
+        }
     }
 
     private void doTest(@NotNull Function1<MessageChecker, Void> whatToExpect) {

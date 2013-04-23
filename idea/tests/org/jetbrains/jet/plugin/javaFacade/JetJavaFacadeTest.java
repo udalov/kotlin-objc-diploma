@@ -123,12 +123,12 @@ public class JetJavaFacadeTest extends LightCodeInsightFixtureTestCase {
         PsiField classobjField = theClass.findFieldByName("$classobj", false);
         assertNull(classobjField);
 
-        final PsiClass classObjectClass = theClass.findInnerClassByName("object", false);
+        PsiClass classObjectClass = theClass.findInnerClassByName("object", false);
         assertNotNull(classObjectClass);
         assertEquals("foo.TheClass.object", classObjectClass.getQualifiedName());
         assertTrue(classObjectClass.hasModifierProperty(PsiModifier.STATIC));
 
-        final PsiField instance = classObjectClass.findFieldByName(JvmAbi.INSTANCE_FIELD, false);
+        PsiField instance = theClass.findFieldByName(JvmAbi.CLASS_OBJECT_FIELD, false);
         assertNotNull(instance);
         assertEquals("foo.TheClass.object", instance.getType().getCanonicalText());
         assertTrue(instance.hasModifierProperty(PsiModifier.PUBLIC));
@@ -149,7 +149,7 @@ public class JetJavaFacadeTest extends LightCodeInsightFixtureTestCase {
         assertInstanceOf(element, JetClass.class);
         JetClass aClass = (JetClass) element;
 
-        KotlinLightClass createdByWrapDelegate = LightClassUtil.createLightClass(aClass);
+        PsiClass createdByWrapDelegate = LightClassUtil.getPsiClass(aClass);
         assertNull(createdByWrapDelegate);
     }
 
@@ -189,7 +189,7 @@ public class JetJavaFacadeTest extends LightCodeInsightFixtureTestCase {
         assertNotNull("Caret should be placed to class definition", jetClass);
 
         // Should not fail!
-        KotlinLightClass lightClass = LightClassUtil.createLightClass(jetClass);
+        KotlinLightClass lightClass = (KotlinLightClass) LightClassUtil.getPsiClass(jetClass);
 
         assertNotNull(String.format("Failed to wrap jetClass '%s' to class", jetClass.getText()), lightClass);
 

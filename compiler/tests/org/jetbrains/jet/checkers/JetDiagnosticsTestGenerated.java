@@ -33,7 +33,7 @@ import org.jetbrains.jet.checkers.AbstractDiagnosticsTestWithEagerResolve;
 @InnerTestClasses({JetDiagnosticsTestGenerated.Tests.class, JetDiagnosticsTestGenerated.Script.class})
 public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEagerResolve {
     @TestMetadata("compiler/testData/diagnostics/tests")
-    @InnerTestClasses({Tests.Annotations.class, Tests.BackingField.class, Tests.Cast.class, Tests.CheckArguments.class, Tests.ControlFlowAnalysis.class, Tests.ControlStructures.class, Tests.DataClasses.class, Tests.DataFlow.class, Tests.DataFlowInfoTraversal.class, Tests.DeclarationChecks.class, Tests.Deparenthesize.class, Tests.Enum.class, Tests.Extensions.class, Tests.FunctionLiterals.class, Tests.Generics.class, Tests.IncompleteCode.class, Tests.Inference.class, Tests.Infos.class, Tests.Inner.class, Tests.J_k.class, Tests.Jdk_annotations.class, Tests.Library.class, Tests.NullabilityAndAutoCasts.class, Tests.NullableTypes.class, Tests.Objects.class, Tests.OperatorsOverloading.class, Tests.Overload.class, Tests.Override.class, Tests.Redeclarations.class, Tests.Regressions.class, Tests.Resolve.class, Tests.Scopes.class, Tests.SenselessComparison.class, Tests.Shadowing.class, Tests.Substitutions.class, Tests.Subtyping.class, Tests.ThisAndSuper.class, Tests.Tuples.class, Tests.Varargs.class})
+    @InnerTestClasses({Tests.Annotations.class, Tests.BackingField.class, Tests.CallableReference.class, Tests.Cast.class, Tests.CheckArguments.class, Tests.ControlFlowAnalysis.class, Tests.ControlStructures.class, Tests.DataClasses.class, Tests.DataFlow.class, Tests.DataFlowInfoTraversal.class, Tests.DeclarationChecks.class, Tests.Deparenthesize.class, Tests.Enum.class, Tests.Extensions.class, Tests.FunctionLiterals.class, Tests.Generics.class, Tests.IncompleteCode.class, Tests.Inference.class, Tests.Infos.class, Tests.Inner.class, Tests.J_k.class, Tests.Jdk_annotations.class, Tests.Library.class, Tests.NullabilityAndAutoCasts.class, Tests.NullableTypes.class, Tests.Objects.class, Tests.OperatorsOverloading.class, Tests.Overload.class, Tests.Override.class, Tests.Recovery.class, Tests.Redeclarations.class, Tests.Regressions.class, Tests.Resolve.class, Tests.Scopes.class, Tests.SenselessComparison.class, Tests.Shadowing.class, Tests.SmartCasts.class, Tests.Substitutions.class, Tests.Subtyping.class, Tests.ThisAndSuper.class, Tests.Varargs.class})
     public static class Tests extends AbstractDiagnosticsTestWithEagerResolve {
         @TestMetadata("Abstract.kt")
         public void testAbstract() throws Exception {
@@ -459,6 +459,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             doTest("compiler/testData/diagnostics/tests/SyntaxErrorInTestHighlightingEof.kt");
         }
         
+        @TestMetadata("TraitOverrideObjectMethods.kt")
+        public void testTraitOverrideObjectMethods() throws Exception {
+            doTest("compiler/testData/diagnostics/tests/TraitOverrideObjectMethods.kt");
+        }
+        
         @TestMetadata("TraitSupertypeList.kt")
         public void testTraitSupertypeList() throws Exception {
             doTest("compiler/testData/diagnostics/tests/TraitSupertypeList.kt");
@@ -469,6 +474,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             doTest("compiler/testData/diagnostics/tests/TypeInference.kt");
         }
         
+        @TestMetadata("TypeMismatchOnOverrideWithSyntaxErrors.kt")
+        public void testTypeMismatchOnOverrideWithSyntaxErrors() throws Exception {
+            doTest("compiler/testData/diagnostics/tests/TypeMismatchOnOverrideWithSyntaxErrors.kt");
+        }
+        
         @TestMetadata("UninitializedOrReassignedVariables.kt")
         public void testUninitializedOrReassignedVariables() throws Exception {
             doTest("compiler/testData/diagnostics/tests/UninitializedOrReassignedVariables.kt");
@@ -477,6 +487,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
         @TestMetadata("UnitByDefaultForFunctionTypes.kt")
         public void testUnitByDefaultForFunctionTypes() throws Exception {
             doTest("compiler/testData/diagnostics/tests/UnitByDefaultForFunctionTypes.kt");
+        }
+        
+        @TestMetadata("UnitValue.kt")
+        public void testUnitValue() throws Exception {
+            doTest("compiler/testData/diagnostics/tests/UnitValue.kt");
         }
         
         @TestMetadata("UnreachableCode.kt")
@@ -686,6 +701,249 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             @TestMetadata("WriteNonexistentDeclaredInHigher.kt")
             public void testWriteNonexistentDeclaredInHigher() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/backingField/WriteNonexistentDeclaredInHigher.kt");
+            }
+            
+        }
+        
+        @TestMetadata("compiler/testData/diagnostics/tests/callableReference")
+        public static class CallableReference extends AbstractDiagnosticsTestWithEagerResolve {
+            @TestMetadata("abstractClassConstructors.kt")
+            public void testAbstractClassConstructors() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/abstractClassConstructors.kt");
+            }
+            
+            public void testAllFilesPresentInCallableReference() throws Exception {
+                JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/callableReference"), Pattern.compile("^(.+)\\.kt$"), true);
+            }
+            
+            @TestMetadata("ambiguityTopLevelVsTopLevel.kt")
+            public void testAmbiguityTopLevelVsTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/ambiguityTopLevelVsTopLevel.kt");
+            }
+            
+            @TestMetadata("constructorFromClass.kt")
+            public void testConstructorFromClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/constructorFromClass.kt");
+            }
+            
+            @TestMetadata("constructorFromExtension.kt")
+            public void testConstructorFromExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/constructorFromExtension.kt");
+            }
+            
+            @TestMetadata("constructorFromExtensionInClass.kt")
+            public void testConstructorFromExtensionInClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/constructorFromExtensionInClass.kt");
+            }
+            
+            @TestMetadata("constructorFromTopLevel.kt")
+            public void testConstructorFromTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/constructorFromTopLevel.kt");
+            }
+            
+            @TestMetadata("differentPackageClass.kt")
+            public void testDifferentPackageClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/differentPackageClass.kt");
+            }
+            
+            @TestMetadata("differentPackageExtension.kt")
+            public void testDifferentPackageExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/differentPackageExtension.kt");
+            }
+            
+            @TestMetadata("differentPackageTopLevel.kt")
+            public void testDifferentPackageTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/differentPackageTopLevel.kt");
+            }
+            
+            @TestMetadata("empty.kt")
+            public void testEmpty() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/empty.kt");
+            }
+            
+            @TestMetadata("extensionFromClass.kt")
+            public void testExtensionFromClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/extensionFromClass.kt");
+            }
+            
+            @TestMetadata("extensionFromExtension.kt")
+            public void testExtensionFromExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/extensionFromExtension.kt");
+            }
+            
+            @TestMetadata("extensionFromExtensionInClass.kt")
+            public void testExtensionFromExtensionInClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/extensionFromExtensionInClass.kt");
+            }
+            
+            @TestMetadata("extensionFromTopLevel.kt")
+            public void testExtensionFromTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/extensionFromTopLevel.kt");
+            }
+            
+            @TestMetadata("extensionInClassDisallowed.kt")
+            public void testExtensionInClassDisallowed() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/extensionInClassDisallowed.kt");
+            }
+            
+            @TestMetadata("genericClassFromTopLevel.kt")
+            public void testGenericClassFromTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/genericClassFromTopLevel.kt");
+            }
+            
+            @TestMetadata("importedInnerConstructor.kt")
+            public void testImportedInnerConstructor() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/importedInnerConstructor.kt");
+            }
+            
+            @TestMetadata("innerConstructorFromClass.kt")
+            public void testInnerConstructorFromClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/innerConstructorFromClass.kt");
+            }
+            
+            @TestMetadata("innerConstructorFromExtension.kt")
+            public void testInnerConstructorFromExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/innerConstructorFromExtension.kt");
+            }
+            
+            @TestMetadata("innerConstructorFromTopLevel.kt")
+            public void testInnerConstructorFromTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/innerConstructorFromTopLevel.kt");
+            }
+            
+            @TestMetadata("lhsNotAClass.kt")
+            public void testLhsNotAClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/lhsNotAClass.kt");
+            }
+            
+            @TestMetadata("localConstructor.kt")
+            public void testLocalConstructor() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/localConstructor.kt");
+            }
+            
+            @TestMetadata("localConstructorFromExtensionInLocalClass.kt")
+            public void testLocalConstructorFromExtensionInLocalClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/localConstructorFromExtensionInLocalClass.kt");
+            }
+            
+            @TestMetadata("localConstructorFromLocalClass.kt")
+            public void testLocalConstructorFromLocalClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/localConstructorFromLocalClass.kt");
+            }
+            
+            @TestMetadata("localConstructorFromLocalExtension.kt")
+            public void testLocalConstructorFromLocalExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/localConstructorFromLocalExtension.kt");
+            }
+            
+            @TestMetadata("localNamedFun.kt")
+            public void testLocalNamedFun() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/localNamedFun.kt");
+            }
+            
+            @TestMetadata("localNamedFunFromExtensionInLocalClass.kt")
+            public void testLocalNamedFunFromExtensionInLocalClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/localNamedFunFromExtensionInLocalClass.kt");
+            }
+            
+            @TestMetadata("localNamedFunFromLocalClass.kt")
+            public void testLocalNamedFunFromLocalClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/localNamedFunFromLocalClass.kt");
+            }
+            
+            @TestMetadata("localNamedFunFromLocalExtension.kt")
+            public void testLocalNamedFunFromLocalExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/localNamedFunFromLocalExtension.kt");
+            }
+            
+            @TestMetadata("longQualifiedName.kt")
+            public void testLongQualifiedName() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/longQualifiedName.kt");
+            }
+            
+            @TestMetadata("longQualifiedNameGeneric.kt")
+            public void testLongQualifiedNameGeneric() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/longQualifiedNameGeneric.kt");
+            }
+            
+            @TestMetadata("memberFromClass.kt")
+            public void testMemberFromClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/memberFromClass.kt");
+            }
+            
+            @TestMetadata("memberFromExtension.kt")
+            public void testMemberFromExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/memberFromExtension.kt");
+            }
+            
+            @TestMetadata("memberFromExtensionInClass.kt")
+            public void testMemberFromExtensionInClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/memberFromExtensionInClass.kt");
+            }
+            
+            @TestMetadata("memberFromTopLevel.kt")
+            public void testMemberFromTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/memberFromTopLevel.kt");
+            }
+            
+            @TestMetadata("nestedConstructorFromClass.kt")
+            public void testNestedConstructorFromClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/nestedConstructorFromClass.kt");
+            }
+            
+            @TestMetadata("nestedConstructorFromExtension.kt")
+            public void testNestedConstructorFromExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/nestedConstructorFromExtension.kt");
+            }
+            
+            @TestMetadata("nestedConstructorFromTopLevel.kt")
+            public void testNestedConstructorFromTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/nestedConstructorFromTopLevel.kt");
+            }
+            
+            @TestMetadata("noAmbiguityLocalVsTopLevel.kt")
+            public void testNoAmbiguityLocalVsTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/noAmbiguityLocalVsTopLevel.kt");
+            }
+            
+            @TestMetadata("noAmbiguityMemberVsExtension.kt")
+            public void testNoAmbiguityMemberVsExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/noAmbiguityMemberVsExtension.kt");
+            }
+            
+            @TestMetadata("noAmbiguityMemberVsTopLevel.kt")
+            public void testNoAmbiguityMemberVsTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/noAmbiguityMemberVsTopLevel.kt");
+            }
+            
+            @TestMetadata("renameOnImport.kt")
+            public void testRenameOnImport() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/renameOnImport.kt");
+            }
+            
+            @TestMetadata("topLevelFromClass.kt")
+            public void testTopLevelFromClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/topLevelFromClass.kt");
+            }
+            
+            @TestMetadata("topLevelFromExtension.kt")
+            public void testTopLevelFromExtension() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/topLevelFromExtension.kt");
+            }
+            
+            @TestMetadata("topLevelFromExtensionInClass.kt")
+            public void testTopLevelFromExtensionInClass() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/topLevelFromExtensionInClass.kt");
+            }
+            
+            @TestMetadata("topLevelFromTopLevel.kt")
+            public void testTopLevelFromTopLevel() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/topLevelFromTopLevel.kt");
+            }
+            
+            @TestMetadata("unresolved.kt")
+            public void testUnresolved() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/callableReference/unresolved.kt");
             }
             
         }
@@ -1844,6 +2102,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
                 doTest("compiler/testData/diagnostics/tests/functionLiterals/kt2906.kt");
             }
             
+            @TestMetadata("unusedLiteral.kt")
+            public void testUnusedLiteral() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/functionLiterals/unusedLiteral.kt");
+            }
+            
         }
         
         @TestMetadata("compiler/testData/diagnostics/tests/generics")
@@ -1956,10 +2219,20 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
                 doTest("compiler/testData/diagnostics/tests/incompleteCode/SupertypeOfErrorType.kt");
             }
             
+            @TestMetadata("typeParameterOnLhsOfDot.kt")
+            public void testTypeParameterOnLhsOfDot() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/incompleteCode/typeParameterOnLhsOfDot.kt");
+            }
+            
             @TestMetadata("compiler/testData/diagnostics/tests/incompleteCode/diagnosticWithSyntaxError")
             public static class DiagnosticWithSyntaxError extends AbstractDiagnosticsTestWithEagerResolve {
                 public void testAllFilesPresentInDiagnosticWithSyntaxError() throws Exception {
                     JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/incompleteCode/diagnosticWithSyntaxError"), Pattern.compile("^(.+)\\.kt$"), true);
+                }
+                
+                @TestMetadata("arrayExpression.kt")
+                public void testArrayExpression() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/incompleteCode/diagnosticWithSyntaxError/arrayExpression.kt");
                 }
                 
                 @TestMetadata("checkBackingFieldException.kt")
@@ -2002,6 +2275,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
                     doTest("compiler/testData/diagnostics/tests/incompleteCode/diagnosticWithSyntaxError/namedFun.kt");
                 }
                 
+                @TestMetadata("noTypeParamsInReturnType.kt")
+                public void testNoTypeParamsInReturnType() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/incompleteCode/diagnosticWithSyntaxError/noTypeParamsInReturnType.kt");
+                }
+                
                 @TestMetadata("typeReferenceError.kt")
                 public void testTypeReferenceError() throws Exception {
                     doTest("compiler/testData/diagnostics/tests/incompleteCode/diagnosticWithSyntaxError/typeReferenceError.kt");
@@ -2018,7 +2296,7 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
         }
         
         @TestMetadata("compiler/testData/diagnostics/tests/inference")
-        @InnerTestClasses({Inference.Complicated.class, Inference.Regressions.class, Inference.ReportingImprovements.class, Inference.UpperBounds.class, Inference.Varargs.class})
+        @InnerTestClasses({Inference.NestedCalls.class, Inference.Regressions.class, Inference.ReportingImprovements.class, Inference.UpperBounds.class, Inference.Varargs.class})
         public static class Inference extends AbstractDiagnosticsTestWithEagerResolve {
             public void testAllFilesPresentInInference() throws Exception {
                 JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/inference"), Pattern.compile("^(.+)\\.kt$"), true);
@@ -2144,15 +2422,40 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
                 doTest("compiler/testData/diagnostics/tests/inference/typeInferenceExpectedTypeMismatch.kt");
             }
             
-            @TestMetadata("compiler/testData/diagnostics/tests/inference/complicated")
-            public static class Complicated extends AbstractDiagnosticsTestWithEagerResolve {
-                public void testAllFilesPresentInComplicated() throws Exception {
-                    JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/inference/complicated"), Pattern.compile("^(.+)\\.kt$"), true);
+            @TestMetadata("compiler/testData/diagnostics/tests/inference/nestedCalls")
+            public static class NestedCalls extends AbstractDiagnosticsTestWithEagerResolve {
+                public void testAllFilesPresentInNestedCalls() throws Exception {
+                    JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/inference/nestedCalls"), Pattern.compile("^(.+)\\.kt$"), true);
+                }
+                
+                @TestMetadata("checkTypesForQualifiedProperties.kt")
+                public void testCheckTypesForQualifiedProperties() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/inference/nestedCalls/checkTypesForQualifiedProperties.kt");
+                }
+                
+                @TestMetadata("completeNestedCallsForArraySetExpression.kt")
+                public void testCompleteNestedCallsForArraySetExpression() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/inference/nestedCalls/completeNestedCallsForArraySetExpression.kt");
                 }
                 
                 @TestMetadata("completeNestedCallsInference.kt")
                 public void testCompleteNestedCallsInference() throws Exception {
-                    doTest("compiler/testData/diagnostics/tests/inference/complicated/completeNestedCallsInference.kt");
+                    doTest("compiler/testData/diagnostics/tests/inference/nestedCalls/completeNestedCallsInference.kt");
+                }
+                
+                @TestMetadata("completeNestedForVariableAsFunctionCall.kt")
+                public void testCompleteNestedForVariableAsFunctionCall() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/inference/nestedCalls/completeNestedForVariableAsFunctionCall.kt");
+                }
+                
+                @TestMetadata("kt3395.kt")
+                public void testKt3395() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/inference/nestedCalls/kt3395.kt");
+                }
+                
+                @TestMetadata("kt3461checkTypes.kt")
+                public void testKt3461checkTypes() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/inference/nestedCalls/kt3461checkTypes.kt");
                 }
                 
             }
@@ -2161,6 +2464,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             public static class Regressions extends AbstractDiagnosticsTestWithEagerResolve {
                 public void testAllFilesPresentInRegressions() throws Exception {
                     JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/inference/regressions"), Pattern.compile("^(.+)\\.kt$"), true);
+                }
+                
+                @TestMetadata("compareBy.kt")
+                public void testCompareBy() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/inference/regressions/compareBy.kt");
                 }
                 
                 @TestMetadata("kt1029.kt")
@@ -2419,6 +2727,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
                     doTest("compiler/testData/diagnostics/tests/inference/upperBounds/kt2856.kt");
                 }
                 
+                @TestMetadata("useBoundsIfUnknownParameters.kt")
+                public void testUseBoundsIfUnknownParameters() throws Exception {
+                    doTest("compiler/testData/diagnostics/tests/inference/upperBounds/useBoundsIfUnknownParameters.kt");
+                }
+                
                 @TestMetadata("useBoundsToInferTypeParamsSimple.kt")
                 public void testUseBoundsToInferTypeParamsSimple() throws Exception {
                     doTest("compiler/testData/diagnostics/tests/inference/upperBounds/useBoundsToInferTypeParamsSimple.kt");
@@ -2442,7 +2755,7 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             public static Test innerSuite() {
                 TestSuite suite = new TestSuite("Inference");
                 suite.addTestSuite(Inference.class);
-                suite.addTestSuite(Complicated.class);
+                suite.addTestSuite(NestedCalls.class);
                 suite.addTestSuite(Regressions.class);
                 suite.addTestSuite(ReportingImprovements.class);
                 suite.addTestSuite(UpperBounds.class);
@@ -2980,6 +3293,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
                 doTest("compiler/testData/diagnostics/tests/nullableTypes/nullAssertOnTypeWithNullableUpperBound.kt");
             }
             
+            @TestMetadata("nullableArgumentForIn.kt")
+            public void testNullableArgumentForIn() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/nullableTypes/nullableArgumentForIn.kt");
+            }
+            
             @TestMetadata("redundantNullable.kt")
             public void testRedundantNullable() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/nullableTypes/redundantNullable.kt");
@@ -2993,6 +3311,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             @TestMetadata("safeCallOnTypeWithNullableUpperBound.kt")
             public void testSafeCallOnTypeWithNullableUpperBound() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/nullableTypes/safeCallOnTypeWithNullableUpperBound.kt");
+            }
+            
+            @TestMetadata("uselessElvis.kt")
+            public void testUselessElvis() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/nullableTypes/uselessElvis.kt");
             }
             
         }
@@ -3039,6 +3362,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             @TestMetadata("AssignOperatorAmbiguity.kt")
             public void testAssignOperatorAmbiguity() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/operatorsOverloading/AssignOperatorAmbiguity.kt");
+            }
+            
+            @TestMetadata("AssignmentOperations.kt")
+            public void testAssignmentOperations() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/operatorsOverloading/AssignmentOperations.kt");
             }
             
             @TestMetadata("IteratorAmbiguity.kt")
@@ -3122,6 +3450,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             @TestMetadata("OverloadVarAndFunInClass.kt")
             public void testOverloadVarAndFunInClass() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/overload/OverloadVarAndFunInClass.kt");
+            }
+            
+            @TestMetadata("SyntheticAndNotSynthetic.kt")
+            public void testSyntheticAndNotSynthetic() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/overload/SyntheticAndNotSynthetic.kt");
             }
             
         }
@@ -3314,6 +3647,19 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             
         }
         
+        @TestMetadata("compiler/testData/diagnostics/tests/recovery")
+        public static class Recovery extends AbstractDiagnosticsTestWithEagerResolve {
+            @TestMetadata("absentLeftHandSide.kt")
+            public void testAbsentLeftHandSide() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/recovery/absentLeftHandSide.kt");
+            }
+            
+            public void testAllFilesPresentInRecovery() throws Exception {
+                JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/recovery"), Pattern.compile("^(.+)\\.kt$"), true);
+            }
+            
+        }
+        
         @TestMetadata("compiler/testData/diagnostics/tests/redeclarations")
         public static class Redeclarations extends AbstractDiagnosticsTestWithEagerResolve {
             public void testAllFilesPresentInRedeclarations() throws Exception {
@@ -3363,6 +3709,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             @TestMetadata("Redeclarations.kt")
             public void testRedeclarations() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/redeclarations/Redeclarations.kt");
+            }
+            
+            @TestMetadata("RedeclarationsInObjects.kt")
+            public void testRedeclarationsInObjects() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/redeclarations/RedeclarationsInObjects.kt");
             }
             
             @TestMetadata("RedeclaredTypeParameters.kt")
@@ -3601,6 +3952,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             @TestMetadata("kt328.kt")
             public void testKt328() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/regressions/kt328.kt");
+            }
+            
+            @TestMetadata("kt334.kt")
+            public void testKt334() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/regressions/kt334.kt");
             }
             
             @TestMetadata("kt335.336.kt")
@@ -4182,6 +4538,19 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             
         }
         
+        @TestMetadata("compiler/testData/diagnostics/tests/smartCasts")
+        public static class SmartCasts extends AbstractDiagnosticsTestWithEagerResolve {
+            public void testAllFilesPresentInSmartCasts() throws Exception {
+                JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/smartCasts"), Pattern.compile("^(.+)\\.kt$"), true);
+            }
+            
+            @TestMetadata("kt1461.kt")
+            public void testKt1461() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/smartCasts/kt1461.kt");
+            }
+            
+        }
+        
         @TestMetadata("compiler/testData/diagnostics/tests/substitutions")
         public static class Substitutions extends AbstractDiagnosticsTestWithEagerResolve {
             public void testAllFilesPresentInSubstitutions() throws Exception {
@@ -4249,6 +4618,11 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
                 doTest("compiler/testData/diagnostics/tests/thisAndSuper/ambigousLabelOnThis.kt");
             }
             
+            @TestMetadata("notAccessibleSuperInTrait.kt")
+            public void testNotAccessibleSuperInTrait() throws Exception {
+                doTest("compiler/testData/diagnostics/tests/thisAndSuper/notAccessibleSuperInTrait.kt");
+            }
+            
             @TestMetadata("QualifiedThis.kt")
             public void testQualifiedThis() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/thisAndSuper/QualifiedThis.kt");
@@ -4297,19 +4671,6 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             @TestMetadata("thisInToplevelFunction.kt")
             public void testThisInToplevelFunction() throws Exception {
                 doTest("compiler/testData/diagnostics/tests/thisAndSuper/thisInToplevelFunction.kt");
-            }
-            
-        }
-        
-        @TestMetadata("compiler/testData/diagnostics/tests/tuples")
-        public static class Tuples extends AbstractDiagnosticsTestWithEagerResolve {
-            public void testAllFilesPresentInTuples() throws Exception {
-                JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/diagnostics/tests/tuples"), Pattern.compile("^(.+)\\.kt$"), true);
-            }
-            
-            @TestMetadata("UnitValue.kt")
-            public void testUnitValue() throws Exception {
-                doTest("compiler/testData/diagnostics/tests/tuples/UnitValue.kt");
             }
             
         }
@@ -4382,6 +4743,7 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             suite.addTestSuite(Tests.class);
             suite.addTestSuite(Annotations.class);
             suite.addTestSuite(BackingField.class);
+            suite.addTestSuite(CallableReference.class);
             suite.addTestSuite(Cast.class);
             suite.addTestSuite(CheckArguments.class);
             suite.addTestSuite(ControlFlowAnalysis.class);
@@ -4408,16 +4770,17 @@ public class JetDiagnosticsTestGenerated extends AbstractDiagnosticsTestWithEage
             suite.addTestSuite(OperatorsOverloading.class);
             suite.addTestSuite(Overload.class);
             suite.addTestSuite(Override.class);
+            suite.addTestSuite(Recovery.class);
             suite.addTestSuite(Redeclarations.class);
             suite.addTestSuite(Regressions.class);
             suite.addTestSuite(Resolve.class);
             suite.addTestSuite(Scopes.class);
             suite.addTestSuite(SenselessComparison.class);
             suite.addTestSuite(Shadowing.class);
+            suite.addTestSuite(SmartCasts.class);
             suite.addTestSuite(Substitutions.class);
             suite.addTestSuite(Subtyping.class);
             suite.addTestSuite(ThisAndSuper.class);
-            suite.addTestSuite(Tuples.class);
             suite.addTestSuite(Varargs.class);
             return suite;
         }

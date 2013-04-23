@@ -42,7 +42,8 @@ public final class JavaPackageScopeWithoutMembers extends JavaPackageScope {
     @Override
     @NotNull
     protected Set<FunctionDescriptor> computeFunctionDescriptor(@NotNull Name name) {
-            return Collections.emptySet();
+        return getResolver().resolveFunctionGroup(
+                name, (PackagePsiDeclarationProvider) declarationProvider, (NamespaceDescriptor) descriptor);
     }
 
     @NotNull

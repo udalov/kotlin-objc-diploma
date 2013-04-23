@@ -47,7 +47,7 @@ public class ObjCTestUtil {
 
     @NotNull
     public static NamespaceDescriptor extractObjCNamespaceFromAnalyzeExhaust(@NotNull AnalyzeExhaust analyzeExhaust) {
-        ModuleConfiguration moduleConfiguration = analyzeExhaust.getModuleConfiguration();
+        ModuleConfiguration moduleConfiguration = analyzeExhaust.getModuleDescriptor().getModuleConfiguration();
         assert moduleConfiguration instanceof ObjCModuleConfiguration
                 : "Not an Obj-C module configuration: " + moduleConfiguration;
         return ((ObjCModuleConfiguration) moduleConfiguration).getResolver().resolve();

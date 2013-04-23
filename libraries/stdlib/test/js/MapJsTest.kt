@@ -6,6 +6,9 @@ import java.util.*
 import org.junit.Test as test
 
 class MapJsTest {
+    //TODO: replace `array(...).toList()` to `listOf(...)`
+    val KEYS = array("zero", "one", "two", "three").toList()
+    val VALUES = array(0, 1, 2, 3).toList()
 
     test fun getOrElse() {
         val data = HashMap<String, Int>()
@@ -34,6 +37,55 @@ class MapJsTest {
         assertEquals(data.size, 0)
     }
 
+    // #KT-3035
+    test fun emptyHashMapValues() {
+        val emptyMap = HashMap<String, Int>()
+        assertTrue(emptyMap.values().isEmpty())
+    }
+
+    test fun hashMapValues() {
+        val map = createTestHashMap()
+        assertEquals(VALUES, map.values().toSortedList())
+    }
+
+    test fun hashMapKeySet() {
+        val map = createTestHashMap()
+        assertEquals(KEYS.toSortedList(), map.keySet().toSortedList())
+    }
+
+    test fun hashMapContainsValue() {
+        val map = createTestHashMap()
+
+        assertTrue(map.containsValue(VALUES[0]) &&
+            map.containsValue(VALUES[1]) &&
+            map.containsValue(VALUES[2]) &&
+            map.containsValue(VALUES[3]))
+
+        assertFalse(map.containsValue("four") ||
+            map.containsValue("five"))
+    }
+
+    test fun hashMapSize() {
+        val map = createTestHashMap()
+        assertEquals(KEYS.size, map.size)
+    }
+
+    test fun hashMapPutAll() {
+        val map = createTestHashMap()
+        val newMap = HashMap<String, Int>()
+        newMap.putAll(map)
+        assertEquals(KEYS.size, newMap.size)
+    }
+
+
+    fun createTestHashMap(): HashMap<String, Int> {
+        val map = HashMap<String, Int>()
+        for (i in KEYS.indices) {
+            map.put(KEYS[i], VALUES[i])
+        }
+        return map
+    }
+
     /*
 
     TODO fix bug with .set() on Map...
@@ -51,7 +103,7 @@ class MapJsTest {
     }
     */
 
-    test fun createUsingTuples() {
+    test fun createUsingPairs() {
         val map = hashMap(Pair("a", 1), Pair("b", 2))
         assertEquals(2, map.size)
         assertEquals(1, map.get("a"))
@@ -67,7 +119,7 @@ class MapJsTest {
 
     /*
     test fun createLinkedMap() {
-        val map = linkedMap(#("c", 3), #("b", 2), #("a", 1))
+        val map = linkedMapOf("c" to 3, "b" to 2, "a" to 1)
         assertEquals(1, map.get("a"))
         assertEquals(2, map.get("b"))
         assertEquals(3, map.get("c"))
@@ -131,7 +183,7 @@ class MapJsTest {
     }
 
     test fun createSortedMap() {
-        val map = sortedMap(#("c", 3), #("b", 2), #("a", 1))
+        val map = sortedMapOf("c" to 3, "b" to 2, "a" to 1)
         assertEquals(1, map.get("a"))
         assertEquals(2, map.get("b"))
         assertEquals(3, map.get("c"))
@@ -139,7 +191,7 @@ class MapJsTest {
     }
 
     test fun toSortedMap() {
-        val map = hashMap<String,Int>(#("c", 3), #("b", 2), #("a", 1))
+        val map = hashMapOf<String,Int>("c" to 3, "b" to 2, "a" to 1)
         val sorted = map.toSortedMap<String,Int>()
         assertEquals(1, sorted.get("a"))
         assertEquals(2, sorted.get("b"))
@@ -148,7 +200,7 @@ class MapJsTest {
     }
 
     test fun toSortedMapWithComparator() {
-        val map = hashMap(#("c", 3), #("bc", 2), #("bd", 4), #("abc", 1))
+        val map = hashMapOf("c" to 3, "bc" to 2, "bd" to 4, "abc" to 1)
         val c = comparator<String>{ a, b ->
             val answer = a.length() - b.length()
             if (answer == 0) a.compareTo(b) else answer

@@ -16,6 +16,7 @@
 
 package org.jetbrains.jet.completion.confidence;
 
+import com.intellij.codeInsight.CodeInsightSettings;
 import com.intellij.codeInsight.completion.CodeCompletionHandlerBase;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.completion.LightCompletionTestCase;
@@ -23,8 +24,9 @@ import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.text.StringUtil;
 import org.apache.commons.lang.SystemUtils;
-import org.jetbrains.jet.plugin.PluginTestCaseBase;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.InTextDirectivesUtils;
+import org.jetbrains.jet.plugin.PluginTestCaseBase;
 
 import java.io.File;
 
@@ -60,15 +62,24 @@ public class JetConfidenceTest extends LightCompletionTestCase {
     }
 
     protected void doTest() {
-        configureByFile(getBeforeFileName());
-        type(getTypeTextFromFile());
-        checkResultByFile(getAfterFileName());
+        boolean completeByChars = CodeInsightSettings.getInstance().SELECT_AUTOPOPUP_SUGGESTIONS_BY_CHARS;
+
+        CodeInsightSettings.getInstance().SELECT_AUTOPOPUP_SUGGESTIONS_BY_CHARS = true;
+
+        try {
+            configureByFile(getBeforeFileName());
+            type(getTypeTextFromFile());
+            checkResultByFile(getAfterFileName());
+        }
+        finally {
+            CodeInsightSettings.getInstance().SELECT_AUTOPOPUP_SUGGESTIONS_BY_CHARS = completeByChars;
+        }
     }
 
     protected static String getTypeTextFromFile() {
         String text = getEditor().getDocument().getText();
 
-        String[] directives = InTextDirectivesUtils.findArrayWithPrefix(TYPE_DIRECTIVE_PREFIX, text);
+        String[] directives = InTextDirectivesUtils.findArrayWithPrefixes(text, TYPE_DIRECTIVE_PREFIX);
         assertEquals("One directive with \"" + TYPE_DIRECTIVE_PREFIX +"\" expected", 1, directives.length);
 
         return StringUtil.unquoteString(directives[0]);
@@ -82,6 +93,7 @@ public class JetConfidenceTest extends LightCompletionTestCase {
         return getTestName(false) + ".kt.after";
     }
 
+    @NotNull
     @Override
     protected String getTestDataPath() {
         return new File(PluginTestCaseBase.getTestDataPathBase(), "/completion/confidence/").getPath() + File.separator;

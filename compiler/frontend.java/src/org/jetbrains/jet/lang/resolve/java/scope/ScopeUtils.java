@@ -37,12 +37,10 @@ public final class ScopeUtils {
     @NotNull
     public static Collection<DeclarationDescriptor> computeAllPackageDeclarations(
             PsiPackage psiPackage,
-            JavaSemanticServices javaSemanticServices,
-            FqName packageFqName
+            JavaSemanticServices javaSemanticServices
     ) {
         Collection<DeclarationDescriptor> result = Sets.newHashSet();
-        boolean isKotlinNamespace = packageFqName != null && javaSemanticServices.getKotlinNamespaceDescriptor(packageFqName) != null;
-        final JavaDescriptorResolver descriptorResolver = javaSemanticServices.getDescriptorResolver();
+        JavaDescriptorResolver descriptorResolver = javaSemanticServices.getDescriptorResolver();
 
         for (PsiPackage psiSubPackage : psiPackage.getSubPackages()) {
             NamespaceDescriptor childNs = descriptorResolver.resolveNamespace(
@@ -53,7 +51,7 @@ public final class ScopeUtils {
         }
 
         for (PsiClass psiClass : javaSemanticServices.getPsiClassFinder().findPsiClasses(psiPackage)) {
-            if (isKotlinNamespace && PackageClassUtils.isPackageClass(psiClass)) {
+            if (PackageClassUtils.isPackageClass(psiClass)) {
                 continue;
             }
 
@@ -61,20 +59,22 @@ public final class ScopeUtils {
                 continue;
             }
 
-            // TODO: Temp hack for collection function descriptors from java
-            if (PackageClassUtils.isPackageClass(psiClass)) {
-                continue;
-            }
-
             if (psiClass.hasModifierProperty(PsiModifier.PUBLIC)) {
                 ProgressIndicatorProvider.checkCanceled();
-                ClassDescriptor classDescriptor = descriptorResolver
-                        .resolveClass(new FqName(psiClass.getQualifiedName()), DescriptorSearchRule.IGNORE_IF_FOUND_IN_KOTLIN);
+                FqName fqName = new FqName(psiClass.getQualifiedName());
+                ClassDescriptor classDescriptor = descriptorResolver.resolveClass(fqName, DescriptorSearchRule.IGNORE_IF_FOUND_IN_KOTLIN);
                 if (classDescriptor != null) {
                     result.add(classDescriptor);
+                }
+
+                NamespaceDescriptor namespaceDescriptor = descriptorResolver.resolveNamespace(
+                        fqName, DescriptorSearchRule.IGNORE_IF_FOUND_IN_KOTLIN);
+                if (namespaceDescriptor != null) {
+                    result.add(namespaceDescriptor);
                 }
             }
         }
         return result;
     }
+
 }

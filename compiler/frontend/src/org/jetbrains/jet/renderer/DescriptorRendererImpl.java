@@ -26,6 +26,7 @@ import org.jetbrains.jet.lang.descriptors.annotations.Annotated;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.DeclarationDescriptorVisitorEmptyBodies;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
+import org.jetbrains.jet.lang.resolve.calls.CallResolverUtil;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.FqNameUnsafe;
 import org.jetbrains.jet.lang.resolve.name.Name;
@@ -195,16 +196,13 @@ public class DescriptorRendererImpl implements DescriptorRenderer {
     }
 
     private String renderTypeWithoutEscape(@NotNull JetType type) {
-        if (type == ExpressionTypingUtils.CANNOT_BE_INFERRED) {
+        if (type == ExpressionTypingUtils.CANT_INFER_LAMBDA_PARAM_TYPE || type == CallResolverUtil.CANT_INFER_TYPE_PARAMETER) {
             return "???";
         }
-        else if (ErrorUtils.isErrorType(type)) {
+        if (ErrorUtils.isErrorType(type)) {
             return type.toString();
         }
-        else if (KotlinBuiltIns.getInstance().isUnit(type)) {
-            return KotlinBuiltIns.UNIT_ALIAS + (type.isNullable() ? "?" : "");
-        }
-        else if (KotlinBuiltIns.getInstance().isFunctionOrExtensionFunctionType(type)) {
+        if (KotlinBuiltIns.getInstance().isFunctionOrExtensionFunctionType(type)) {
             return renderFunctionType(type);
         }
         return renderDefaultType(type);
@@ -284,7 +282,7 @@ public class DescriptorRendererImpl implements DescriptorRenderer {
         }
         builder.append(" ").append(renderMessage("defined in")).append(" ");
 
-        final DeclarationDescriptor containingDeclaration = descriptor.getContainingDeclaration();
+        DeclarationDescriptor containingDeclaration = descriptor.getContainingDeclaration();
         if (containingDeclaration != null) {
             FqNameUnsafe fqName = DescriptorUtils.getFQName(containingDeclaration);
             builder.append(FqName.ROOT.equalsTo(fqName) ? "root package" : renderFqName(fqName));
@@ -300,7 +298,7 @@ public class DescriptorRendererImpl implements DescriptorRenderer {
             if (!excludedAnnotationClasses.contains(DescriptorUtils.getFQName(annotationClass).toSafe())) {
                 builder.append(renderType(annotation.getType()));
                 if (verbose) {
-                    builder.append("(").append(StringUtil.join(DescriptorUtils.getSortedValueArguments(annotation), ", ")).append(")");
+                    builder.append("(").append(StringUtil.join(DescriptorUtils.getSortedValueArguments(annotation, this), ", ")).append(")");
                 }
                 builder.append(" ");
             }

@@ -20,16 +20,16 @@ import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.CallableDescriptor;
-import org.jetbrains.jet.lang.descriptors.FunctionDescriptor;
 import org.jetbrains.jet.lang.descriptors.ValueParameterDescriptor;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.diagnostics.Errors;
 import org.jetbrains.jet.lang.psi.*;
-import org.jetbrains.jet.lang.resolve.*;
-import org.jetbrains.jet.lang.resolve.calls.context.CallCandidateResolutionContext;
+import org.jetbrains.jet.lang.resolve.BindingTrace;
+import org.jetbrains.jet.lang.resolve.TemporaryBindingTrace;
+import org.jetbrains.jet.lang.resolve.TypeResolver;
 import org.jetbrains.jet.lang.resolve.calls.context.CallResolutionContext;
+import org.jetbrains.jet.lang.resolve.calls.context.CheckValueArgumentsMode;
 import org.jetbrains.jet.lang.resolve.calls.context.ResolveMode;
-import org.jetbrains.jet.lang.resolve.calls.context.TypeInfoForCall;
 import org.jetbrains.jet.lang.resolve.calls.model.ResolvedCallImpl;
 import org.jetbrains.jet.lang.resolve.calls.model.ResolvedValueArgument;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
@@ -88,11 +88,13 @@ public class ArgumentTypeResolver {
         return KotlinBuiltIns.getInstance().isFunctionOrExtensionFunctionType(supertype) || ErrorUtils.isErrorType(supertype);
     }
 
-    public void checkTypesWithNoCallee(@NotNull CallResolutionContext context) {
+    public void checkTypesWithNoCallee(@NotNull CallResolutionContext<?> context) {
         checkTypesWithNoCallee(context, SKIP_FUNCTION_ARGUMENTS);
     }
 
-    public void checkTypesWithNoCallee(@NotNull CallResolutionContext context, @NotNull ResolveArgumentsMode resolveFunctionArgumentBodies) {
+    public void checkTypesWithNoCallee(@NotNull CallResolutionContext<?> context, @NotNull ResolveArgumentsMode resolveFunctionArgumentBodies) {
+        if (context.checkArguments == CheckValueArgumentsMode.DISABLED) return;
+
         for (ValueArgument valueArgument : context.call.getValueArguments()) {
             JetExpression argumentExpression = valueArgument.getArgumentExpression();
             if (argumentExpression != null && !(argumentExpression instanceof JetFunctionLiteralExpression)) {
@@ -115,7 +117,9 @@ public class ArgumentTypeResolver {
         }
     }
 
-    public void checkTypesForFunctionArgumentsWithNoCallee(@NotNull CallResolutionContext context) {
+    public void checkTypesForFunctionArgumentsWithNoCallee(@NotNull CallResolutionContext<?> context) {
+        if (context.checkArguments == CheckValueArgumentsMode.DISABLED) return;
+
         for (ValueArgument valueArgument : context.call.getValueArguments()) {
             JetExpression argumentExpression = valueArgument.getArgumentExpression();
             if (argumentExpression != null && (argumentExpression instanceof JetFunctionLiteralExpression)) {
@@ -128,7 +132,7 @@ public class ArgumentTypeResolver {
         }
     }
 
-    public void checkUnmappedArgumentTypes(CallResolutionContext context, Set<ValueArgument> unmappedArguments) {
+    public void checkUnmappedArgumentTypes(CallResolutionContext<?> context, Set<ValueArgument> unmappedArguments) {
         for (ValueArgument valueArgument : unmappedArguments) {
             JetExpression argumentExpression = valueArgument.getArgumentExpression();
             if (argumentExpression != null) {
@@ -137,7 +141,7 @@ public class ArgumentTypeResolver {
         }
     }
 
-    public <D extends CallableDescriptor> void checkTypesForFunctionArguments(CallResolutionContext context, ResolvedCallImpl<D> resolvedCall) {
+    public <D extends CallableDescriptor> void checkTypesForFunctionArguments(CallResolutionContext<?> context, ResolvedCallImpl<D> resolvedCall) {
         Map<ValueParameterDescriptor, ResolvedValueArgument> arguments = resolvedCall.getValueArguments();
         for (Map.Entry<ValueParameterDescriptor, ResolvedValueArgument> entry : arguments.entrySet()) {
             ValueParameterDescriptor valueParameterDescriptor = entry.getKey();
@@ -163,7 +167,7 @@ public class ArgumentTypeResolver {
     @NotNull
     public JetTypeInfo getArgumentTypeInfo(
             @Nullable JetExpression expression,
-            @NotNull CallResolutionContext context,
+            @NotNull CallResolutionContext<?> context,
             @NotNull ResolveArgumentsMode resolveArgumentsMode,
             @Nullable TemporaryBindingTrace traceToCommitForCall
     ) {
@@ -183,32 +187,29 @@ public class ArgumentTypeResolver {
             return expressionTypingServices.getTypeInfo(context.scope, expression, context.expectedType, context.dataFlowInfo, context.trace);
         }
 
-        TypeInfoForCall result;
+        JetTypeInfo result;
         if (expression instanceof JetCallExpression) {
-            result = callExpressionResolver.getCallExpressionTypeInfoForCall(
+            result = callExpressionResolver.getCallExpressionTypeInfo(
                     (JetCallExpression) expression, ReceiverValue.NO_RECEIVER, null,
-                    context.replaceExpectedType(TypeUtils.NO_EXPECTED_TYPE), ResolveMode.NESTED_CALL);
+                    context.replaceExpectedType(TypeUtils.NO_EXPECTED_TYPE), ResolveMode.NESTED_CALL, context.resolutionResultsCache);
         }
         else { // expression instanceof JetQualifiedExpression
-            result = callExpressionResolver.getQualifiedExpressionExtendedTypeInfo(
-                    (JetQualifiedExpression) expression, context.replaceExpectedType(TypeUtils.NO_EXPECTED_TYPE), ResolveMode.NESTED_CALL);
+            result = callExpressionResolver.getQualifiedExpressionTypeInfo(
+                    (JetQualifiedExpression) expression, context.replaceExpectedType(TypeUtils.NO_EXPECTED_TYPE),
+                    ResolveMode.NESTED_CALL, context.resolutionResultsCache);
         }
 
-        recordExpressionType(expression, context.trace, context.scope, result.getTypeInfo());
-        CallCandidateResolutionContext<FunctionDescriptor> deferredContext = result.getCallCandidateResolutionContext();
-        if (deferredContext != null) {
-            context.trace.record(BindingContext.DEFERRED_COMPUTATION_FOR_CALL, expression, deferredContext);
-        }
+        recordExpressionType(expression, context.trace, context.scope, result);
         if (traceToCommitForCall != null) {
             traceToCommitForCall.commit();
         }
-        return result.getTypeInfo();
+        return result;
     }
 
     @NotNull
     public JetTypeInfo getFunctionLiteralTypeInfo(
             @NotNull JetFunctionLiteralExpression functionLiteralExpression,
-            @NotNull CallResolutionContext context,
+            @NotNull CallResolutionContext<?> context,
             @NotNull ResolveArgumentsMode resolveArgumentsMode
     ) {
         if (resolveArgumentsMode == SKIP_FUNCTION_ARGUMENTS) {

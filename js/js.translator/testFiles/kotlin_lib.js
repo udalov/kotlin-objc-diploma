@@ -75,7 +75,6 @@ var kotlin = {set:function (receiver, key, value) {
 
     Kotlin.Exception = Kotlin.$createClass();
     Kotlin.RuntimeException = Kotlin.$createClass(Kotlin.Exception);
-    Kotlin.IndexOutOfBounds = Kotlin.$createClass(Kotlin.Exception);
     Kotlin.NullPointerException = Kotlin.$createClass(Kotlin.Exception);
     Kotlin.NoSuchElementException = Kotlin.$createClass(Kotlin.Exception);
     Kotlin.IllegalArgumentException = Kotlin.$createClass(Kotlin.Exception);
@@ -198,21 +197,18 @@ var kotlin = {set:function (receiver, key, value) {
         }
     });
 
+    //TODO: should be JS Array-like (https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Predefined_Core_Objects#Working_with_Array-like_objects)
     Kotlin.ArrayList = Kotlin.$createClass(Kotlin.AbstractList, {
         initialize: function () {
             this.array = [];
             this.$size = 0;
         },
         get: function (index) {
-            if (index < 0 || index >= this.$size) {
-                throw Kotlin.IndexOutOfBounds;
-            }
+            this.checkRange(index);
             return this.array[index];
         },
         set: function (index, value) {
-            if (index < 0 || index >= this.$size) {
-                throw Kotlin.IndexOutOfBounds;
-            }
+            this.checkRange(index);
             this.array[index] = value;
         },
         toArray: function () {
@@ -240,8 +236,9 @@ var kotlin = {set:function (receiver, key, value) {
             this.$size += collection.size();
         },
         removeAt: function (index) {
-            this.array.splice(index, 1);
+            this.checkRange(index);
             this.$size--;
+            return this.array.splice(index, 1)[0];
         },
         clear: function () {
             this.array.length = 0;
@@ -260,6 +257,11 @@ var kotlin = {set:function (receiver, key, value) {
         },
         toJSON: function () {
             return this.array;
+        },
+        checkRange: function(index) {
+            if (index < 0 || index >= this.$size) {
+                throw new Kotlin.IndexOutOfBoundsException();
+            }
         }
     });
 
@@ -364,7 +366,7 @@ var kotlin = {set:function (receiver, key, value) {
         },
         next: function () {
             var value = this.$i;
-            this.set_i(this.$i + this.$increment)
+            this.set_i(this.$i + this.$increment);
             return value;
         },
         get_hasNext: function () {
@@ -446,6 +448,31 @@ var kotlin = {set:function (receiver, key, value) {
         return max;
     };
 
+    Kotlin.collectionsSort = function (mutableList, comparator) {
+        var boundComparator = undefined;
+        if (comparator !== undefined) {
+            boundComparator = comparator.compare.bind(comparator);
+        }
+
+        if (mutableList instanceof Array) {
+            mutableList.sort(boundComparator);
+        }
+
+        //TODO: should be deleted when List will be JS Array-like (https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Predefined_Core_Objects#Working_with_Array-like_objects)
+        var array = [];
+        var it = mutableList.iterator();
+        while (it.hasNext()) {
+            array.push(it.next());
+        }
+
+        array.sort(boundComparator);
+
+        for (var i = 0, n = array.length; i < n; i++) {
+            mutableList.set(i, array[i]);
+        }
+    };
+
+
     Kotlin.StringBuilder = Kotlin.$createClass(
             {
                 initialize:function () {
@@ -473,6 +500,18 @@ var kotlin = {set:function (receiver, key, value) {
         return res;
     };
 
+    Kotlin.numberArrayOfSize = function (size) {
+        return Kotlin.arrayFromFun(size, function(){ return 0; });
+    };
+
+    Kotlin.charArrayOfSize = function (size) {
+        return Kotlin.arrayFromFun(size, function(){ return '\0'; });
+    };
+
+    Kotlin.booleanArrayOfSize = function (size) {
+        return Kotlin.arrayFromFun(size, function(){ return false; });
+    };
+
     Kotlin.arrayFromFun = function (size, initFun) {
         var result = new Array(size);
         for (var i = 0; i < size; i++) {
@@ -493,7 +532,7 @@ var kotlin = {set:function (receiver, key, value) {
         return obj.toString();
     };
 
-    Kotlin.jsonFromTuples = function (pairArr) {
+    Kotlin.jsonFromPairs = function (pairArr) {
         var i = pairArr.length;
         var res = {};
         while (i > 0) {

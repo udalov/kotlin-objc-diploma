@@ -18,7 +18,6 @@ package org.jetbrains.jet.plugin.search;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
@@ -34,7 +33,6 @@ import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.util.Processor;
 import com.intellij.util.indexing.FileBasedIndex;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jet.asJava.KotlinLightClass;
 import org.jetbrains.jet.asJava.LightClassUtil;
 import org.jetbrains.jet.lang.descriptors.ClassifierDescriptor;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
@@ -44,28 +42,24 @@ import org.jetbrains.jet.lang.psi.JetDeclaration;
 import org.jetbrains.jet.lang.psi.JetNamedFunction;
 import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
-import org.jetbrains.jet.plugin.caches.resolve.KotlinCacheManager;
-import org.jetbrains.jet.plugin.caches.resolve.KotlinDeclarationsCache;
+import org.jetbrains.jet.plugin.caches.resolve.KotlinCacheManagerUtil;
 import org.jetbrains.jet.plugin.stubindex.JetAnnotationsIndex;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * User: Natalia.Ukhorskaya
- */
 public class KotlinAnnotatedElementsSearcher extends AnnotatedElementsSearcher {
     private static final Logger LOG = Logger.getInstance("#com.intellij.psi.impl.search.AnnotatedMembersSearcher");
 
     @Override
-    public boolean execute(@NotNull final AnnotatedElementsSearch.Parameters p, @NotNull final Processor<PsiModifierListOwner> consumer) {
-        final PsiClass annClass = p.getAnnotationClass();
+    public boolean execute(@NotNull AnnotatedElementsSearch.Parameters p, @NotNull final Processor<PsiModifierListOwner> consumer) {
+        PsiClass annClass = p.getAnnotationClass();
         assert annClass.isAnnotationType() : "Annotation type should be passed to annotated members search";
 
         final String annotationFQN = annClass.getQualifiedName();
         assert annotationFQN != null;
 
-        final SearchScope useScope = p.getScope();
+        SearchScope useScope = p.getScope();
 
         for (final PsiElement elt : getJetAnnotationCandidates(annClass, useScope)) {
             if (notJetAnnotationEntry(elt)) continue;
@@ -73,13 +67,12 @@ public class KotlinAnnotatedElementsSearcher extends AnnotatedElementsSearcher {
             ApplicationManager.getApplication().runReadAction(new Runnable() {
                 @Override
                 public void run() {
-                    //TODO LazyResolve
-                    Project project = elt.getProject();
-                    KotlinDeclarationsCache declarations = KotlinCacheManager.getInstance(project).getDeclarationsFromProject();
-                    BindingContext context = declarations.getBindingContext();
-
                     JetDeclaration parentOfType = PsiTreeUtil.getParentOfType(elt, JetDeclaration.class);
                     if (parentOfType == null) return;
+
+                    //TODO LazyResolve
+                    BindingContext context = KotlinCacheManagerUtil.getDeclarationsBindingContext(parentOfType);
+
                     AnnotationDescriptor annotationDescriptor = context.get(BindingContext.ANNOTATION, (JetAnnotationEntry) elt);
                     if (annotationDescriptor == null) return;
 
@@ -88,7 +81,7 @@ public class KotlinAnnotatedElementsSearcher extends AnnotatedElementsSearcher {
                     if (!(DescriptorUtils.getFQName(descriptor).getFqName().equals(annotationFQN))) return;
 
                     if (parentOfType instanceof JetClass) {
-                        KotlinLightClass lightClass = LightClassUtil.createLightClass((JetClass) parentOfType);
+                        PsiClass lightClass = LightClassUtil.getPsiClass((JetClass) parentOfType);
                         consumer.process(lightClass);
                     }
                     else if (parentOfType instanceof JetNamedFunction) {
@@ -135,7 +128,7 @@ public class KotlinAnnotatedElementsSearcher extends AnnotatedElementsSearcher {
         });
     }
 
-    private static boolean notJetAnnotationEntry(final PsiElement found) {
+    private static boolean notJetAnnotationEntry(PsiElement found) {
         if (found instanceof JetAnnotationEntry) return false;
 
         VirtualFile faultyContainer = PsiUtilCore.getVirtualFile(found);

@@ -16,6 +16,7 @@
 
 package org.jetbrains.jet.plugin.editor.importOptimizer;
 
+import com.google.common.collect.Lists;
 import com.intellij.lang.ImportOptimizer;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicatorProvider;
@@ -23,15 +24,26 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.jet.lang.descriptors.CallableDescriptor;
+import org.jetbrains.jet.lang.descriptors.FunctionDescriptor;
 import org.jetbrains.jet.lang.psi.*;
+import org.jetbrains.jet.lang.resolve.BindingContext;
+import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.ImportPath;
+import org.jetbrains.jet.lang.resolve.calls.model.ResolvedCall;
 import org.jetbrains.jet.lang.resolve.java.PackageClassUtils;
+import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
+import org.jetbrains.jet.lang.resolve.lazy.ResolveSessionUtils;
 import org.jetbrains.jet.lang.resolve.name.FqName;
+import org.jetbrains.jet.lang.resolve.name.FqNameUnsafe;
 import org.jetbrains.jet.lang.resolve.name.Name;
+import org.jetbrains.jet.plugin.project.WholeProjectAnalyzerFacade;
 import org.jetbrains.jet.plugin.quickfix.ImportInsertHelper;
 import org.jetbrains.jet.util.QualifiedNamesUtil;
 
 import java.util.*;
+
+import static org.jetbrains.jet.plugin.quickfix.ImportInsertHelper.doNeedImport;
 
 public class JetImportOptimizer implements ImportOptimizer {
     @Override
@@ -49,31 +61,10 @@ public class JetImportOptimizer implements ImportOptimizer {
                 final JetFile jetFile = (JetFile) file;
                 final Set<FqName> usedQualifiedNames = extractUsedQualifiedNames(jetFile);
 
-                final List<JetImportDirective> sortedDirectives = jetFile.getImportDirectives();
-                Collections.sort(sortedDirectives, new Comparator<JetImportDirective>() {
-                    @Override
-                    public int compare(JetImportDirective directive1, JetImportDirective directive2) {
-                        ImportPath firstPath = JetPsiUtil.getImportPath(directive1);
-                        ImportPath secondPath = JetPsiUtil.getImportPath(directive2);
+                final List<JetImportDirective> directives = jetFile.getImportDirectives();
 
-                        if (firstPath == null || secondPath == null) {
-                            return firstPath == null && secondPath == null ? 0 :
-                                   firstPath == null ? -1 :
-                                   1;
-                        }
-
-                        // import bla.bla.bla.* should be before import bla.bla.bla.something
-                        if (firstPath.isAllUnder() && !secondPath.isAllUnder() && firstPath.fqnPart().equals(secondPath.fqnPart().parent())) {
-                            return -1;
-                        }
-
-                        if (!firstPath.isAllUnder() && secondPath.isAllUnder() && secondPath.fqnPart().equals(firstPath.fqnPart().parent())) {
-                            return 1;
-                        }
-
-                        return firstPath.getPathStr().compareTo(secondPath.getPathStr());
-                    }
-                });
+                final List<JetImportDirective> directivesBeforeCurrent = Lists.newArrayList();
+                final List<JetImportDirective> directivesAfterCurrent = jetFile.getImportDirectives();
 
                 ApplicationManager.getApplication().runWriteAction(new Runnable() {
                     @Override
@@ -95,14 +86,19 @@ public class JetImportOptimizer implements ImportOptimizer {
                         }
 
                         // Insert back only necessary imports in correct order
-                        for (JetImportDirective anImport : sortedDirectives) {
+                        for (JetImportDirective anImport : directives) {
+                            directivesAfterCurrent.remove(anImport);
+
                             ImportPath importPath = JetPsiUtil.getImportPath(anImport);
                             if (importPath == null) {
                                 continue;
                             }
 
-                            if (isUseful(importPath, usedQualifiedNames)) {
-                                ImportInsertHelper.addImportDirective(importPath, jetFile);
+                            if (isUseful(importPath, usedQualifiedNames) &&
+                                    doNeedImport(importPath, jetFile, directivesBeforeCurrent) &&
+                                    doNeedImport(importPath, jetFile, directivesAfterCurrent)) {
+                                ImportInsertHelper.writeImportToFile(importPath, jetFile);
+                                directivesBeforeCurrent.add(anImport);
                             }
                         }
                     }
@@ -126,7 +122,7 @@ public class JetImportOptimizer implements ImportOptimizer {
         return false;
     }
 
-    public static Set<FqName> extractUsedQualifiedNames(final JetFile jetFile) {
+    public static Set<FqName> extractUsedQualifiedNames(JetFile jetFile) {
         final Set<FqName> usedQualifiedNames = new HashSet<FqName>();
         jetFile.accept(new JetVisitorVoid() {
             @Override
@@ -178,6 +174,38 @@ public class JetImportOptimizer implements ImportOptimizer {
                 }
 
                 super.visitReferenceExpression(expression);
+            }
+
+            @Override
+            public void visitForExpression(JetForExpression expression) {
+                ResolveSession resolveSession = WholeProjectAnalyzerFacade.getLazyResolveSessionForFile((JetFile) expression.getContainingFile());
+                BindingContext context = ResolveSessionUtils.resolveToExpression(resolveSession, expression);
+                ResolvedCall<FunctionDescriptor> resolvedCall = context.get(BindingContext.LOOP_RANGE_ITERATOR_RESOLVED_CALL, expression.getLoopRange());
+                addResolvedCallFqName(resolvedCall);
+
+                super.visitForExpression(expression);
+            }
+
+            @Override
+            public void visitMultiDeclaration(JetMultiDeclaration declaration) {
+                ResolveSession resolveSession = WholeProjectAnalyzerFacade.getLazyResolveSessionForFile((JetFile) declaration.getContainingFile());
+                BindingContext context = ResolveSessionUtils.resolveToExpression(resolveSession, declaration);
+                List<JetMultiDeclarationEntry> entries = declaration.getEntries();
+                for (JetMultiDeclarationEntry entry : entries) {
+                    ResolvedCall<FunctionDescriptor> resolvedCall = context.get(BindingContext.COMPONENT_RESOLVED_CALL, entry);
+                    addResolvedCallFqName(resolvedCall);
+                }
+
+                super.visitMultiDeclaration(declaration);
+            }
+
+            private void addResolvedCallFqName(@Nullable ResolvedCall resolvedCall) {
+                if (resolvedCall != null) {
+                    CallableDescriptor resultingDescriptor = resolvedCall.getResultingDescriptor();
+                    FqNameUnsafe name = DescriptorUtils.getFQName(resultingDescriptor);
+                    assert name.isSafe(): "FqName for resulting descriptor should be safe " + resultingDescriptor.getName();
+                    usedQualifiedNames.add(name.toSafe());
+                }
             }
         });
 

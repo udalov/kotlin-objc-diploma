@@ -1,0 +1,6 @@
+package test
+
+public open class NotVarargReplacedWithVararg : java.lang.Object {
+    public constructor NotVarargReplacedWithVararg()
+    public open fun foo(/*0*/ p0 : jet.String?) : jet.Unit
+}

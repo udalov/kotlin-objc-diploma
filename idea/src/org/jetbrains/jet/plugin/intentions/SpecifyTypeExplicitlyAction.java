@@ -46,7 +46,7 @@ import org.jetbrains.jet.lang.types.TypeConstructor;
 import org.jetbrains.jet.lang.types.TypeUtils;
 import org.jetbrains.jet.plugin.JetBundle;
 import org.jetbrains.jet.plugin.codeInsight.ReferenceToClassesShortening;
-import org.jetbrains.jet.plugin.project.AnalyzeSingleFileUtil;
+import org.jetbrains.jet.plugin.project.AnalyzerFacadeWithCache;
 import org.jetbrains.jet.renderer.DescriptorRenderer;
 
 import java.util.*;
@@ -140,7 +140,7 @@ public class SpecifyTypeExplicitlyAction extends PsiElementBaseIntentionAction {
 
 
     private static boolean hasPublicMemberDiagnostic(@NotNull JetNamedDeclaration declaration) {
-        BindingContext bindingContext = AnalyzeSingleFileUtil.getContextForSingleFile((JetFile) declaration.getContainingFile());
+        BindingContext bindingContext = AnalyzerFacadeWithCache.analyzeFileWithCache((JetFile) declaration.getContainingFile()).getBindingContext();
         for (Diagnostic diagnostic : bindingContext.getDiagnostics()) {
             //noinspection ConstantConditions
             if (Errors.PUBLIC_MEMBER_SHOULD_SPECIFY_TYPE == diagnostic.getFactory() && declaration == diagnostic.getPsiElement()) {
@@ -152,7 +152,7 @@ public class SpecifyTypeExplicitlyAction extends PsiElementBaseIntentionAction {
 
     @NotNull
     public static JetType getTypeForDeclaration(@NotNull JetNamedDeclaration declaration) {
-        BindingContext bindingContext = AnalyzeSingleFileUtil.getContextForSingleFile((JetFile) declaration.getContainingFile());
+        BindingContext bindingContext = AnalyzerFacadeWithCache.analyzeFileWithCache((JetFile) declaration.getContainingFile()).getBindingContext();
         DeclarationDescriptor descriptor = bindingContext.get(BindingContext.DECLARATION_TO_DESCRIPTOR, declaration);
 
         JetType type;
@@ -265,21 +265,24 @@ public class SpecifyTypeExplicitlyAction extends PsiElementBaseIntentionAction {
         return null;
     }
 
-    private static void removeTypeAnnotation(@NotNull JetNamedDeclaration property, @Nullable JetTypeReference typeReference) {
+    private static void removeTypeAnnotation(@Nullable PsiElement removeAfter, @Nullable JetTypeReference typeReference) {
+        if (removeAfter == null) return;
         if (typeReference == null) return;
-        PsiElement identifier = property.getNameIdentifier();
-        if (identifier == null) return;
-        PsiElement sibling = identifier.getNextSibling();
+        PsiElement sibling = removeAfter.getNextSibling();
         if (sibling == null) return;
         PsiElement nextSibling = typeReference.getNextSibling();
         sibling.getParent().getNode().removeRange(sibling.getNode(), nextSibling == null ? null : nextSibling.getNode());
     }
 
-    public static void removeTypeAnnotation(JetProperty property) {
-        removeTypeAnnotation(property, property.getTypeRef());
+    public static void removeTypeAnnotation(JetVariableDeclaration property) {
+        removeTypeAnnotation(property.getNameIdentifier(), property.getTypeRef());
     }
 
     public static void removeTypeAnnotation(JetParameter parameter) {
-        removeTypeAnnotation(parameter, parameter.getTypeReference());
+        removeTypeAnnotation(parameter.getNameIdentifier(), parameter.getTypeReference());
+    }
+
+    public static void removeTypeAnnotation(JetFunction function) {
+        removeTypeAnnotation(function.getValueParameterList(), function.getReturnTypeRef());
     }
 }

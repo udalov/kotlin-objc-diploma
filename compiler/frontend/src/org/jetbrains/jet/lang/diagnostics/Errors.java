@@ -54,12 +54,6 @@ public interface Errors {
 
     DiagnosticFactory1<PsiElement, String> UNSUPPORTED = DiagnosticFactory1.create(ERROR);
 
-    // TODO: Temporary error message: to deprecate tuples we report this error and provide a quick fix
-    @Deprecated // Tuples will be dropped in Kotlin M4
-            DiagnosticFactory0<PsiElement> TUPLES_ARE_NOT_SUPPORTED = DiagnosticFactory0.create(ERROR);
-    @Deprecated // Tuples will be dropped in Kotlin M4
-            DiagnosticFactory0<PsiElement> TUPLES_ARE_NOT_SUPPORTED_BIG = DiagnosticFactory0.create(ERROR);
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Generic errors/warnings: applicable in many contexts
@@ -351,6 +345,11 @@ public interface Errors {
     DiagnosticFactory1<PsiElement, InferenceErrorData> TYPE_INFERENCE_UPPER_BOUND_VIOLATED = DiagnosticFactory1.create(ERROR);
     DiagnosticFactory2<PsiElement, JetType, JetType> TYPE_INFERENCE_EXPECTED_TYPE_MISMATCH = DiagnosticFactory2.create(ERROR);
 
+    // Callable references
+
+    DiagnosticFactory1<JetExpression, CallableMemberDescriptor> EXTENSION_IN_CLASS_REFERENCE_NOT_ALLOWED = DiagnosticFactory1.create(ERROR);
+    DiagnosticFactory0<JetExpression> CALLABLE_REFERENCE_LHS_NOT_A_CLASS = DiagnosticFactory0.create(ERROR);
+
     // Multi-declarations
 
     DiagnosticFactory0<JetMultiDeclaration> INITIALIZER_REQUIRED_FOR_MULTIDECLARATION = DiagnosticFactory0.create(ERROR, DEFAULT);
@@ -362,6 +361,7 @@ public interface Errors {
 
     DiagnosticFactory1<JetSuperExpression, String> SUPER_IS_NOT_AN_EXPRESSION = DiagnosticFactory1.create(ERROR);
     DiagnosticFactory0<JetSuperExpression> SUPER_NOT_AVAILABLE = DiagnosticFactory0.create(ERROR);
+    DiagnosticFactory0<JetSuperExpression> SUPERCLASS_NOT_ACCESSIBLE_FROM_TRAIT = DiagnosticFactory0.create(ERROR);
     DiagnosticFactory0<JetSuperExpression> AMBIGUOUS_SUPER = DiagnosticFactory0.create(ERROR);
     DiagnosticFactory0<JetExpression> ABSTRACT_SUPER_CALL = DiagnosticFactory0.create(ERROR);
     DiagnosticFactory0<JetTypeReference> NOT_A_SUPERTYPE = DiagnosticFactory0.create(ERROR);
@@ -524,11 +524,13 @@ public interface Errors {
     DiagnosticFactory0<JetDeclarationWithBody>
             NO_RETURN_IN_FUNCTION_WITH_BLOCK_BODY = DiagnosticFactory0.create(ERROR, DECLARATION_WITH_BODY);
 
-    DiagnosticFactory0<JetClassInitializer> ANONYMOUS_INITIALIZER_WITHOUT_CONSTRUCTOR = DiagnosticFactory0.create(ERROR);
+    DiagnosticFactory0<JetClassInitializer> ANONYMOUS_INITIALIZER_IN_TRAIT = DiagnosticFactory0.create(ERROR);
 
     DiagnosticFactory0<JetThisExpression> NO_THIS = DiagnosticFactory0.create(ERROR);
     DiagnosticFactory0<JetRootNamespaceExpression> NAMESPACE_IS_NOT_AN_EXPRESSION = DiagnosticFactory0.create(ERROR);
     DiagnosticFactory1<JetSimpleNameExpression, ClassifierDescriptor> NO_CLASS_OBJECT = DiagnosticFactory1.create(ERROR);
+    DiagnosticFactory1<JetSimpleNameExpression, TypeParameterDescriptor> TYPE_PARAMETER_IS_NOT_AN_EXPRESSION = DiagnosticFactory1.create(ERROR);
+    DiagnosticFactory1<JetSimpleNameExpression, TypeParameterDescriptor> TYPE_PARAMETER_ON_LHS_OF_DOT = DiagnosticFactory1.create(ERROR);
 
     DiagnosticFactory1<PsiElement, ClassDescriptor> INACCESSIBLE_OUTER_CLASS_EXPRESSION = DiagnosticFactory1.create(ERROR);
     DiagnosticFactory0<PsiElement> NESTED_CLASS_NOT_ALLOWED = DiagnosticFactory0.create(ERROR);

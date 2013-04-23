@@ -88,21 +88,12 @@ public class TypeTransformingVisitor extends JetVisitor<JetType, Void> {
     }
 
     @Override
-    public JetType visitTupleType(JetTupleType type, Void data) {
-        return visitCommonType(KotlinBuiltIns.getInstance().getTuple(type.getComponentTypeRefs().size()), type);
-    }
-
-    @Override
     public JetType visitUserType(JetUserType type, Void data) {
         JetUserType qualifier = type.getQualifier();
 
         //noinspection ConstantConditions
         String shortName = type.getReferenceExpression().getReferencedName();
         String longName = (qualifier == null ? "" : qualifier.getText() + ".") + shortName;
-
-        if (KotlinBuiltIns.UNIT_ALIAS.getName().equals(longName)) {
-            return visitCommonType(KotlinBuiltIns.getInstance().getTuple(0), type);
-        }
 
         return visitCommonType(longName, type);
     }

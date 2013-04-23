@@ -18,6 +18,7 @@ package org.jetbrains.jet.completion;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.openapi.util.text.StringUtil;
@@ -26,6 +27,7 @@ import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.InTextDirectivesUtils;
+import org.jetbrains.jet.plugin.project.TargetPlatform;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +40,8 @@ import java.util.regex.Pattern;
  * should be asserted during test execution.
  */
 public class ExpectedCompletionUtils {
+    private ExpectedCompletionUtils() {
+    }
 
     public static class CompletionProposal {
         public static final Pattern PATTERN = Pattern.compile("([^~@]*)(@([^~]*))?(~(.*))?");
@@ -88,45 +92,83 @@ public class ExpectedCompletionUtils {
             return result.toString();
         }
     }
-    
-    public static final String EXIST_LINE_PREFIX = "// EXIST:";
-    public static final String ABSENT_LINE_PREFIX = "// ABSENT:";
-    public static final String NUMBER_LINE_PREFIX = "// NUMBER:";
-    public static final String EXECUTION_TIME_PREFIX = "// TIME:";
-    public static final String WITH_ORDER_PREFIX = "// WITH_ORDER:";
 
-    private final String existLinePrefix;
-    private final String absentLinePrefix;
-    private final String numberLinePrefix;
-    private final String executionTimePrefix;
-    private final String withOrderPrefix;
-
-    public ExpectedCompletionUtils() {
-        this(EXIST_LINE_PREFIX, ABSENT_LINE_PREFIX, NUMBER_LINE_PREFIX, EXECUTION_TIME_PREFIX, WITH_ORDER_PREFIX);
-    }
+    private static final String UNSUPPORTED_PLATFORM_MESSAGE = String.format("Only %s and %s platforms are supported", TargetPlatform.JVM, TargetPlatform.JS);
     
-    public ExpectedCompletionUtils(String existLinePrefix, String absentLinePrefix,
-            String numberLinePrefix, String executionTimePrefix, String withOrderPrefix) {
-        this.existLinePrefix = existLinePrefix;
-        this.absentLinePrefix = absentLinePrefix;
-        this.numberLinePrefix = numberLinePrefix;
-        this.executionTimePrefix = executionTimePrefix;
-        this.withOrderPrefix = withOrderPrefix;
+    private static final String EXIST_LINE_PREFIX = "EXIST:";
+
+    private static final String ABSENT_LINE_PREFIX = "ABSENT:";
+    private static final String ABSENT_JS_LINE_PREFIX = "ABSENT_JS:";
+    private static final String ABSENT_JAVA_LINE_PREFIX = "ABSENT_JAVA:";
+
+    private static final String EXIST_JAVA_ONLY_LINE_PREFIX = "EXIST_JAVA_ONLY:";
+    private static final String EXIST_JS_ONLY_LINE_PREFIX = "EXIST_JS_ONLY:";
+
+    private static final String NUMBER_LINE_PREFIX = "NUMBER:";
+    private static final String NUMBER_JS_LINE_PREFIX = "NUMBER_JS:";
+    private static final String NUMBER_JAVA_LINE_PREFIX = "NUMBER_JAVA:";
+
+    private static final String EXECUTION_TIME_PREFIX = "TIME:";
+    private static final String WITH_ORDER_PREFIX = "WITH_ORDER:";
+
+    public static final List<String> KNOWN_PREFIXES = ImmutableList.of(
+            EXIST_LINE_PREFIX,
+            ABSENT_LINE_PREFIX,
+            ABSENT_JS_LINE_PREFIX,
+            ABSENT_JAVA_LINE_PREFIX,
+            EXIST_JAVA_ONLY_LINE_PREFIX,
+            EXIST_JS_ONLY_LINE_PREFIX,
+            NUMBER_LINE_PREFIX,
+            NUMBER_JS_LINE_PREFIX,
+            NUMBER_JAVA_LINE_PREFIX,
+            EXECUTION_TIME_PREFIX,
+            WITH_ORDER_PREFIX);
+
+    @NotNull
+    public static CompletionProposal[] itemsShouldExist(String fileText, @Nullable TargetPlatform platform) {
+        if (platform == null) {
+            return processProposalAssertions(fileText, EXIST_LINE_PREFIX);
+        }
+        else if (platform == TargetPlatform.JVM) {
+            return processProposalAssertions(fileText, EXIST_LINE_PREFIX, EXIST_JAVA_ONLY_LINE_PREFIX);
+        }
+        else if (platform == TargetPlatform.JS) {
+            return processProposalAssertions(fileText, EXIST_LINE_PREFIX, EXIST_JS_ONLY_LINE_PREFIX);
+        }
+        else {
+            throw new IllegalArgumentException(UNSUPPORTED_PLATFORM_MESSAGE);
+        }
     }
 
     @NotNull
-    public CompletionProposal[] itemsShouldExist(String fileText) {
-        return processProposalAssertions(existLinePrefix, fileText);
+    public static CompletionProposal[] itemsShouldAbsent(String fileText, @Nullable TargetPlatform platform) {
+        if (platform == null) {
+            return processProposalAssertions(fileText, ABSENT_LINE_PREFIX);
+        }
+        else if (platform == TargetPlatform.JVM) {
+            return processProposalAssertions(fileText, ABSENT_LINE_PREFIX, ABSENT_JAVA_LINE_PREFIX, EXIST_JS_ONLY_LINE_PREFIX);
+        }
+        else if (platform == TargetPlatform.JS) {
+            return processProposalAssertions(fileText, ABSENT_LINE_PREFIX, ABSENT_JS_LINE_PREFIX, EXIST_JAVA_ONLY_LINE_PREFIX);
+        }
+        else {
+            throw new IllegalArgumentException(UNSUPPORTED_PLATFORM_MESSAGE);
+        }
     }
 
     @NotNull
-    public CompletionProposal[] itemsShouldAbsent(String fileText) {
-        return processProposalAssertions(absentLinePrefix, fileText);
+    public static CompletionProposal[] itemsShouldExist(String fileText) {
+        return itemsShouldExist(fileText, null);
     }
 
-    public static CompletionProposal[] processProposalAssertions(String prefix, String fileText) {
+    @NotNull
+    public static CompletionProposal[] itemsShouldAbsent(String fileText) {
+        return itemsShouldAbsent(fileText, null);
+    }
+
+    public static CompletionProposal[] processProposalAssertions(String fileText, String... prefixes) {
         Collection<CompletionProposal> proposals = new ArrayList<CompletionProposal>();
-        for (String proposalStr : InTextDirectivesUtils.findListWithPrefix(prefix, fileText)) {
+        for (String proposalStr : InTextDirectivesUtils.findListWithPrefixes(fileText, prefixes)) {
             Matcher matcher = CompletionProposal.PATTERN.matcher(proposalStr);
             matcher.find();
             proposals.add(new CompletionProposal(matcher.group(CompletionProposal.LOOKUP_STRING_GROUP_INDEX),
@@ -138,20 +180,40 @@ public class ExpectedCompletionUtils {
     }
 
     @Nullable
-    public Integer getExpectedNumber(String fileText) {
-        return InTextDirectivesUtils.getPrefixedInt(fileText, numberLinePrefix);
+    public static Integer getExpectedNumber(String fileText) {
+        return getExpectedNumber(fileText, null);
     }
 
     @Nullable
-    public Integer getExecutionTime(String fileText) {
-        return InTextDirectivesUtils.getPrefixedInt(fileText, executionTimePrefix);
+    public static Integer getExpectedNumber(String fileText, @Nullable TargetPlatform platform) {
+        if (platform == null) {
+            return InTextDirectivesUtils.getPrefixedInt(fileText, NUMBER_LINE_PREFIX);
+        }
+        else if (platform == TargetPlatform.JVM) {
+            return getPlatformExpectedNumber(fileText, NUMBER_JAVA_LINE_PREFIX);
+        }
+        else if (platform == TargetPlatform.JS) {
+            return getPlatformExpectedNumber(fileText, NUMBER_JS_LINE_PREFIX);
+        }
+        else {
+            throw new IllegalArgumentException(UNSUPPORTED_PLATFORM_MESSAGE);
+        }
     }
 
-    public boolean isWithOrder(String fileText) {
-        return InTextDirectivesUtils.getPrefixedInt(fileText, withOrderPrefix) != null;
+    @Nullable
+    public static Integer getExecutionTime(String fileText) {
+        return InTextDirectivesUtils.getPrefixedInt(fileText, EXECUTION_TIME_PREFIX);
     }
 
-    protected static void assertContainsRenderedItems(CompletionProposal[] expected, LookupElement[] items, boolean checkOrder) {
+    public static boolean isWithOrder(String fileText) {
+        return InTextDirectivesUtils.getPrefixedInt(fileText, WITH_ORDER_PREFIX) != null;
+    }
+
+    public static void assertDirectivesValid(String fileText) {
+        InTextDirectivesUtils.assertHasUnknownPrefixes(fileText, KNOWN_PREFIXES);
+    }
+
+    public static void assertContainsRenderedItems(CompletionProposal[] expected, LookupElement[] items, boolean checkOrder) {
         List<CompletionProposal> itemsInformation = getItemsInformation(items);
         String allItemsString = listToString(itemsInformation);
 
@@ -178,7 +240,19 @@ public class ExpectedCompletionUtils {
         }
     }
 
-    protected static void assertNotContainsRenderedItems(CompletionProposal[] unexpected,LookupElement[] items) {
+    private static Integer getPlatformExpectedNumber(String fileText, String platformNumberPrefix) {
+        Integer prefixedInt = InTextDirectivesUtils.getPrefixedInt(fileText, platformNumberPrefix);
+        if (prefixedInt != null) {
+            Assert.assertNull(String.format("There shouldn't be %s and %s prefixes set in same time", NUMBER_LINE_PREFIX,
+                                            platformNumberPrefix),
+                              InTextDirectivesUtils.getPrefixedInt(fileText, NUMBER_LINE_PREFIX));
+            return prefixedInt;
+        }
+
+        return InTextDirectivesUtils.getPrefixedInt(fileText, NUMBER_LINE_PREFIX);
+    }
+
+    public static void assertNotContainsRenderedItems(CompletionProposal[] unexpected, LookupElement[] items) {
         List<CompletionProposal> itemsInformation = getItemsInformation(items);
         String allItemsString = listToString(itemsInformation);
 
@@ -190,8 +264,8 @@ public class ExpectedCompletionUtils {
         }
     }
 
-    protected static List<CompletionProposal> getItemsInformation(LookupElement[] items) {
-        final LookupElementPresentation presentation = new LookupElementPresentation();
+    public static List<CompletionProposal> getItemsInformation(LookupElement[] items) {
+        LookupElementPresentation presentation = new LookupElementPresentation();
 
         List<CompletionProposal> result = new ArrayList<CompletionProposal>();
         if (items != null) {
@@ -205,7 +279,7 @@ public class ExpectedCompletionUtils {
         return result;
     }
 
-    protected static String listToString(Collection<CompletionProposal> items) {
+    public static String listToString(Collection<CompletionProposal> items) {
         return StringUtil.join(
             Collections2.transform(items, new Function<CompletionProposal, String>() {
                 @Override

@@ -18,9 +18,12 @@ package org.jetbrains.jet.lang.types;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.jet.lang.ModuleConfiguration;
+import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.*;
+import org.jetbrains.jet.lang.resolve.ImportPath;
 import org.jetbrains.jet.lang.resolve.name.LabelName;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
@@ -31,7 +34,16 @@ import java.util.*;
 
 public class ErrorUtils {
 
-    private static final ModuleDescriptor ERROR_MODULE = new ModuleDescriptor(Name.special("<ERROR MODULE>"));
+    private static final ModuleDescriptor ERROR_MODULE;
+    static {
+        ModuleDescriptorImpl module = new ModuleDescriptorImpl(
+                Name.special("<ERROR MODULE>"),
+                Collections.<ImportPath>emptyList(),
+                PlatformToKotlinClassMap.EMPTY
+        );
+        module.setModuleConfiguration(ModuleConfiguration.EMPTY);
+        ERROR_MODULE = module;
+    }
 
 
     public static class ErrorScope implements JetScope {
@@ -198,7 +210,6 @@ public class ErrorUtils {
                     i,
                     Collections.<AnnotationDescriptor>emptyList(),
                     Name.special("<ERROR VALUE_PARAMETER>"),
-                    true,
                     ERROR_PARAMETER_TYPE,
                     false,
                     null));
@@ -302,6 +313,10 @@ public class ErrorUtils {
         public String toString() {
             return constructor.toString();
         }
+    }
+
+    public static ModuleDescriptor getErrorModule() {
+        return ERROR_MODULE;
     }
 
     private ErrorUtils() {}

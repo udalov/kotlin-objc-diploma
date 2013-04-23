@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
 import org.jetbrains.jet.lang.resolve.java.provider.ClassPsiDeclarationProvider;
+import org.jetbrains.jet.lang.resolve.java.provider.PackagePsiDeclarationProvider;
 import org.jetbrains.jet.lang.resolve.java.provider.PsiDeclarationProvider;
 import org.jetbrains.jet.lang.resolve.java.resolver.*;
 import org.jetbrains.jet.lang.resolve.name.FqName;
@@ -38,7 +39,7 @@ public class JavaDescriptorResolver implements DependencyClassByQualifiedNameRes
 
     public static final Name JAVA_ROOT = Name.special("<java_root>");
 
-    public static Visibility PACKAGE_VISIBILITY = new Visibility("package", false) {
+    public static final Visibility PACKAGE_VISIBILITY = new Visibility("package", false) {
         @Override
         protected boolean isVisible(@NotNull DeclarationDescriptorWithVisibility what, @NotNull DeclarationDescriptor from) {
             return DescriptorUtils.isInSameNamespace(what, from);
@@ -250,6 +251,15 @@ public class JavaDescriptorResolver implements DependencyClassByQualifiedNameRes
             @NotNull Name methodName,
             @NotNull ClassPsiDeclarationProvider scopeData,
             @NotNull ClassOrNamespaceDescriptor ownerDescriptor
+    ) {
+        return functionResolver.resolveFunctionGroup(methodName, scopeData, ownerDescriptor);
+    }
+
+    @NotNull
+    public Set<FunctionDescriptor> resolveFunctionGroup(
+            @NotNull Name methodName,
+            @NotNull PackagePsiDeclarationProvider scopeData,
+            @NotNull NamespaceDescriptor ownerDescriptor
     ) {
         return functionResolver.resolveFunctionGroup(methodName, scopeData, ownerDescriptor);
     }

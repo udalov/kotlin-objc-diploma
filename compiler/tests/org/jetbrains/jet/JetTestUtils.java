@@ -39,6 +39,9 @@ import org.jetbrains.jet.codegen.forTestCompile.ForTestCompileRuntime;
 import org.jetbrains.jet.codegen.forTestCompile.ForTestPackJdkAnnotations;
 import org.jetbrains.jet.config.CommonConfigurationKeys;
 import org.jetbrains.jet.config.CompilerConfiguration;
+import org.jetbrains.jet.lang.ModuleConfiguration;
+import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.diagnostics.Diagnostic;
 import org.jetbrains.jet.lang.diagnostics.Errors;
 import org.jetbrains.jet.lang.diagnostics.Severity;
@@ -48,8 +51,10 @@ import org.jetbrains.jet.lang.psi.JetPsiFactory;
 import org.jetbrains.jet.lang.resolve.AnalyzerScriptParameter;
 import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.resolve.BindingTrace;
+import org.jetbrains.jet.lang.resolve.ImportPath;
 import org.jetbrains.jet.lang.resolve.java.AnalyzerFacadeForJVM;
 import org.jetbrains.jet.lang.resolve.lazy.LazyResolveTestUtil;
+import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.plugin.JetLanguage;
 import org.jetbrains.jet.test.InnerTestClasses;
 import org.jetbrains.jet.test.TestMetadata;
@@ -226,7 +231,7 @@ public class JetTestUtils {
             @NotNull TestJdkKind jdkKind
     ) {
         return new JetCoreEnvironment(disposable, compilerConfigurationForTests(
-                configurationKind, jdkKind, getAnnotationsJar()));
+                configurationKind, jdkKind, getAnnotationsJar(), getAnnotationsExtJar()));
     }
 
     public static File findMockJdkRtJar() {
@@ -235,6 +240,10 @@ public class JetTestUtils {
 
     public static File getAnnotationsJar() {
         return new File(JetTestCaseBuilder.getHomeDirectory(), "compiler/testData/mockJDK/jre/lib/annotations.jar");
+    }
+
+    public static File getAnnotationsExtJar() {
+        return new File(JetTestCaseBuilder.getHomeDirectory(), "dist/kotlinc/lib/kotlin-annotations-ext.jar");
     }
 
     public static void mkdirs(File file) throws IOException {
@@ -548,5 +557,17 @@ public class JetTestUtils {
     public static JetFile loadJetFile(@NotNull Project project, @NotNull File ioFile) throws IOException {
         String text = FileUtil.loadFile(ioFile);
         return JetPsiFactory.createPhysicalFile(project, ioFile.getName(), text);
+    }
+
+    public static ModuleDescriptorImpl createEmptyModule() {
+        return createEmptyModule("<empty-for-test>");
+    }
+
+    public static ModuleDescriptorImpl createEmptyModule(@NotNull String name) {
+        ModuleDescriptorImpl descriptor = new ModuleDescriptorImpl(Name.special(name),
+                                                                   Collections.<ImportPath>emptyList(),
+                                                                   PlatformToKotlinClassMap.EMPTY);
+        descriptor.setModuleConfiguration(ModuleConfiguration.EMPTY);
+        return descriptor;
     }
 }

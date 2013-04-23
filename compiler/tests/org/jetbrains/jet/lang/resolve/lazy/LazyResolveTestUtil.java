@@ -18,7 +18,6 @@ package org.jetbrains.jet.lang.resolve.lazy;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
@@ -29,18 +28,20 @@ import org.jetbrains.jet.cli.jvm.compiler.JetCoreEnvironment;
 import org.jetbrains.jet.di.InjectorForJavaDescriptorResolver;
 import org.jetbrains.jet.di.InjectorForTopDownAnalyzer;
 import org.jetbrains.jet.di.InjectorForTopDownAnalyzerForJvm;
-import org.jetbrains.jet.lang.DefaultModuleConfiguration;
 import org.jetbrains.jet.lang.ModuleConfiguration;
-import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
 import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.psi.JetNamespaceHeader;
 import org.jetbrains.jet.lang.psi.JetPsiFactory;
 import org.jetbrains.jet.lang.psi.JetSimpleNameExpression;
-import org.jetbrains.jet.lang.resolve.*;
+import org.jetbrains.jet.lang.resolve.AnalyzerScriptParameter;
+import org.jetbrains.jet.lang.resolve.BindingTrace;
+import org.jetbrains.jet.lang.resolve.DescriptorUtils;
+import org.jetbrains.jet.lang.resolve.TopDownAnalysisParameters;
+import org.jetbrains.jet.lang.resolve.java.AnalyzerFacadeForJVM;
 import org.jetbrains.jet.lang.resolve.java.JavaDescriptorResolver;
-import org.jetbrains.jet.lang.resolve.java.JavaToKotlinClassMap;
 import org.jetbrains.jet.lang.resolve.java.PsiClassFinder;
 import org.jetbrains.jet.lang.resolve.lazy.declarations.FileBasedDeclarationProviderFactory;
 import org.jetbrains.jet.lang.resolve.lazy.storage.LockBasedStorageManager;
@@ -59,7 +60,7 @@ public class LazyResolveTestUtil {
     }
 
     public static InjectorForTopDownAnalyzer getEagerInjectorForTopDownAnalyzer(JetCoreEnvironment environment) {
-        ModuleDescriptor eagerModuleForLazy = new ModuleDescriptor(Name.special("<eager module for lazy>"));
+        ModuleDescriptorImpl eagerModuleForLazy = AnalyzerFacadeForJVM.createJavaModule("<eager module for lazy>");
 
         InjectorForTopDownAnalyzer tdaInjectorForLazy = createInjectorForTDA(eagerModuleForLazy, environment);
         // This line is required fro the 'jet' namespace to be filled in with functions
@@ -68,17 +69,19 @@ public class LazyResolveTestUtil {
         return tdaInjectorForLazy;
     }
 
-    public static InjectorForTopDownAnalyzer createInjectorForTDA(ModuleDescriptor module, JetCoreEnvironment environment) {
+    public static InjectorForTopDownAnalyzer createInjectorForTDA(ModuleDescriptorImpl module, JetCoreEnvironment environment) {
         JetTestUtils.newTrace(environment);
 
         TopDownAnalysisParameters params = new TopDownAnalysisParameters(
                 Predicates.<PsiFile>alwaysTrue(), false, false, Collections.<AnalyzerScriptParameter>emptyList());
         BindingTrace sharedTrace = CliLightClassGenerationSupport.getInstanceForCli(environment.getProject()).getTrace();
-        return new InjectorForTopDownAnalyzerForJvm(environment.getProject(), params, sharedTrace, module);
+        InjectorForTopDownAnalyzerForJvm injector = new InjectorForTopDownAnalyzerForJvm(environment.getProject(), params, sharedTrace, module);
+        module.setModuleConfiguration(injector.getJavaBridgeConfiguration());
+        return injector;
     }
 
     public static ModuleDescriptor resolveEagerly(List<JetFile> files, JetCoreEnvironment environment) {
-        ModuleDescriptor module = new ModuleDescriptor(Name.special("<test module>"));
+        ModuleDescriptorImpl module = AnalyzerFacadeForJVM.createJavaModule("<test module>");
         InjectorForTopDownAnalyzer injector = createInjectorForTDA(module, environment);
         injector.getTopDownAnalyzer().analyzeFiles(files, Collections.<AnalyzerScriptParameter>emptyList());
         return module;
@@ -87,9 +90,9 @@ public class LazyResolveTestUtil {
     public static KotlinCodeAnalyzer resolveLazilyWithSession(List<JetFile> files, JetCoreEnvironment environment) {
         JetTestUtils.newTrace(environment);
 
-        ModuleDescriptor javaModule = new ModuleDescriptor(Name.special("<java module>"));
+        ModuleDescriptorImpl javaModule = AnalyzerFacadeForJVM.createJavaModule("<java module>");
 
-        final Project project = environment.getProject();
+        Project project = environment.getProject();
         BindingTrace sharedTrace = CliLightClassGenerationSupport.getInstanceForCli(environment.getProject()).getTrace();
         InjectorForJavaDescriptorResolver injector =
                 new InjectorForJavaDescriptorResolver(project, sharedTrace, javaModule);
@@ -98,7 +101,7 @@ public class LazyResolveTestUtil {
 
 
         LockBasedStorageManager storageManager = new LockBasedStorageManager();
-        final FileBasedDeclarationProviderFactory declarationProviderFactory = new FileBasedDeclarationProviderFactory(storageManager, files, new Predicate<FqName>() {
+        FileBasedDeclarationProviderFactory declarationProviderFactory = new FileBasedDeclarationProviderFactory(storageManager, files, new Predicate<FqName>() {
             @Override
             public boolean apply(FqName fqName) {
                 return psiClassFinder.findPsiPackage(fqName) != null || new FqName("jet").equals(fqName);
@@ -106,12 +109,6 @@ public class LazyResolveTestUtil {
         });
 
         ModuleConfiguration moduleConfiguration = new ModuleConfiguration() {
-            @Override
-            public List<ImportPath> getDefaultImports() {
-                List<ImportPath> imports = Lists.newArrayList(new ImportPath("java.lang.*"));
-                imports.addAll(DefaultModuleConfiguration.DEFAULT_JET_IMPORTS);
-                return imports;
-            }
 
             @Override
             public void extendNamespaceScope(
@@ -129,16 +126,12 @@ public class LazyResolveTestUtil {
                     namespaceMemberScope.importScope(javaPackageScope);
                 }
             }
-
-            @NotNull
-            @Override
-            public PlatformToKotlinClassMap getPlatformToKotlinClassMap() {
-                return JavaToKotlinClassMap.getInstance();
-            }
         };
+        javaModule.setModuleConfiguration(moduleConfiguration);
 
-        ModuleDescriptor lazyModule = new ModuleDescriptor(Name.special("<lazy module>"));
-        return new ResolveSession(project, storageManager, lazyModule, moduleConfiguration, declarationProviderFactory, sharedTrace);
+        ModuleDescriptorImpl lazyModule = AnalyzerFacadeForJVM.createJavaModule("<lazy module>");
+        lazyModule.setModuleConfiguration(moduleConfiguration);
+        return new ResolveSession(project, storageManager, lazyModule, declarationProviderFactory, sharedTrace);
     }
 
     public static ModuleDescriptor resolveLazily(List<JetFile> files, JetCoreEnvironment environment) {

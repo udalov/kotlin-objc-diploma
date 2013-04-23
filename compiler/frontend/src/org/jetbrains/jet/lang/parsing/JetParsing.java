@@ -57,7 +57,7 @@ public class JetParsing extends AbstractJetParsing {
         return jetParsing;
     }
 
-    private static JetParsing createForByClause(final SemanticWhitespaceAwarePsiBuilder builder) {
+    private static JetParsing createForByClause(SemanticWhitespaceAwarePsiBuilder builder) {
         final SemanticWhitespaceAwarePsiBuilderForByClause builderForByClause = new SemanticWhitespaceAwarePsiBuilderForByClause(builder);
         JetParsing jetParsing = new JetParsing(builderForByClause);
         jetParsing.myExpressionParsing = new JetExpressionParsing(builderForByClause, jetParsing) {
@@ -753,7 +753,7 @@ public class JetParsing extends AbstractJetParsing {
 
         advance(); // CLASS_KEYWORD
 
-        final PsiBuilder.Marker objectDeclaration = mark();
+        PsiBuilder.Marker objectDeclaration = mark();
         parseObject(false, true);
         objectDeclaration.done(OBJECT_DECLARATION);
 
@@ -1452,7 +1452,7 @@ public class JetParsing extends AbstractJetParsing {
      *   : ("namespace" ".")? simpleUserType{"."}
      *   ;
      */
-    private void parseUserType() {
+    void parseUserType() {
         PsiBuilder.Marker userType = mark();
 
         if (at(PACKAGE_KEYWORD)) {
@@ -1564,7 +1564,7 @@ public class JetParsing extends AbstractJetParsing {
      *   : "#" "(" parameter{","} ")" // tuple with named entries, the names do not affect assignment compatibility
      *   ;
      */
-    @Deprecated // Tuples are to be removed in Kotlin M4
+    @Deprecated // Tuples are dropped, but parsing is left to minimize surprising. This code should be removed some time (in Kotlin 1.0?)
     private void parseTupleType() {
         assert _at(HASH);
 
@@ -1572,7 +1572,7 @@ public class JetParsing extends AbstractJetParsing {
 
         myBuilder.disableNewlines();
         advance(); // HASH
-        expect(LPAR, "Expecting a tuple type in the form of '#(...)");
+        consumeIf(LPAR);
 
         if (!at(RPAR)) {
             while (true) {
@@ -1581,11 +1581,9 @@ public class JetParsing extends AbstractJetParsing {
                 }
 
                 if (at(IDENTIFIER) && lookahead(1) == COLON) {
-                    PsiBuilder.Marker labeledEntry = mark();
                     advance(); // IDENTIFIER
                     advance(); // COLON
                     parseTypeRef();
-                    labeledEntry.done(LABELED_TUPLE_TYPE_ENTRY);
                 }
                 else if (TYPE_REF_FIRST.contains(tt())) {
                     parseTypeRef();
@@ -1599,10 +1597,10 @@ public class JetParsing extends AbstractJetParsing {
             }
         }
 
-        expect(RPAR, "Expecting ')");
+        consumeIf(RPAR);
         myBuilder.restoreNewlinesState();
 
-        tuple.done(TUPLE_TYPE);
+        tuple.error("Tuples are not supported. Use data classes instead.");
     }
 
     /*
@@ -1729,17 +1727,25 @@ public class JetParsing extends AbstractJetParsing {
      *   ;
      */
     private boolean parseFunctionParameterRest() {
-        expect(IDENTIFIER, "Parameter name expected", PARAMETER_NAME_RECOVERY_SET);
-
         boolean noErrors = true;
 
-        if (at(COLON)) {
-            advance(); // COLON
+        // Recovery for the case 'fun foo(Array<String>) {}'
+        if (at(IDENTIFIER) && lookahead(1) == LT) {
+            error("Parameter name expected");
             parseTypeRef();
+            noErrors = false;
         }
         else {
-            errorWithRecovery("Parameters must have type annotation", PARAMETER_NAME_RECOVERY_SET);
-            noErrors = false;
+            expect(IDENTIFIER, "Parameter name expected", PARAMETER_NAME_RECOVERY_SET);
+
+            if (at(COLON)) {
+                advance(); // COLON
+                parseTypeRef();
+            }
+            else {
+                errorWithRecovery("Parameters must have type annotation", PARAMETER_NAME_RECOVERY_SET);
+                noErrors = false;
+            }
         }
 
         if (at(EQ)) {

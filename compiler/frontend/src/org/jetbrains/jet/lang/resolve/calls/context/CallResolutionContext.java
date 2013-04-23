@@ -16,6 +16,7 @@
 
 package org.jetbrains.jet.lang.resolve.calls.context;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.psi.Call;
 import org.jetbrains.jet.lang.resolve.BindingTrace;
 import org.jetbrains.jet.lang.resolve.calls.autocasts.DataFlowInfo;
@@ -25,22 +26,28 @@ import org.jetbrains.jet.lang.types.JetType;
 public abstract class CallResolutionContext<Context extends CallResolutionContext> extends ResolutionContext<Context> {
     public final Call call;
     public final ResolveMode resolveMode;
+    public final CheckValueArgumentsMode checkArguments;
+    public final ResolutionResultsCache resolutionResultsCache;
 
     protected CallResolutionContext(
-            BindingTrace trace,
-            JetScope scope,
-            Call call,
-            JetType expectedType,
-            DataFlowInfo dataFlowInfo,
-            ResolveMode resolveMode,
-            ExpressionPosition expressionPosition
+            @NotNull BindingTrace trace,
+            @NotNull JetScope scope,
+            @NotNull Call call,
+            @NotNull JetType expectedType,
+            @NotNull DataFlowInfo dataFlowInfo,
+            @NotNull ResolveMode resolveMode,
+            @NotNull CheckValueArgumentsMode checkArguments,
+            @NotNull ExpressionPosition expressionPosition,
+            @NotNull ResolutionResultsCache resolutionResultsCache
     ) {
         super(trace, scope, expectedType, dataFlowInfo, expressionPosition);
         this.call = call;
         this.resolveMode = resolveMode;
+        this.checkArguments = checkArguments;
+        this.resolutionResultsCache = resolutionResultsCache;
     }
 
     public BasicCallResolutionContext toBasic() {
-        return BasicCallResolutionContext.create(trace, scope, call, expectedType, dataFlowInfo, resolveMode, expressionPosition);
+        return BasicCallResolutionContext.create(this, call, resolveMode, checkArguments, resolutionResultsCache);
     }
 }

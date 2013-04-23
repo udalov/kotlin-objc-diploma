@@ -17,17 +17,24 @@
 package org.jetbrains.jet.lang.resolve.calls;
 
 import com.google.common.collect.Lists;
+import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.CallableDescriptor;
+import org.jetbrains.jet.lang.descriptors.FunctionDescriptor;
 import org.jetbrains.jet.lang.descriptors.TypeParameterDescriptor;
 import org.jetbrains.jet.lang.descriptors.ValueParameterDescriptor;
+import org.jetbrains.jet.lang.psi.Call;
+import org.jetbrains.jet.lang.psi.CallKey;
+import org.jetbrains.jet.lang.psi.JetExpression;
 import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.resolve.TraceUtil;
+import org.jetbrains.jet.lang.resolve.calls.context.BasicCallResolutionContext;
 import org.jetbrains.jet.lang.resolve.calls.context.CallResolutionContext;
 import org.jetbrains.jet.lang.resolve.calls.inference.ConstraintSystem;
 import org.jetbrains.jet.lang.resolve.calls.inference.ConstraintsUtil;
-import org.jetbrains.jet.lang.resolve.calls.model.ResolvedCall;
 import org.jetbrains.jet.lang.resolve.calls.model.ResolvedCallImpl;
+import org.jetbrains.jet.lang.resolve.calls.model.ResolvedCallWithTrace;
 import org.jetbrains.jet.lang.resolve.calls.model.ResolvedValueArgument;
 import org.jetbrains.jet.lang.resolve.calls.tasks.ResolutionCandidate;
 import org.jetbrains.jet.lang.types.*;
@@ -37,10 +44,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.jetbrains.jet.lang.resolve.calls.CallTransformer.CallForImplicitInvoke;
+
 public class CallResolverUtil {
 
     public static final JetType DONT_CARE = ErrorUtils.createErrorTypeWithCustomDebugName("DONT_CARE");
-    public static final JetType CANT_INFER = ErrorUtils.createErrorTypeWithCustomDebugName("CANT_INFER");
+    public static final JetType CANT_INFER_TYPE_PARAMETER = ErrorUtils.createErrorTypeWithCustomDebugName("CANT_INFER_TYPE_PARAMETER");
     public static final JetType PLACEHOLDER_FUNCTION_TYPE = ErrorUtils.createErrorTypeWithCustomDebugName("PLACEHOLDER_FUNCTION_TYPE");
 
     public static enum ResolveArgumentsMode {
@@ -50,7 +59,7 @@ public class CallResolverUtil {
 
     private CallResolverUtil() {}
 
-    public static <D extends CallableDescriptor> ResolvedCallImpl<D> copy(@NotNull ResolvedCallImpl<D> call, @NotNull CallResolutionContext context) {
+    public static <D extends CallableDescriptor> ResolvedCallImpl<D> copy(@NotNull ResolvedCallImpl<D> call, @NotNull CallResolutionContext<?> context) {
         ResolutionCandidate<D> candidate = ResolutionCandidate.create(call.getCandidateDescriptor(), call.getThisObject(),
                                                                       call.getReceiverArgument(), call.getExplicitReceiverKind(),
                                                                       call.isSafeCall());
@@ -84,7 +93,7 @@ public class CallResolverUtil {
         // last argument is return type of function type
         List<TypeProjection> functionParameters = arguments.subList(0, arguments.size() - 1);
         for (TypeProjection functionParameter : functionParameters) {
-            if (TypeUtils.equalsOrContainsAsArgument(functionParameter.getType(), CANT_INFER, DONT_CARE)) {
+            if (TypeUtils.equalsOrContainsAsArgument(functionParameter.getType(), CANT_INFER_TYPE_PARAMETER, DONT_CARE)) {
                 return true;
             }
         }
@@ -106,14 +115,11 @@ public class CallResolverUtil {
         return new JetTypeImpl(type.getAnnotations(), type.getConstructor(), type.isNullable(), newArguments, type.getMemberScope());
     }
 
-    public static <D extends CallableDescriptor> boolean hasReturnTypeDependentOnNotInferredParams(@NotNull ResolvedCall<D> resolvedCall) {
-        //todo[ResolvedCallImpl]
-        if (!(resolvedCall instanceof ResolvedCallImpl)) return false;
-        ResolvedCallImpl call = (ResolvedCallImpl) resolvedCall;
-        ConstraintSystem constraintSystem = call.getConstraintSystem();
+    private static boolean hasReturnTypeDependentOnNotInferredParams(@NotNull ResolvedCallImpl<?> callToComplete) {
+        ConstraintSystem constraintSystem = callToComplete.getConstraintSystem();
         if (constraintSystem == null) return false;
 
-        CallableDescriptor candidateDescriptor = call.getCandidateDescriptor();
+        CallableDescriptor candidateDescriptor = callToComplete.getCandidateDescriptor();
         JetType returnType = candidateDescriptor.getReturnType();
         if (returnType == null) return false;
 
@@ -126,5 +132,25 @@ public class CallResolverUtil {
             }
         }
         return false;
+    }
+
+    public static boolean hasInferredReturnType(ResolvedCallWithTrace<?> call) {
+        ResolvedCallImpl<?> callToComplete = call.getCallToCompleteTypeArgumentInference();
+        if (hasReturnTypeDependentOnNotInferredParams(callToComplete)) return false;
+
+        // Expected type mismatch was reported before as 'TYPE_INFERENCE_EXPECTED_TYPE_MISMATCH'
+        ConstraintSystem constraintSystem = callToComplete.getConstraintSystem();
+        if (constraintSystem != null && constraintSystem.hasOnlyExpectedTypeMismatch()) return false;
+        return true;
+    }
+
+    @Nullable
+    public static CallKey createCallKey(@NotNull BasicCallResolutionContext context) {
+        if (context.call.getCallType() == Call.CallType.INVOKE) {
+            return null;
+        }
+        PsiElement callElement = context.call.getCallElement();
+        if (!(callElement instanceof JetExpression)) return null;
+        return CallKey.create(context.call.getCallType(), (JetExpression) callElement);
     }
 }

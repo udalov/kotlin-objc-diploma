@@ -59,10 +59,6 @@ public class BuiltInsReferenceResolverTest extends ResolveTestCase {
         doTest();
     }
 
-    public void testTupleElement() throws Exception {
-        doTest();
-    }
-
     public void testUnit() throws Exception {
         doTest();
     }
@@ -136,6 +132,6 @@ public class BuiltInsReferenceResolverTest extends ResolveTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return PluginTestCaseBase.getTestDataPathBase() + "/resolve/std/";
+        return PluginTestCaseBase.getTestDataPathBase() + "/resolve/builtins/";
     }
 }

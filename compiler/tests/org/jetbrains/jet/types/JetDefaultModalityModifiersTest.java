@@ -60,12 +60,12 @@ public class JetDefaultModalityModifiersTest extends JetLiteFixture {
     }
 
     public class JetDefaultModalityModifiersTestCase  {
-        private ModuleDescriptor root = new ModuleDescriptor(Name.special("<test_root>"));
+        private ModuleDescriptorImpl root = JetTestUtils.createEmptyModule("<test_root>");
         private DescriptorResolver descriptorResolver;
         private JetScope scope;
 
         public void setUp() throws Exception {
-            InjectorForTests injector = new InjectorForTests(getProject());
+            InjectorForTests injector = new InjectorForTests(getProject(), root);
             KotlinBuiltIns builtIns = injector.getKotlinBuiltIns();
             descriptorResolver = injector.getDescriptorResolver();
             scope = createScope(builtIns.getBuiltInsScope());

@@ -20,13 +20,15 @@ import com.google.common.collect.Sets;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.jet.lang.ModuleConfiguration;
-import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
+import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorParent;
-import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
-import org.jetbrains.jet.lang.psi.*;
+import org.jetbrains.jet.lang.psi.JetFile;
+import org.jetbrains.jet.lang.psi.JetNamespaceHeader;
+import org.jetbrains.jet.lang.psi.JetReferenceExpression;
+import org.jetbrains.jet.lang.psi.JetSimpleNameExpression;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.FqNameUnsafe;
 import org.jetbrains.jet.lang.resolve.name.Name;
@@ -43,23 +45,17 @@ import static org.jetbrains.jet.lang.resolve.BindingContext.*;
 
 public class NamespaceFactoryImpl implements NamespaceFactory {
 
-    private ModuleDescriptor moduleDescriptor;
+    private ModuleDescriptorImpl moduleDescriptor;
     private BindingTrace trace;
-    private ModuleConfiguration configuration;
 
     @Inject
-    public void setModuleDescriptor(ModuleDescriptor moduleDescriptor) {
+    public void setModuleDescriptor(ModuleDescriptorImpl moduleDescriptor) {
         this.moduleDescriptor = moduleDescriptor;
     }
 
     @Inject
     public void setTrace(BindingTrace trace) {
         this.trace = trace;
-    }
-
-    @Inject
-    public void setConfiguration(ModuleConfiguration configuration) {
-        this.configuration = configuration;
     }
 
     @NotNull
@@ -136,7 +132,7 @@ public class NamespaceFactoryImpl implements NamespaceFactory {
     }
 
     private NamespaceDescriptorImpl createRootNamespaceDescriptorIfNeeded(@Nullable JetFile file,
-                                                                          @NotNull ModuleDescriptor owner,
+                                                                          @NotNull ModuleDescriptorImpl owner,
                                                                           @Nullable JetReferenceExpression expression,
                                                                           @NotNull RedeclarationHandler handler) {
         FqName fqName = FqName.ROOT;
@@ -190,7 +186,7 @@ public class NamespaceFactoryImpl implements NamespaceFactory {
         namespaceDescriptor.initialize(scope);
         scope.changeLockLevel(WritableScope.LockLevel.BOTH);
         //
-        configuration.extendNamespaceScope(trace, namespaceDescriptor, scope);
+        moduleDescriptor.getModuleConfiguration().extendNamespaceScope(trace, namespaceDescriptor, scope);
         owner.addNamespace(namespaceDescriptor);
         if (expression != null) {
             trace.record(BindingContext.NAMESPACE, expression, namespaceDescriptor);

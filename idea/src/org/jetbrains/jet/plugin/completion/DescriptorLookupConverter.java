@@ -23,7 +23,6 @@ import com.intellij.codeInsight.completion.JavaMethodCallElement;
 import com.intellij.codeInsight.completion.JavaPsiClassReferenceElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.codeInsight.lookup.MutableLookupElement;
 import com.intellij.codeInsight.lookup.VariableLookupItem;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.*;
@@ -33,6 +32,7 @@ import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.resolve.BindingContextUtils;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
+import org.jetbrains.jet.lang.resolve.java.DescriptorResolverUtils;
 import org.jetbrains.jet.lang.resolve.lazy.KotlinCodeAnalyzer;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
@@ -40,7 +40,6 @@ import org.jetbrains.jet.plugin.JetDescriptorIconProvider;
 import org.jetbrains.jet.plugin.completion.handlers.JetClassInsertHandler;
 import org.jetbrains.jet.plugin.completion.handlers.JetFunctionInsertHandler;
 import org.jetbrains.jet.plugin.completion.handlers.JetJavaClassInsertHandler;
-import org.jetbrains.jet.plugin.libraries.DecompiledDataFactory;
 import org.jetbrains.jet.renderer.DescriptorRenderer;
 
 import java.util.List;
@@ -62,15 +61,9 @@ public final class DescriptorLookupConverter {
     public static LookupElement createLookupElement(@NotNull KotlinCodeAnalyzer analyzer,
             @NotNull DeclarationDescriptor descriptor, @Nullable PsiElement declaration) {
         if (declaration != null) {
-            MutableLookupElement javaLookupElement = createJavaLookupElementIfPossible(declaration);
+            LookupElement javaLookupElement = createJavaLookupElementIfPossible(declaration, descriptor);
             if (javaLookupElement != null) {
-                InsertHandler<LookupElement> customHandler = getInsertHandler(descriptor);
-                if (customHandler != null) {
-                    return javaLookupElement.setInsertHandler(getInsertHandler(descriptor));
-                }
-                else {
-                    return javaLookupElement;
-                }
+                return javaLookupElement;
             }
         }
 
@@ -142,19 +135,22 @@ public final class DescriptorLookupConverter {
     }
 
     @Nullable
-    private static MutableLookupElement createJavaLookupElementIfPossible(@NotNull PsiElement declaration) {
+    private static LookupElement createJavaLookupElementIfPossible(@NotNull PsiElement declaration, @NotNull DeclarationDescriptor descriptor) {
         if (declaration instanceof PsiClass) {
             PsiClass psiClass = (PsiClass) declaration;
-            if (!DecompiledDataFactory.isCompiledFromKotlin(psiClass)) {
-                return new JavaPsiClassReferenceElement(psiClass);
+            if (!DescriptorResolverUtils.isKotlinClass(psiClass)) {
+                return setCustomInsertHandler(new JavaPsiClassReferenceElement(psiClass));
             }
         }
 
         if (declaration instanceof PsiMember) {
             PsiClass containingClass = ((PsiMember) declaration).getContainingClass();
-            if (containingClass != null && !DecompiledDataFactory.isCompiledFromKotlin(containingClass)) {
+            if (containingClass != null && !DescriptorResolverUtils.isKotlinClass(containingClass)) {
                 if (declaration instanceof PsiMethod) {
-                    return new JavaMethodCallElementWithCustomHandler(declaration);
+                    InsertHandler<LookupElement> handler = getInsertHandler(descriptor);
+                    assert handler != null: "Special kotlin handler is expected for function: " + declaration.getText() + " and descriptor" + DescriptorRenderer.TEXT.render(descriptor);
+
+                    return new JavaMethodCallElementWithCustomHandler(declaration).setInsertHandler(handler);
                 }
 
                 if (declaration instanceof PsiField) {
@@ -192,7 +188,7 @@ public final class DescriptorLookupConverter {
             @NotNull Iterable<DeclarationDescriptor> descriptors) {
         List<LookupElement> result = Lists.newArrayList();
 
-        for (final DeclarationDescriptor descriptor : descriptors) {
+        for (DeclarationDescriptor descriptor : descriptors) {
             result.add(createLookupElement(analyzer, bindingContext, descriptor));
         }
 
@@ -206,7 +202,7 @@ public final class DescriptorLookupConverter {
 
         @Override
         public void handleInsert(InsertionContext context) {
-            final InsertHandler<? extends LookupElement> handler = getInsertHandler();
+            InsertHandler<? extends LookupElement> handler = getInsertHandler();
             if (handler != null) {
                 //noinspection unchecked
                 ((InsertHandler)handler).handleInsert(context, this);
@@ -224,7 +220,7 @@ public final class DescriptorLookupConverter {
 
         @Override
         public void handleInsert(InsertionContext context) {
-            final InsertHandler<? extends LookupElement> handler = getInsertHandler();
+            InsertHandler<? extends LookupElement> handler = getInsertHandler();
             if (handler != null) {
                 //noinspection unchecked
                 ((InsertHandler)handler).handleInsert(context, this);

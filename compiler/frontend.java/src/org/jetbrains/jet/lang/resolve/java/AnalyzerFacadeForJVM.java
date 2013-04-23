@@ -18,8 +18,6 @@ package org.jetbrains.jet.lang.resolve.java;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
@@ -28,16 +26,15 @@ import org.jetbrains.jet.analyzer.AnalyzerFacade;
 import org.jetbrains.jet.analyzer.AnalyzerFacadeForEverything;
 import org.jetbrains.jet.di.InjectorForJavaDescriptorResolver;
 import org.jetbrains.jet.di.InjectorForTopDownAnalyzerForJvm;
-import org.jetbrains.jet.lang.DefaultModuleConfiguration;
 import org.jetbrains.jet.lang.ModuleConfiguration;
-import org.jetbrains.jet.lang.PlatformToKotlinClassMap;
 import org.jetbrains.jet.lang.descriptors.ModuleDescriptor;
+import org.jetbrains.jet.lang.descriptors.ModuleDescriptorImpl;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.resolve.*;
+import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
 import org.jetbrains.jet.lang.resolve.lazy.declarations.FileBasedDeclarationProviderFactory;
 import org.jetbrains.jet.lang.resolve.lazy.storage.LockBasedStorageManager;
-import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
@@ -46,7 +43,6 @@ import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 public enum AnalyzerFacadeForJVM implements AnalyzerFacade {
@@ -72,17 +68,17 @@ public enum AnalyzerFacadeForJVM implements AnalyzerFacade {
                                                @NotNull Predicate<PsiFile> filesForBodiesResolve,
                                                @NotNull BindingTrace headersTraceContext,
                                                @NotNull BodiesResolveContext bodiesResolveContext,
-                                               @NotNull ModuleConfiguration configuration
+                                               @NotNull ModuleDescriptor module
     ) {
         return AnalyzerFacadeForEverything.analyzeBodiesInFilesWithJavaIntegration(
                 project, scriptParameters, filesForBodiesResolve,
-                headersTraceContext, bodiesResolveContext, configuration);
+                headersTraceContext, bodiesResolveContext, module);
     }
 
     @NotNull
     @Override
-    public ResolveSession getLazyResolveSession(@NotNull final Project fileProject, @NotNull Collection<JetFile> files) {
-        ModuleDescriptor javaModule = new ModuleDescriptor(Name.special("<java module>"));
+    public ResolveSession getLazyResolveSession(@NotNull Project fileProject, @NotNull Collection<JetFile> files) {
+        ModuleDescriptorImpl javaModule = createJavaModule("<java module>");
 
         BindingTraceContext javaResolverTrace = new BindingTraceContext();
         InjectorForJavaDescriptorResolver injector = new InjectorForJavaDescriptorResolver(fileProject, javaResolverTrace, javaModule);
@@ -91,7 +87,7 @@ public enum AnalyzerFacadeForJVM implements AnalyzerFacade {
 
         // TODO: Replace with stub declaration provider
         LockBasedStorageManager storageManager = new LockBasedStorageManager();
-        final FileBasedDeclarationProviderFactory declarationProviderFactory = new FileBasedDeclarationProviderFactory(storageManager, files, new Predicate<FqName>() {
+        FileBasedDeclarationProviderFactory declarationProviderFactory = new FileBasedDeclarationProviderFactory(storageManager, files, new Predicate<FqName>() {
             @Override
             public boolean apply(FqName fqName) {
                 return psiClassFinder.findPsiPackage(fqName) != null || new FqName("jet").equals(fqName);
@@ -101,12 +97,6 @@ public enum AnalyzerFacadeForJVM implements AnalyzerFacade {
         final JavaDescriptorResolver javaDescriptorResolver = injector.getJavaDescriptorResolver();
 
         ModuleConfiguration moduleConfiguration = new ModuleConfiguration() {
-            @Override
-            public List<ImportPath> getDefaultImports() {
-                LinkedHashSet<ImportPath> imports = Sets.newLinkedHashSet(JavaBridgeConfiguration.DEFAULT_JAVA_IMPORTS);
-                imports.addAll(DefaultModuleConfiguration.DEFAULT_JET_IMPORTS);
-                return Lists.newArrayList(imports);
-            }
 
             @Override
             public void extendNamespaceScope(
@@ -124,17 +114,13 @@ public enum AnalyzerFacadeForJVM implements AnalyzerFacade {
                     namespaceMemberScope.importScope(javaPackageScope);
                 }
             }
-
-            @NotNull
-            @Override
-            public PlatformToKotlinClassMap getPlatformToKotlinClassMap() {
-                return JavaToKotlinClassMap.getInstance();
-            }
         };
+        javaModule.setModuleConfiguration(moduleConfiguration);
 
-        ModuleDescriptor lazyModule = new ModuleDescriptor(Name.special("<lazy module>"));
+        ModuleDescriptorImpl lazyModule = createJavaModule("<lazy module>");
+        lazyModule.setModuleConfiguration(moduleConfiguration);
 
-        return new ResolveSession(fileProject, storageManager, lazyModule, moduleConfiguration, declarationProviderFactory, javaResolverTrace);
+        return new ResolveSession(fileProject, storageManager, lazyModule, declarationProviderFactory, javaResolverTrace);
     }
 
     public static AnalyzeExhaust analyzeOneFileWithJavaIntegrationAndCheckForErrors(
@@ -199,7 +185,7 @@ public enum AnalyzerFacadeForJVM implements AnalyzerFacade {
             Predicate<PsiFile> filesToAnalyzeCompletely,
             boolean storeContextForBodiesResolve
     ) {
-        final ModuleDescriptor owner = new ModuleDescriptor(Name.special("<module>"));
+        ModuleDescriptorImpl owner = createJavaModule("<module>");
 
         TopDownAnalysisParameters topDownAnalysisParameters = new TopDownAnalysisParameters(
                 filesToAnalyzeCompletely, false, false, scriptParameters);
@@ -207,23 +193,20 @@ public enum AnalyzerFacadeForJVM implements AnalyzerFacade {
         InjectorForTopDownAnalyzerForJvm injector = new InjectorForTopDownAnalyzerForJvm(
                 project, topDownAnalysisParameters,
                 new ObservableBindingTrace(trace), owner);
+        owner.setModuleConfiguration(injector.getJavaBridgeConfiguration());
         try {
             injector.getTopDownAnalyzer().analyzeFiles(files, scriptParameters);
             BodiesResolveContext bodiesResolveContext = storeContextForBodiesResolve ?
                                                         new CachedBodiesResolveContext(injector.getTopDownAnalysisContext()) :
                                                         null;
-            return AnalyzeExhaust.success(trace.getBindingContext(), bodiesResolveContext, injector.getModuleConfiguration());
+            return AnalyzeExhaust.success(trace.getBindingContext(), bodiesResolveContext, owner);
         } finally {
             injector.destroy();
         }
     }
 
-    public static AnalyzeExhaust shallowAnalyzeFiles(Collection<JetFile> files) {
-        assert files.size() > 0;
-
-        Project project = files.iterator().next().getProject();
-
-        return analyzeFilesWithJavaIntegration(project,
-                files, Collections.<AnalyzerScriptParameter>emptyList(), Predicates.<PsiFile>alwaysFalse());
+    @NotNull
+    public static ModuleDescriptorImpl createJavaModule(@NotNull String name) {
+        return new ModuleDescriptorImpl(Name.special(name), JavaBridgeConfiguration.ALL_JAVA_IMPORTS, JavaToKotlinClassMap.getInstance());
     }
 }

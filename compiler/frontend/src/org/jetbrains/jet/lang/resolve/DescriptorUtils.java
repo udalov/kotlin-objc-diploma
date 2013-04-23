@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
+import org.jetbrains.jet.lang.descriptors.impl.AnonymousFunctionDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorParent;
 import org.jetbrains.jet.lang.psi.JetElement;
 import org.jetbrains.jet.lang.psi.JetFunction;
@@ -32,9 +33,13 @@ import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.scopes.FilteringScope;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.resolve.scopes.receivers.ReceiverValue;
-import org.jetbrains.jet.lang.types.*;
+import org.jetbrains.jet.lang.types.DescriptorSubstitutor;
+import org.jetbrains.jet.lang.types.JetType;
+import org.jetbrains.jet.lang.types.TypeUtils;
+import org.jetbrains.jet.lang.types.Variance;
 import org.jetbrains.jet.lang.types.checker.JetTypeChecker;
 import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
+import org.jetbrains.jet.renderer.DescriptorRenderer;
 
 import java.util.*;
 
@@ -43,8 +48,8 @@ import static org.jetbrains.jet.lang.descriptors.ReceiverParameterDescriptor.NO_
 public class DescriptorUtils {
 
     @NotNull
-    public static <D extends CallableDescriptor> D substituteBounds(@NotNull final D functionDescriptor) {
-        final List<TypeParameterDescriptor> typeParameters = functionDescriptor.getTypeParameters();
+    public static <D extends CallableDescriptor> D substituteBounds(@NotNull D functionDescriptor) {
+        List<TypeParameterDescriptor> typeParameters = functionDescriptor.getTypeParameters();
         if (typeParameters.isEmpty()) return functionDescriptor;
 
         // TODO: this does not handle any recursion in the bounds
@@ -144,9 +149,19 @@ public class DescriptorUtils {
         return fromPackage != null && whatPackage != null && whatPackage.equals(fromPackage);
     }
 
+    public static boolean isInSameModule(@NotNull DeclarationDescriptor first, @NotNull DeclarationDescriptor second) {
+        ModuleDescriptor parentModule = DescriptorUtils.getParentOfType(first, ModuleDescriptorImpl.class, false);
+        ModuleDescriptor fromModule = DescriptorUtils.getParentOfType(second, ModuleDescriptorImpl.class, false);
+        assert parentModule != null && fromModule != null;
+        return parentModule.equals(fromModule);
+    }
+
     @Nullable
     public static DeclarationDescriptor findTopLevelParent(@NotNull DeclarationDescriptor declarationDescriptor) {
         DeclarationDescriptor descriptor = declarationDescriptor;
+        if (declarationDescriptor instanceof PropertyAccessorDescriptor) {
+            descriptor = ((PropertyAccessorDescriptor)descriptor).getCorrespondingProperty();
+        }
         while (!(descriptor == null || isTopLevelDeclaration(descriptor))) {
             descriptor = descriptor.getContainingDeclaration();
         }
@@ -253,24 +268,36 @@ public class DescriptorUtils {
         }
     }
 
+    public static boolean isFunctionLiteral(@NotNull FunctionDescriptor descriptor) {
+        return descriptor instanceof AnonymousFunctionDescriptor;
+    }
+
     public static boolean isClassObject(@NotNull DeclarationDescriptor descriptor) {
-        return descriptor instanceof ClassDescriptor
-               && ((ClassDescriptor) descriptor).getKind() == ClassKind.CLASS_OBJECT;
+        return isKindOf(descriptor, ClassKind.CLASS_OBJECT);
     }
 
     public static boolean isAnonymous(@Nullable ClassifierDescriptor descriptor) {
-        return descriptor instanceof ClassDescriptor
-               && descriptor.getName().isSpecial() && ((ClassDescriptor)descriptor).getKind() == ClassKind.OBJECT;
+        return isKindOf(descriptor, ClassKind.OBJECT) && descriptor.getName().isSpecial();
     }
 
     public static boolean isEnumEntry(@NotNull DeclarationDescriptor descriptor) {
-        return descriptor instanceof ClassDescriptor
-               && ((ClassDescriptor) descriptor).getKind() == ClassKind.ENUM_ENTRY;
+        return isKindOf(descriptor, ClassKind.ENUM_ENTRY);
     }
 
     public static boolean isEnumClass(@NotNull DeclarationDescriptor descriptor) {
-        return descriptor instanceof ClassDescriptor
-               && ((ClassDescriptor) descriptor).getKind() == ClassKind.ENUM_CLASS;
+        return isKindOf(descriptor, ClassKind.ENUM_CLASS);
+    }
+
+    public static boolean isKindOf(@NotNull JetType jetType, @NotNull ClassKind classKind) {
+        ClassifierDescriptor descriptor = jetType.getConstructor().getDeclarationDescriptor();
+        return isKindOf(descriptor, classKind);
+    }
+
+    public static boolean isKindOf(@Nullable DeclarationDescriptor descriptor, @NotNull ClassKind classKind) {
+        if (descriptor instanceof ClassDescriptor) {
+            return ((ClassDescriptor) descriptor).getKind() == classKind;
+        }
+        return false;
     }
 
     @NotNull
@@ -343,10 +370,14 @@ public class DescriptorUtils {
         return Name.special("<class-object-for-" + className + ">");
     }
 
-    public static boolean isEnumClassObject(@NotNull DeclarationDescriptor classObjectDescriptor) {
-        DeclarationDescriptor containingDeclaration = classObjectDescriptor.getContainingDeclaration();
-        return ((containingDeclaration instanceof ClassDescriptor) &&
-                ((ClassDescriptor) containingDeclaration).getKind() == ClassKind.ENUM_CLASS);
+    public static boolean isEnumClassObject(@NotNull DeclarationDescriptor descriptor) {
+        if (descriptor instanceof ClassDescriptor && ((ClassDescriptor) descriptor).getKind() == ClassKind.CLASS_OBJECT) {
+            DeclarationDescriptor containing = descriptor.getContainingDeclaration();
+            if ((containing instanceof ClassDescriptor) && ((ClassDescriptor) containing).getKind() == ClassKind.ENUM_CLASS) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @NotNull
@@ -362,10 +393,18 @@ public class DescriptorUtils {
         return Visibilities.PUBLIC;
     }
 
-    public static List<String> getSortedValueArguments(AnnotationDescriptor descriptor) {
+    @NotNull
+    public static List<String> getSortedValueArguments(
+            @NotNull AnnotationDescriptor descriptor,
+            @Nullable DescriptorRenderer rendererForTypesIfNecessary
+    ) {
         List<String> resultList = Lists.newArrayList();
         for (Map.Entry<ValueParameterDescriptor, CompileTimeConstant<?>> entry : descriptor.getAllValueArguments().entrySet()) {
-            resultList.add(entry.getKey().getName().getName() + " = " + entry.getValue().toString());
+            CompileTimeConstant<?> value = entry.getValue();
+            String typeSuffix = rendererForTypesIfNecessary == null
+                                ? ""
+                                : ": " + rendererForTypesIfNecessary.renderType(value.getType(KotlinBuiltIns.getInstance()));
+            resultList.add(entry.getKey().getName().getName() + " = " + value.toString() + typeSuffix);
         }
         Collections.sort(resultList);
         return resultList;
@@ -493,4 +532,17 @@ public class DescriptorUtils {
         return null;
     }
 
+    public static boolean isEnumValueOfMethod(@NotNull FunctionDescriptor functionDescriptor) {
+        List<ValueParameterDescriptor> methodTypeParameters = functionDescriptor.getValueParameters();
+        JetType nullableString = TypeUtils.makeNullable(KotlinBuiltIns.getInstance().getStringType());
+        return "valueOf".equals(functionDescriptor.getName().getName())
+               && methodTypeParameters.size() == 1
+               && JetTypeChecker.INSTANCE.isSubtypeOf(methodTypeParameters.get(0).getType(), nullableString);
+    }
+
+    public static boolean isEnumValuesMethod(@NotNull FunctionDescriptor functionDescriptor) {
+        List<ValueParameterDescriptor> methodTypeParameters = functionDescriptor.getValueParameters();
+        return "values".equals(functionDescriptor.getName().getName())
+               && methodTypeParameters.isEmpty();
+    }
 }
