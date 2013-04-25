@@ -1,0 +1,12 @@
+package objc
+
+public trait Derived : objc.P, objc.Q {
+}
+
+public trait P {
+    public open fun p() : jet.Unit
+}
+
+public trait Q {
+    public open fun q() : jet.Unit
+}

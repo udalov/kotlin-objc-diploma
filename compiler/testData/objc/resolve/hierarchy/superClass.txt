@@ -1,0 +1,9 @@
+package objc
+
+public open class Base {
+    public open fun someBaseMethod() : jet.Unit
+}
+
+public open class Derived : objc.Base {
+    public open fun someDerivedMethod() : jet.Unit
+}

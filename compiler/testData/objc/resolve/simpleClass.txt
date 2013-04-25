@@ -1,0 +1,4 @@
+package objc
+
+public open class A {
+}

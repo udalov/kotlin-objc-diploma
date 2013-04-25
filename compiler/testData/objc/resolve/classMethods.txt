@@ -1,0 +1,13 @@
+package objc
+
+public open class A {
+    
+    public class object <class-object-for-A> {
+        public open fun idWithInt(/*0*/ intArg : jet.Int, /*1*/ charArg : jet.Any?) : jet.Any?
+        public open fun intNoArgs() : jet.Int
+        public open fun intWithInt(/*0*/ intArg : jet.Int) : jet.Int
+        public open fun voidNoArgs() : jet.Unit
+        public open fun voidWithID(/*0*/ idArg : jet.Any?, /*1*/ charArg : jet.Any?) : jet.Unit
+        public open fun voidWithInt(/*0*/ intArg : jet.Int) : jet.Unit
+    }
+}

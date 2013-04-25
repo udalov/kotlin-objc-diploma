@@ -1,0 +1,12 @@
+package objc
+
+public open class A {
+}
+
+public trait P {
+    public open fun protocolMethod() : jet.Unit
+}
+
+public trait Q {
+    public open fun anotherMethod() : jet.Int
+}
