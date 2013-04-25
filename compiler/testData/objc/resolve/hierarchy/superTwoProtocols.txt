@@ -1,12 +1,21 @@
 package objc
 
 public trait Derived : objc.P, objc.Q {
+    
+    public class object <class-object-for-Derived> : objc.P.<class-object-for-P>, objc.Q.<class-object-for-Q> {
+    }
 }
 
 public trait P {
     public open fun p() : jet.Unit
+    
+    public class object <class-object-for-P> {
+    }
 }
 
 public trait Q {
     public open fun q() : jet.Unit
+    
+    public class object <class-object-for-Q> {
+    }
 }

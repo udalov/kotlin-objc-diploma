@@ -1,0 +1,22 @@
+package objc
+
+public open class BaseClass {
+    
+    public class object <class-object-for-BaseClass> {
+        public open fun baseClassMethod() : jet.Unit
+    }
+}
+
+public trait BaseProtocol {
+    
+    public class object <class-object-for-BaseProtocol> {
+        public open fun baseProtocolMethod() : jet.Unit
+    }
+}
+
+public open class Derived : objc.BaseClass, objc.BaseProtocol {
+    
+    public class object <class-object-for-Derived> : objc.BaseClass.<class-object-for-BaseClass> {
+        public open fun derivedMethod() : jet.Unit
+    }
+}

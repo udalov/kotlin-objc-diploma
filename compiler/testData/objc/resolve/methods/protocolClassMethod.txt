@@ -3,5 +3,6 @@ package objc
 public trait P {
     
     public class object <class-object-for-P> {
+        public open fun foo(/*0*/ a : jet.Int) : jet.Unit
     }
 }

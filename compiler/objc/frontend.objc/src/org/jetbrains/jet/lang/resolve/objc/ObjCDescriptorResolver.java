@@ -18,6 +18,7 @@ package org.jetbrains.jet.lang.resolve.objc;
 
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorImpl;
@@ -76,6 +77,11 @@ public class ObjCDescriptorResolver {
 
         for (ObjCClassDescriptor descriptor : classes) {
             descriptor.initialize();
+
+            ObjCClassDescriptor classObject = descriptor.getClassObjectDescriptor();
+            if (classObject != null) {
+                classObject.initialize();
+            }
         }
 
         return namespace;
@@ -86,10 +92,14 @@ public class ObjCDescriptorResolver {
         Name name = Name.identifier(clazz.getName());
 
         List<JetType> supertypes = new ArrayList<JetType>(clazz.getProtocolCount() + 1);
+        List<Name> supertypeNames = new ArrayList<Name>(clazz.getProtocolCount() + 1);
         if (clazz.hasBaseClass()) {
-            JetType supertype = createDeferredSupertype(name, Name.identifier(clazz.getBaseClass()));
+            Name baseName = Name.identifier(clazz.getBaseClass());
+            supertypeNames.add(baseName);
+            JetType supertype = createDeferredSupertype(name, baseName);
             supertypes.add(supertype);
         }
+
         for (String baseProtocolName : clazz.getProtocolList()) {
             Name baseName = nameForProtocol(baseProtocolName);
             JetType supertype = createDeferredSupertype(name, baseName);
@@ -97,7 +107,7 @@ public class ObjCDescriptorResolver {
         }
 
         ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name, supertypes);
-        processMethodsOfClassOrProtocol(clazz.getMethodList(), descriptor);
+        processMethodsOfClassOrProtocol(clazz.getMethodList(), descriptor, supertypeNames);
         return descriptor;
     }
 
@@ -115,18 +125,35 @@ public class ObjCDescriptorResolver {
     }
 
     @NotNull
+    private JetType createClassObjectDeferredSupertype(@NotNull final Name baseClassName) {
+        return new ObjCDeferredType(new RecursionIntolerantLazyValue<JetType>() {
+            @Override
+            protected JetType compute() {
+                JetScope scope = namespace.getMemberScope();
+                ClassifierDescriptor classifier = scope.getClassifier(baseClassName);
+                assert classifier != null : "Super class is not resolved: " + baseClassName;
+                JetType classObjectType = classifier.getClassObjectType();
+                assert classObjectType != null : "Class object is not resolved for class: " + baseClassName;
+                return classObjectType;
+            }
+        });
+    }
+
+    @NotNull
     private ObjCClassDescriptor resolveProtocol(@NotNull ObjCProtocol protocol) {
         Name name = nameForProtocol(protocol.getName());
 
         List<JetType> supertypes = new ArrayList<JetType>(protocol.getBaseProtocolCount());
+        List<Name> supertypeNames = new ArrayList<Name>(protocol.getBaseProtocolCount());
         for (String baseProtocolName : protocol.getBaseProtocolList()) {
             Name baseName = nameForProtocol(baseProtocolName);
+            supertypeNames.add(baseName);
             JetType supertype = createDeferredSupertype(name, baseName);
             supertypes.add(supertype);
         }
 
         ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name, supertypes);
-        processMethodsOfClassOrProtocol(protocol.getMethodList(), descriptor);
+        processMethodsOfClassOrProtocol(protocol.getMethodList(), descriptor, supertypeNames);
         return descriptor;
     }
 
@@ -148,7 +175,11 @@ public class ObjCDescriptorResolver {
         return name;
     }
 
-    private void processMethodsOfClassOrProtocol(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
+    private void processMethodsOfClassOrProtocol(
+            @NotNull List<ObjCMethod> methods,
+            @NotNull ObjCClassDescriptor descriptor,
+            @Nullable List<Name> supertypeNames
+    ) {
         List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
         List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
         for (ObjCMethod method : methods) {
@@ -162,17 +193,34 @@ public class ObjCDescriptorResolver {
 
         addMethodsToClassScope(instanceMethods, descriptor);
 
-        if (!classMethods.isEmpty()) {
-            Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
-            ObjCClassDescriptor classObject = new ObjCClassDescriptor(descriptor, ClassKind.CLASS_OBJECT, Modality.FINAL, name,
-                    Collections.<JetType>emptyList() /* TODO: does class object need to subclass from anything, e.g. NSObject? */);
-            addMethodsToClassScope(classMethods, classObject);
-
-            ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
-            assert result == ClassObjectStatus.OK : result;
-        }
+        createClassObject(descriptor, classMethods, supertypeNames);
 
         descriptor.lockScopes();
+    }
+
+    private void createClassObject(
+            @NotNull ObjCClassDescriptor descriptor,
+            @NotNull List<ObjCMethod> classMethods,
+            @Nullable List<Name> supertypeNames
+    ) {
+        Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
+
+        List<JetType> supertypes;
+        if (supertypeNames != null) {
+            supertypes = new ArrayList<JetType>(supertypeNames.size());
+            for (Name supertypeName : supertypeNames) {
+                supertypes.add(createClassObjectDeferredSupertype(supertypeName));
+            }
+        }
+        else {
+            supertypes = Collections.emptyList();
+        }
+
+        ObjCClassDescriptor classObject = new ObjCClassDescriptor(descriptor, ClassKind.CLASS_OBJECT, Modality.FINAL, name, supertypes);
+        addMethodsToClassScope(classMethods, classObject);
+
+        ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
+        assert result == ClassObjectStatus.OK : result;
     }
 
     private void addMethodsToClassScope(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {

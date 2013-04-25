@@ -62,6 +62,12 @@ public class ObjCClassDescriptor extends MutableClassDescriptorLite {
         }
     }
 
+    @Nullable
+    @Override
+    public ObjCClassDescriptor getClassObjectDescriptor() {
+        return (ObjCClassDescriptor) super.getClassObjectDescriptor();
+    }
+
     @NotNull
     @Override
     public Collection<ConstructorDescriptor> getConstructors() {

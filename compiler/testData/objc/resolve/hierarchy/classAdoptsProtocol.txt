@@ -1,8 +1,14 @@
 package objc
 
 public open class A : objc.P {
+    
+    public class object <class-object-for-A> {
+    }
 }
 
 public trait P {
     public open fun protocolMethod() : jet.Unit
+    
+    public class object <class-object-for-P> {
+    }
 }

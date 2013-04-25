@@ -2,8 +2,14 @@ package objc
 
 public open class Base {
     public open fun someBaseMethod() : jet.Unit
+    
+    public class object <class-object-for-Base> {
+    }
 }
 
 public open class Derived : objc.Base {
     public open fun someDerivedMethod() : jet.Unit
+    
+    public class object <class-object-for-Derived> : objc.Base.<class-object-for-Base> {
+    }
 }
