@@ -1,6 +1,6 @@
 package objc
 
-public open class A {
+public open class A : objc.P, objc.Q {
 }
 
 public trait P {

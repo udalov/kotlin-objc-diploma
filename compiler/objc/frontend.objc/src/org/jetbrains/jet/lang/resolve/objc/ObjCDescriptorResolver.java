@@ -57,33 +57,43 @@ public class ObjCDescriptorResolver {
     }
 
     @NotNull
-    public NamespaceDescriptor resolveTranslationUnit(@NotNull TranslationUnit translationUnit) {
+    public NamespaceDescriptor resolveTranslationUnit(@NotNull TranslationUnit tu) {
         WritableScope scope = namespace.getMemberScope();
 
-        for (ObjCClass clazz : translationUnit.getClassList()) {
-            ClassDescriptor classDescriptor = resolveClass(clazz);
-            scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
+        List<ObjCClassDescriptor> classes = new ArrayList<ObjCClassDescriptor>(tu.getClassCount() + tu.getProtocolCount());
+
+        for (ObjCClass clazz : tu.getClassList()) {
+            ObjCClassDescriptor descriptor = resolveClass(clazz);
+            classes.add(descriptor);
+            scope.addClassifierAlias(descriptor.getName(), descriptor);
         }
 
-        for (ObjCProtocol protocol : translationUnit.getProtocolList()) {
-            ClassDescriptor classDescriptor = resolveProtocol(protocol);
-            scope.addClassifierAlias(classDescriptor.getName(), classDescriptor);
+        for (ObjCProtocol protocol : tu.getProtocolList()) {
+            ObjCClassDescriptor descriptor = resolveProtocol(protocol);
+            classes.add(descriptor);
+            scope.addClassifierAlias(descriptor.getName(), descriptor);
+        }
+
+        for (ObjCClassDescriptor descriptor : classes) {
+            descriptor.initialize();
         }
 
         return namespace;
     }
 
     @NotNull
-    private ClassDescriptor resolveClass(@NotNull ObjCClass clazz) {
+    private ObjCClassDescriptor resolveClass(@NotNull ObjCClass clazz) {
         Name name = Name.identifier(clazz.getName());
 
-        Collection<JetType> supertypes;
+        List<JetType> supertypes = new ArrayList<JetType>(clazz.getProtocolCount() + 1);
         if (clazz.hasBaseClass()) {
             JetType supertype = createDeferredSupertype(name, Name.identifier(clazz.getBaseClass()));
-            supertypes = Collections.singletonList(supertype);
+            supertypes.add(supertype);
         }
-        else {
-            supertypes = Collections.emptyList();
+        for (String baseProtocolName : clazz.getProtocolList()) {
+            Name baseName = nameForProtocol(baseProtocolName);
+            JetType supertype = createDeferredSupertype(name, baseName);
+            supertypes.add(supertype);
         }
 
         ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name, supertypes);
@@ -105,7 +115,7 @@ public class ObjCDescriptorResolver {
     }
 
     @NotNull
-    private ClassDescriptor resolveProtocol(@NotNull ObjCProtocol protocol) {
+    private ObjCClassDescriptor resolveProtocol(@NotNull ObjCProtocol protocol) {
         Name name = nameForProtocol(protocol.getName());
 
         List<JetType> supertypes = new ArrayList<JetType>(protocol.getBaseProtocolCount());

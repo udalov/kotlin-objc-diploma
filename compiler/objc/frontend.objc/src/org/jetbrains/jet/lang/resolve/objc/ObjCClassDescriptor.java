@@ -30,6 +30,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class ObjCClassDescriptor extends MutableClassDescriptorLite {
+    private final Collection<JetType> lazySupertypes;
+
     public ObjCClassDescriptor(
             @NotNull DeclarationDescriptor containingDeclaration,
             @NotNull ClassKind kind,
@@ -47,11 +49,17 @@ public class ObjCClassDescriptor extends MutableClassDescriptorLite {
         setScopeForMemberLookup(scope);
         setTypeParameterDescriptors(Collections.<TypeParameterDescriptor>emptyList());
 
-        for (JetType supertype : supertypes) {
-            addSupertype(supertype);
-        }
+        this.lazySupertypes = supertypes;
 
         createTypeConstructor();
+    }
+
+    /* package */ void initialize() {
+        // Initialization is a separate step, because addSupertype method actually computes deferred types.
+        // Not all supertypes may be available at the time of constructing this class
+        for (JetType supertype : lazySupertypes) {
+            addSupertype(supertype);
+        }
     }
 
     @NotNull
