@@ -30,7 +30,7 @@ JAVA_INCLUDE=$(JAVA_HOME)/Headers
 
 CPP=c++
 CC_FLAGS=-std=c++0x -I$(JAVA_INCLUDE) -Iinclude -stdlib=libstdc++
-LD_FLAGS=-Llib -lclang -lprotobuf
+LD_FLAGS=-lclang -lprotobuf
 
 SRC_FILES=$(wildcard *.cc)
 OBJ_FILES=$(patsubst %.cc,$(OUT)/%.o,$(SRC_FILES))
