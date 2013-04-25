@@ -37,12 +37,8 @@ import static org.jetbrains.jet.objc.ObjCTestUtil.extractObjCNamespaceFromAnalyz
 import static org.jetbrains.jet.test.util.NamespaceComparator.RECURSIVE;
 import static org.jetbrains.jet.test.util.NamespaceComparator.compareNamespaceWithFile;
 
-public class ObjCDescriptorResolverTest extends TestCaseWithTmpdir {
-    public static final String TEST_DATA_PATH = "compiler/testData/objc/resolve/";
-
-    public void doTest(@NotNull String filename) {
-        String header = TEST_DATA_PATH + filename;
-
+public abstract class AbstractObjCDescriptorResolverTest extends TestCaseWithTmpdir {
+    public void doTest(@NotNull String header) {
         assert header.endsWith(".h") : header;
         File expected = new File(header.substring(0, header.length() - ".h".length()) + ".txt");
 
@@ -61,9 +57,5 @@ public class ObjCDescriptorResolverTest extends TestCaseWithTmpdir {
         NamespaceDescriptor descriptor = extractObjCNamespaceFromAnalyzeExhaust(analyzeExhaust);
 
         compareNamespaceWithFile(descriptor, RECURSIVE, expected);
-    }
-
-    public void testFoundation() {
-        doTest("foundation.h");
     }
 }
