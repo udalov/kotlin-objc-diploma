@@ -18,7 +18,6 @@ package org.jetbrains.jet.lang.resolve.objc;
 
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.jet.lang.descriptors.impl.NamespaceDescriptorImpl;
@@ -141,7 +140,11 @@ public class ObjCDescriptorResolver {
         }
 
         ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.CLASS, Modality.OPEN, name, supertypes);
-        processMethodsOfClassOrProtocol(clazz.getMethodList(), descriptor, supertypeNames);
+
+        List<ObjCMethod> methods = clazz.getMethodList();
+        addMethodsToClassScope(methods, descriptor, MethodKind.INSTANCE_METHOD);
+        resolveClassObject(descriptor, methods, supertypeNames);
+
         return descriptor;
     }
 
@@ -185,61 +188,53 @@ public class ObjCDescriptorResolver {
         }
 
         ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name, supertypes);
-        processMethodsOfClassOrProtocol(protocol.getMethodList(), descriptor, supertypeNames);
+
+        List<ObjCMethod> methods = protocol.getMethodList();
+        addMethodsToClassScope(methods, descriptor, MethodKind.INSTANCE_METHOD);
+        resolveClassObject(descriptor, methods, supertypeNames);
+
         return descriptor;
     }
 
-    private void processMethodsOfClassOrProtocol(
-            @NotNull List<ObjCMethod> methods,
-            @NotNull ObjCClassDescriptor descriptor,
-            @Nullable List<Name> supertypeNames
-    ) {
-        List<ObjCMethod> classMethods = new ArrayList<ObjCMethod>();
-        List<ObjCMethod> instanceMethods = new ArrayList<ObjCMethod>();
-        for (ObjCMethod method : methods) {
-            if (method.getClassMethod()) {
-                classMethods.add(method);
-            }
-            else {
-                instanceMethods.add(method);
-            }
-        }
-
-        addMethodsToClassScope(instanceMethods, descriptor);
-
-        createClassObject(descriptor, classMethods, supertypeNames);
-    }
-
-    private void createClassObject(
+    private void resolveClassObject(
             @NotNull ObjCClassDescriptor descriptor,
             @NotNull List<ObjCMethod> classMethods,
-            @Nullable List<Name> supertypeNames
+            @NotNull List<Name> supertypeNames
     ) {
         Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
 
-        List<JetType> supertypes;
-        if (supertypeNames != null) {
-            supertypes = new ArrayList<JetType>(supertypeNames.size());
-            for (Name supertypeName : supertypeNames) {
-                supertypes.add(createClassObjectDeferredSupertype(supertypeName));
-            }
-        }
-        else {
-            supertypes = Collections.emptyList();
+        List<JetType> supertypes = new ArrayList<JetType>(supertypeNames.size());
+        for (Name supertypeName : supertypeNames) {
+            supertypes.add(createClassObjectDeferredSupertype(supertypeName));
         }
 
         ObjCClassDescriptor classObject = new ObjCClassDescriptor(descriptor, ClassKind.CLASS_OBJECT, Modality.FINAL, name, supertypes);
-        addMethodsToClassScope(classMethods, classObject);
+        addMethodsToClassScope(classMethods, classObject, MethodKind.CLASS_METHOD);
 
         ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
         assert result == ClassObjectStatus.OK : result;
     }
 
-    private void addMethodsToClassScope(@NotNull List<ObjCMethod> methods, @NotNull ObjCClassDescriptor descriptor) {
+    private enum MethodKind {
+        CLASS_METHOD,
+        INSTANCE_METHOD;
+
+        public boolean isKind(@NotNull ObjCMethod method) {
+            return method.getClassMethod() == (this == CLASS_METHOD);
+        }
+    }
+
+    private void addMethodsToClassScope(
+            @NotNull List<ObjCMethod> methods,
+            @NotNull ObjCClassDescriptor descriptor,
+            @NotNull MethodKind kind
+    ) {
         NamespaceLikeBuilder builder = descriptor.getBuilder();
         for (ObjCMethod method : methods) {
-            SimpleFunctionDescriptor functionDescriptor = resolveMethod(method, descriptor);
-            builder.addFunctionDescriptor(functionDescriptor);
+            if (kind.isKind(method)) {
+                SimpleFunctionDescriptor functionDescriptor = resolveMethod(method, descriptor);
+                builder.addFunctionDescriptor(functionDescriptor);
+            }
         }
     }
 
