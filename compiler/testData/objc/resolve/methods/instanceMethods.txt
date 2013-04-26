@@ -1,5 +1,8 @@
 package objc
 
+public trait <metaclass-for-A> {
+}
+
 public open class A {
     public open fun idWithInt(/*0*/ intArg : jet.Int, /*1*/ charArg : jet.Any?) : jet.Any?
     public open fun intNoArgs() : jet.Int
@@ -8,6 +11,6 @@ public open class A {
     public open fun voidWithID(/*0*/ idArg : jet.Any?, /*1*/ charArg : jet.Any?) : jet.Unit
     public open fun voidWithInt(/*0*/ intArg : jet.Int) : jet.Unit
     
-    public class object <class-object-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A> {
     }
 }

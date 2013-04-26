@@ -1,15 +1,21 @@
 package objc
 
+public trait <metaclass-for-A> : objc.<metaclass-for-P> {
+}
+
+public trait <metaclass-for-P> {
+}
+
 public open class A : objc.P {
     public open override /*1*/ /*fake_override*/ fun protocolMethod() : jet.Unit
     
-    public class object <class-object-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A> {
     }
 }
 
 public trait P {
     public open fun protocolMethod() : jet.Unit
     
-    public class object <class-object-for-P> {
+    public class object <class-object-for-P> : objc.<metaclass-for-P> {
     }
 }

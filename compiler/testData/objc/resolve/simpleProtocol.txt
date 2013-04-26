@@ -1,7 +1,10 @@
 package objc
 
+public trait <metaclass-for-P> {
+}
+
 public trait P {
     
-    public class object <class-object-for-P> {
+    public class object <class-object-for-P> : objc.<metaclass-for-P> {
     }
 }

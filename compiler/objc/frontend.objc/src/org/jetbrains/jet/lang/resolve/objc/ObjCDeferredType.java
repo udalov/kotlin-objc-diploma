@@ -17,12 +17,31 @@
 package org.jetbrains.jet.lang.resolve.objc;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.jet.lang.descriptors.ClassifierDescriptor;
+import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
+import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.types.DeferredTypeBase;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.util.lazy.RecursionIntolerantLazyValue;
 
 public class ObjCDeferredType extends DeferredTypeBase {
-    public ObjCDeferredType(@NotNull RecursionIntolerantLazyValue<JetType> lazyValue) {
-        super(lazyValue);
+    private final Name className;
+
+    public ObjCDeferredType(@NotNull final NamespaceDescriptor namespace, @NotNull final Name className) {
+        super(new RecursionIntolerantLazyValue<JetType>() {
+            @Override
+            protected JetType compute() {
+                ClassifierDescriptor classifier = namespace.getMemberScope().getClassifier(className);
+                assert classifier != null : "Objective-C class is not yet resolved: " + className;
+                return classifier.getDefaultType();
+            }
+        });
+
+        this.className = className;
+    }
+
+    @NotNull
+    public Name getClassName() {
+        return className;
     }
 }

@@ -66,9 +66,14 @@ public class ObjCClassDescriptor extends MutableClassDescriptorLite {
     /* package */ void initialize() {
         // Initialization is a separate step, because addSupertype method actually computes deferred types.
         // Not all supertypes may be available at the time of constructing this class
+        // TODO: fix addSupertype
         for (JetType supertype : lazySupertypes) {
             addSupertype(supertype);
         }
+    }
+
+    /* package */ Collection<JetType> getLazySupertypes() {
+        return lazySupertypes;
     }
 
     @NotNull

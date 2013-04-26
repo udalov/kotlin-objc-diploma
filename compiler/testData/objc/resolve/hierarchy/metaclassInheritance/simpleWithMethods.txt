@@ -1,15 +1,25 @@
 package objc
 
+public trait <metaclass-for-Base> {
+    public open fun baseMethod() : jet.Unit
+}
+
+public trait <metaclass-for-Derived> : objc.<metaclass-for-Base> {
+    public open override /*1*/ /*fake_override*/ fun baseMethod() : jet.Unit
+    public open fun derivedMethod() : jet.Unit
+}
+
 public open class Base {
     
-    public class object <class-object-for-Base> {
-        public open fun baseMethod() : jet.Unit
+    public class object <class-object-for-Base> : objc.<metaclass-for-Base> {
+        public open override /*1*/ /*fake_override*/ fun baseMethod() : jet.Unit
     }
 }
 
 public open class Derived : objc.Base {
     
-    public class object <class-object-for-Derived> : objc.Base.<class-object-for-Base> {
-        public open fun derivedMethod() : jet.Unit
+    public class object <class-object-for-Derived> : objc.<metaclass-for-Derived> {
+        public open override /*1*/ /*fake_override*/ fun baseMethod() : jet.Unit
+        public open override /*1*/ /*fake_override*/ fun derivedMethod() : jet.Unit
     }
 }

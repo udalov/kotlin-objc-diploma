@@ -35,6 +35,11 @@ public class ObjCOverrideResolver {
     public void process(@NotNull Collection<ObjCClassDescriptor> classes) {
         for (ObjCClassDescriptor descriptor : classes) {
             generateOverrides(descriptor);
+
+            ObjCClassDescriptor classObject = descriptor.getClassObjectDescriptor();
+            if (classObject != null) {
+                generateOverrides(classObject);
+            }
         }
     }
 

@@ -1,22 +1,38 @@
 package objc
 
+public trait <metaclass-for-BaseClass> {
+    public open fun baseClassMethod() : jet.Unit
+}
+
+public trait <metaclass-for-BaseProtocol> {
+    public open fun baseProtocolMethod() : jet.Unit
+}
+
+public trait <metaclass-for-Derived> : objc.<metaclass-for-BaseClass>, objc.<metaclass-for-BaseProtocol> {
+    public open override /*1*/ /*fake_override*/ fun baseClassMethod() : jet.Unit
+    public open override /*1*/ /*fake_override*/ fun baseProtocolMethod() : jet.Unit
+    public open fun derivedMethod() : jet.Unit
+}
+
 public open class BaseClass {
     
-    public class object <class-object-for-BaseClass> {
-        public open fun baseClassMethod() : jet.Unit
+    public class object <class-object-for-BaseClass> : objc.<metaclass-for-BaseClass> {
+        public open override /*1*/ /*fake_override*/ fun baseClassMethod() : jet.Unit
     }
 }
 
 public trait BaseProtocol {
     
-    public class object <class-object-for-BaseProtocol> {
-        public open fun baseProtocolMethod() : jet.Unit
+    public class object <class-object-for-BaseProtocol> : objc.<metaclass-for-BaseProtocol> {
+        public open override /*1*/ /*fake_override*/ fun baseProtocolMethod() : jet.Unit
     }
 }
 
 public open class Derived : objc.BaseClass, objc.BaseProtocol {
     
-    public class object <class-object-for-Derived> : objc.BaseClass.<class-object-for-BaseClass> {
-        public open fun derivedMethod() : jet.Unit
+    public class object <class-object-for-Derived> : objc.<metaclass-for-Derived> {
+        public open override /*1*/ /*fake_override*/ fun baseClassMethod() : jet.Unit
+        public open override /*1*/ /*fake_override*/ fun baseProtocolMethod() : jet.Unit
+        public open override /*1*/ /*fake_override*/ fun derivedMethod() : jet.Unit
     }
 }

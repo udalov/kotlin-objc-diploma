@@ -95,6 +95,11 @@ public class ObjCDescriptorResolverTestGenerated extends AbstractObjCDescriptorR
                 doTest("compiler/testData/objc/resolve/hierarchy/metaclassInheritance/classAndProtocol.h");
             }
             
+            @TestMetadata("classAndProtocolSameName.h")
+            public void testClassAndProtocolSameName() throws Exception {
+                doTest("compiler/testData/objc/resolve/hierarchy/metaclassInheritance/classAndProtocolSameName.h");
+            }
+            
             @TestMetadata("protocol.h")
             public void testProtocol() throws Exception {
                 doTest("compiler/testData/objc/resolve/hierarchy/metaclassInheritance/protocol.h");
