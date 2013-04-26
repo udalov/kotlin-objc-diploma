@@ -8,6 +8,7 @@ public open class Base {
 }
 
 public open class Derived : objc.Base {
+    public open override /*1*/ /*fake_override*/ fun someBaseMethod() : jet.Unit
     public open fun someDerivedMethod() : jet.Unit
     
     public class object <class-object-for-Derived> : objc.Base.<class-object-for-Base> {

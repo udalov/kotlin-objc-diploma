@@ -59,6 +59,8 @@ public class ObjCDescriptorResolver {
 
     @NotNull
     public NamespaceDescriptor resolveTranslationUnit(@NotNull TranslationUnit tu) {
+        calculateProtocolNames(tu);
+
         WritableScope scope = namespace.getMemberScope();
 
         List<ObjCClassDescriptor> classes = new ArrayList<ObjCClassDescriptor>(tu.getClassCount() + tu.getProtocolCount());
@@ -84,7 +86,39 @@ public class ObjCDescriptorResolver {
             }
         }
 
+        new ObjCOverrideResolver().process(classes);
+
+        for (ObjCClassDescriptor descriptor : classes) {
+            descriptor.lockScopes();
+        }
+
         return namespace;
+    }
+
+    private void calculateProtocolNames(@NotNull TranslationUnit tu) {
+        Set<Name> existingNames = new HashSet<Name>();
+        for (ObjCClass clazz : tu.getClassList()) {
+            existingNames.add(Name.identifier(clazz.getName()));
+        }
+
+        for (ObjCProtocol protocol : tu.getProtocolList()) {
+            String protocolName = protocol.getName();
+            Name name = Name.identifier(protocolName);
+            if (existingNames.contains(name)) {
+                // Since Objective-C classes and protocols exist in different namespaces and Kotlin classes and traits don't,
+                // we invent a new name here for the trait when a class with the same name exists already
+                // TODO: handle collisions (where both classes X and XProtocol and a protocol X exist)
+                name = Name.identifier(protocolName + PROTOCOL_NAME_SUFFIX);
+            }
+
+            protocolNames.put(protocolName, name);
+            existingNames.add(name);
+        }
+    }
+
+    @NotNull
+    private Name nameForProtocol(@NotNull String protocolName) {
+        return protocolNames.get(protocolName);
     }
 
     @NotNull
@@ -116,8 +150,7 @@ public class ObjCDescriptorResolver {
         return new ObjCDeferredType(new RecursionIntolerantLazyValue<JetType>() {
             @Override
             protected JetType compute() {
-                JetScope scope = namespace.getMemberScope();
-                ClassifierDescriptor classifier = scope.getClassifier(baseClassName);
+                ClassifierDescriptor classifier = namespace.getMemberScope().getClassifier(baseClassName);
                 assert classifier != null : "Super class is not resolved for class: " + className + ", base: " + baseClassName;
                 return classifier.getDefaultType();
             }
@@ -129,8 +162,7 @@ public class ObjCDescriptorResolver {
         return new ObjCDeferredType(new RecursionIntolerantLazyValue<JetType>() {
             @Override
             protected JetType compute() {
-                JetScope scope = namespace.getMemberScope();
-                ClassifierDescriptor classifier = scope.getClassifier(baseClassName);
+                ClassifierDescriptor classifier = namespace.getMemberScope().getClassifier(baseClassName);
                 assert classifier != null : "Super class is not resolved: " + baseClassName;
                 JetType classObjectType = classifier.getClassObjectType();
                 assert classObjectType != null : "Class object is not resolved for class: " + baseClassName;
@@ -157,24 +189,6 @@ public class ObjCDescriptorResolver {
         return descriptor;
     }
 
-    @NotNull
-    private Name nameForProtocol(@NotNull String protocolName) {
-        if (protocolNames.containsKey(protocolName)) {
-            return protocolNames.get(protocolName);
-        }
-
-        Name name = Name.identifier(protocolName);
-        if (namespace.getMemberScope().getClassifier(name) != null) {
-            // Since Objective-C classes and protocols exist in different namespaces and Kotlin classes and traits don't,
-            // we invent a new name here for the trait when a class with the same name exists already
-            // TODO: handle collisions (where both classes X and XProtocol and a protocol X exist)
-            name = Name.identifier(protocolName + PROTOCOL_NAME_SUFFIX);
-        }
-
-        protocolNames.put(protocolName, name);
-        return name;
-    }
-
     private void processMethodsOfClassOrProtocol(
             @NotNull List<ObjCMethod> methods,
             @NotNull ObjCClassDescriptor descriptor,
@@ -194,8 +208,6 @@ public class ObjCDescriptorResolver {
         addMethodsToClassScope(instanceMethods, descriptor);
 
         createClassObject(descriptor, classMethods, supertypeNames);
-
-        descriptor.lockScopes();
     }
 
     private void createClassObject(

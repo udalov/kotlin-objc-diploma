@@ -1,6 +1,7 @@
 package objc
 
 public open class A : objc.P {
+    public open override /*1*/ /*fake_override*/ fun protocolMethod() : jet.Unit
     
     public class object <class-object-for-A> {
     }

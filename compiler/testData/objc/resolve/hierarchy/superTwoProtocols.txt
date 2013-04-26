@@ -1,6 +1,8 @@
 package objc
 
 public trait Derived : objc.P, objc.Q {
+    public open override /*1*/ /*fake_override*/ fun p() : jet.Unit
+    public open override /*1*/ /*fake_override*/ fun q() : jet.Unit
     
     public class object <class-object-for-Derived> : objc.P.<class-object-for-P>, objc.Q.<class-object-for-Q> {
     }
