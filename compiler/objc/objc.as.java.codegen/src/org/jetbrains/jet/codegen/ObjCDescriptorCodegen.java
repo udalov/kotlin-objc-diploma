@@ -25,19 +25,30 @@ import org.jetbrains.jet.codegen.state.JetTypeMapperMode;
 import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
 import org.jetbrains.jet.lang.descriptors.DeclarationDescriptor;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
+import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.resolve.BindingTraceContext;
 import org.jetbrains.jet.lang.resolve.java.JvmAbi;
 import org.jetbrains.jet.lang.resolve.java.JvmClassName;
+import org.jetbrains.jet.lang.resolve.objc.ObjCMetaclassDescriptor;
 import org.jetbrains.jet.utils.ExceptionUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ObjCDescriptorCodegen {
+    public static final String METACLASS_SUFFIX = "$metaclass";
+
     private final JetTypeMapper typeMapper;
 
     public ObjCDescriptorCodegen() {
         this.typeMapper = new JetTypeMapper(new BindingTraceContext(), true, ClassBuilderMode.FULL);
+    }
+
+    @NotNull
+    public BindingContext getBindingContext() {
+        return typeMapper.getBindingContext();
     }
 
     @NotNull
@@ -75,16 +86,34 @@ public class ObjCDescriptorCodegen {
         writeClassFile(classDescriptor, outputDir, bytes);
     }
 
+    @NotNull
+    private static Collection<ClassDescriptor> filterClasses(@NotNull Collection<DeclarationDescriptor> descriptors) {
+        Collection<ClassDescriptor> result = new ArrayList<ClassDescriptor>(descriptors.size());
+        for (DeclarationDescriptor descriptor : descriptors) {
+            if (descriptor instanceof ClassDescriptor) {
+                result.add((ClassDescriptor) descriptor);
+            }
+        }
+        return result;
+    }
+
     public void generate(@NotNull NamespaceDescriptor namespace, @NotNull File outputDir, @NotNull File dylib) {
-        for (DeclarationDescriptor descriptor : namespace.getMemberScope().getAllDescriptors()) {
-            if (!(descriptor instanceof ClassDescriptor)) continue;
+        Collection<ClassDescriptor> classes = filterClasses(namespace.getMemberScope().getAllDescriptors());
 
-            ClassDescriptor classDescriptor = (ClassDescriptor) descriptor;
-            generateAndWriteClass(dylib, outputDir, classDescriptor);
+        for (ClassDescriptor descriptor : classes) {
+            if (descriptor instanceof ObjCMetaclassDescriptor) {
+                String internalName = asmType(((ObjCMetaclassDescriptor) descriptor).getClassDescriptor()).getInternalName();
+                JvmClassName metaclassName = JvmClassName.byInternalName(internalName + METACLASS_SUFFIX);
+                typeMapper.getBindingTrace().record(CodegenBinding.FQN, descriptor, metaclassName);
+            }
+        }
 
-            ClassDescriptor classObject = classDescriptor.getClassObjectDescriptor();
+        for (ClassDescriptor descriptor : classes) {
+            generateAndWriteClass(dylib, outputDir, descriptor);
+
+            ClassDescriptor classObject = descriptor.getClassObjectDescriptor();
             if (classObject != null) {
-                recordFQNForClassObject(classDescriptor, classObject);
+                recordFQNForClassObject(descriptor, classObject);
                 generateAndWriteClass(dylib, outputDir, classObject);
             }
         }

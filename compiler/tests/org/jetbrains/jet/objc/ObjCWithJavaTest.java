@@ -23,17 +23,18 @@ import com.intellij.testFramework.UsefulTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.JetTestUtils;
 import org.jetbrains.jet.analyzer.AnalyzeExhaust;
-import org.jetbrains.jet.cli.jvm.JVMConfigurationKeys;
 import org.jetbrains.jet.cli.jvm.compiler.CompileEnvironmentUtil;
 import org.jetbrains.jet.cli.jvm.compiler.JetCoreEnvironment;
-import org.jetbrains.jet.codegen.*;
+import org.jetbrains.jet.codegen.ClassBuilderFactories;
+import org.jetbrains.jet.codegen.CompilationErrorHandler;
+import org.jetbrains.jet.codegen.KotlinCodegenFacade;
+import org.jetbrains.jet.codegen.ObjCDescriptorCodegen;
 import org.jetbrains.jet.codegen.state.GenerationState;
-import org.jetbrains.jet.codegen.state.Progress;
-import org.jetbrains.jet.config.CompilerConfiguration;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.psi.JetFile;
 import org.jetbrains.jet.lang.resolve.AnalyzerScriptParameter;
 import org.jetbrains.jet.lang.resolve.AnalyzingUtils;
+import org.jetbrains.jet.lang.resolve.BindingContext;
 import org.jetbrains.jet.lang.resolve.java.PackageClassUtils;
 import org.jetbrains.jet.lang.resolve.name.FqName;
 import org.jetbrains.jet.lang.resolve.objc.AnalyzerFacadeForObjC;
@@ -84,7 +85,8 @@ public class ObjCWithJavaTest extends UsefulTestCase {
 
         ObjCInteropParameters.saveHeaders(environment.getProject(), new File(header));
 
-        AnalyzeExhaust analyzeExhaust = analyzeAndGenerate(kotlinSource);
+        List<JetFile> files = Collections.singletonList(createJetFile(kotlinSource));
+        AnalyzeExhaust analyzeExhaust = analyze(files);
 
         File dylib = new File(tmpDir, "libKotlinObjCTest.dylib");
         compileObjectiveC(implementation, dylib);
@@ -93,6 +95,8 @@ public class ObjCWithJavaTest extends UsefulTestCase {
 
         ObjCDescriptorCodegen codegen = new ObjCDescriptorCodegen();
         codegen.generate(descriptor, tmpDir, dylib);
+
+        generate(files, analyzeExhaust, codegen.getBindingContext());
 
         return runCompiledKotlinClass();
     }
@@ -124,9 +128,7 @@ public class ObjCWithJavaTest extends UsefulTestCase {
     }
 
     @NotNull
-    private AnalyzeExhaust analyzeAndGenerate(@NotNull String kotlinSource) {
-        List<JetFile> files = Collections.singletonList(createJetFile(kotlinSource));
-
+    private AnalyzeExhaust analyze(@NotNull List<JetFile> files) {
         AnalyzeExhaust analyzeExhaust = AnalyzerFacadeForObjC.INSTANCE.analyzeFiles(
                 environment.getProject(),
                 files,
@@ -134,19 +136,17 @@ public class ObjCWithJavaTest extends UsefulTestCase {
                 Predicates.<PsiFile>alwaysTrue());
         analyzeExhaust.throwIfError();
         AnalyzingUtils.throwExceptionOnErrors(analyzeExhaust.getBindingContext());
-        CompilerConfiguration configuration = environment.getConfiguration();
-        GenerationState state = new GenerationState(
-                environment.getProject(), ClassBuilderFactories.TEST, Progress.DEAF, analyzeExhaust.getBindingContext(), files,
-                configuration.get(JVMConfigurationKeys.BUILTIN_TO_JAVA_TYPES_MAPPING_KEY, BuiltinToJavaTypesMapping.ENABLED),
-                configuration.get(JVMConfigurationKeys.GENERATE_NOT_NULL_ASSERTIONS, true),
-                configuration.get(JVMConfigurationKeys.GENERATE_NOT_NULL_PARAMETER_ASSERTIONS, true),
-                true
-        );
+
+        return analyzeExhaust;
+    }
+
+    private void generate(@NotNull List<JetFile> files, @NotNull AnalyzeExhaust analyzeExhaust, @NotNull BindingContext objcBinding) {
+        BindingContext context = new ChainedBindingContext(analyzeExhaust.getBindingContext(), objcBinding);
+
+        GenerationState state = new GenerationState(environment.getProject(), ClassBuilderFactories.TEST, context, files);
         KotlinCodegenFacade.compileCorrectFiles(state, CompilationErrorHandler.THROW_EXCEPTION);
 
         CompileEnvironmentUtil.writeToOutputDirectory(state.getFactory(), tmpDir);
-
-        return analyzeExhaust;
     }
 
     @NotNull

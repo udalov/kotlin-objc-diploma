@@ -187,36 +187,25 @@ public class ObjCDescriptorResolver {
     }
 
     @NotNull
-    private ObjCClassDescriptor resolveMetaclass(@NotNull ObjCClassDescriptor descriptor, @NotNull List<ObjCMethod> methods) {
-        List<Name> supertypeNames = extractSupertypeNamesFromClass(descriptor);
-        Name name = getMetaclassName(descriptor.getName());
+    private ObjCMetaclassDescriptor resolveMetaclass(@NotNull ObjCClassDescriptor descriptor, @NotNull List<ObjCMethod> methods) {
+        List<JetType> supertypes = createDeferredSupertypesForMetaclass(descriptor);
 
-        List<JetType> supertypes = new ArrayList<JetType>(supertypeNames.size());
-        for (Name supertypeName : supertypeNames) {
-            Name superMetaName = getMetaclassName(supertypeName);
-            supertypes.add(createDeferredSupertype(superMetaName));
-        }
-
-        ObjCClassDescriptor metaclass = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name, supertypes);
+        ObjCMetaclassDescriptor metaclass = new ObjCMetaclassDescriptor(descriptor, supertypes);
         addMethodsToClassScope(methods, metaclass, MethodKind.CLASS_METHOD);
 
         return metaclass;
     }
 
     @NotNull
-    private static List<Name> extractSupertypeNamesFromClass(@NotNull ObjCClassDescriptor descriptor) {
-        List<Name> result = new ArrayList<Name>(1);
+    private List<JetType> createDeferredSupertypesForMetaclass(@NotNull ObjCClassDescriptor descriptor) {
+        List<JetType> supertypes = new ArrayList<JetType>(1);
         for (JetType supertype : descriptor.getLazySupertypes()) {
             assert supertype instanceof ObjCDeferredType : "Unexpected Obj-C supertype: " + supertype.getClass().getName();
-            Name name = ((ObjCDeferredType) supertype).getClassName();
-            result.add(name);
+            Name supertypeName = ((ObjCDeferredType) supertype).getClassName();
+            Name superMetaName = ObjCMetaclassDescriptor.getMetaclassName(supertypeName);
+            supertypes.add(createDeferredSupertype(superMetaName));
         }
-        return result;
-    }
-
-    @NotNull
-    private static Name getMetaclassName(@NotNull Name className) {
-        return Name.special("<metaclass-for-" + className.getName() + ">");
+        return supertypes;
     }
 
     private enum MethodKind {

@@ -78,6 +78,8 @@ public class ObjCClassCodegen {
     }
 
     private void newMethod(int flags, @NotNull String name, @NotNull String descriptor, @NotNull MethodCodegen codegen) {
+        if (this.descriptor.getKind() == ClassKind.TRAIT) return;
+
         MethodVisitor mv = cw.visitMethod(flags, name, descriptor, null, null);
         mv.visitCode();
         codegen.generate(new InstructionAdapter(mv));
@@ -88,7 +90,7 @@ public class ObjCClassCodegen {
     @NotNull
     public byte[] generateClass() {
         cw.visit(V1_6,
-                 ACC_PUBLIC | ACC_SUPER,
+                 computeAccessFlagsForClass(),
                  asmType.getInternalName(),
                  null,
                  superClassAsmType.getInternalName(),
@@ -118,6 +120,17 @@ public class ObjCClassCodegen {
         cw.visitEnd();
 
         return cw.toByteArray();
+    }
+
+    private int computeAccessFlagsForClass() {
+        int access = ACC_PUBLIC;
+        if (descriptor.getKind() == ClassKind.TRAIT) {
+            access |= ACC_ABSTRACT | ACC_INTERFACE;
+        }
+        else {
+            access |= ACC_SUPER;
+        }
+        return access;
     }
 
     @NotNull
