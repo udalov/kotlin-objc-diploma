@@ -36,6 +36,7 @@ import org.jetbrains.jet.lang.resolve.lazy.AbstractLazyResolveDescriptorRenderer
 import org.jetbrains.jet.lang.resolve.lazy.AbstractLazyResolveNamespaceComparingTest;
 import org.jetbrains.jet.lang.resolve.lazy.AbstractLazyResolveTest;
 import org.jetbrains.jet.objc.AbstractObjCDescriptorResolverTest;
+import org.jetbrains.jet.objc.AbstractObjCWithJavaTest;
 import org.jetbrains.jet.plugin.codeInsight.codeTransformations.AbstractCodeTransformationTest;
 import org.jetbrains.jet.plugin.codeInsight.surroundWith.AbstractSurroundWithTest;
 import org.jetbrains.jet.plugin.folding.AbstractKotlinFoldingTest;
@@ -149,6 +150,13 @@ public class GenerateTests {
                 "ObjCDescriptorResolverTestGenerated",
                 AbstractObjCDescriptorResolverTest.class,
                 testModel("compiler/testData/objc/resolve", true, "h", "doTest")
+        );
+
+        generateTest(
+                "compiler/tests/",
+                "ObjCWithJavaTestGenerated",
+                AbstractObjCWithJavaTest.class,
+                testModel("compiler/testData/objc/java")
         );
 
 

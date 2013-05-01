@@ -51,11 +51,6 @@ public class ObjCTestUtil {
         return ((ObjCModuleConfiguration) moduleConfiguration).getResolver().resolve();
     }
 
-    public static void compileObjectiveC(@NotNull String filename, @NotNull File out) {
-        String command = String.format("clang -ObjC -dynamiclib -framework Foundation %s -o %s", filename, out);
-        runProcess(command);
-    }
-
     @NotNull
     public static String runProcess(@NotNull String command) {
         try {

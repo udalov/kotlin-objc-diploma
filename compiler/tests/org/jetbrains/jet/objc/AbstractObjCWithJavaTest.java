@@ -48,9 +48,7 @@ import java.util.List;
 
 import static org.jetbrains.jet.objc.ObjCTestUtil.*;
 
-public class ObjCWithJavaTest extends UsefulTestCase {
-    public static final String TEST_DATA_PATH = "compiler/testData/objc/java/";
-
+public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
     private File tmpDir;
     private JetCoreEnvironment environment;
 
@@ -70,11 +68,11 @@ public class ObjCWithJavaTest extends UsefulTestCase {
         super.tearDown();
     }
 
-    private void doTest() {
-        String fileNameCommon = TEST_DATA_PATH + getTestName(true);
+    protected void doTest(@NotNull String kotlinSource) {
+        assert kotlinSource.endsWith(".kt") : kotlinSource;
+        String fileNameCommon = kotlinSource.substring(0, kotlinSource.length() - ".kt".length());
         String header = fileNameCommon + ".h";
         String implementation = fileNameCommon + ".m";
-        String kotlinSource = fileNameCommon + ".kt";
 
         ObjCInteropParameters.saveHeaders(environment.getProject(), new File(header));
 
@@ -105,6 +103,11 @@ public class ObjCWithJavaTest extends UsefulTestCase {
                 + " -Djava.library.path=" + libraryPath
                 + " " + PackageClassUtils.getPackageClassFqName(new FqName("test"));
         return runProcess(command);
+    }
+
+    private static void compileObjectiveC(@NotNull String filename, @NotNull File out) {
+        String command = String.format("clang -ObjC -dynamiclib -framework Foundation %s -o %s", filename, out);
+        runProcess(command);
     }
 
     @NotNull
@@ -152,11 +155,5 @@ public class ObjCWithJavaTest extends UsefulTestCase {
         catch (IOException e) {
             throw ExceptionUtils.rethrow(e);
         }
-    }
-
-
-
-    public void testSimpleClassObject() {
-        doTest();
     }
 }
