@@ -19,6 +19,7 @@ package org.jetbrains.jet.objc;
 import com.google.common.base.Predicates;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.jet.ConfigurationKind;
 import org.jetbrains.jet.analyzer.AnalyzeExhaust;
 import org.jetbrains.jet.cli.jvm.compiler.JetCoreEnvironment;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
@@ -42,7 +43,7 @@ public abstract class AbstractObjCDescriptorResolverTest extends TestCaseWithTmp
         assert header.endsWith(".h") : header;
         File expected = new File(header.substring(0, header.length() - ".h".length()) + ".txt");
 
-        JetCoreEnvironment environment = createEnvironment(getTestRootDisposable());
+        JetCoreEnvironment environment = createEnvironment(getTestRootDisposable(), ConfigurationKind.JDK_ONLY);
         ObjCInteropParameters.saveHeaders(environment.getProject(), new File(header));
 
         AnalyzeExhaust analyzeExhaust = AnalyzerFacadeForObjC.INSTANCE.analyzeFiles(

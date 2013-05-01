@@ -25,22 +25,19 @@ import org.jetbrains.jet.JetTestUtils;
 import org.jetbrains.jet.TestJdkKind;
 import org.jetbrains.jet.analyzer.AnalyzeExhaust;
 import org.jetbrains.jet.cli.jvm.compiler.JetCoreEnvironment;
-import org.jetbrains.jet.config.CompilerConfiguration;
 import org.jetbrains.jet.lang.ModuleConfiguration;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.objc.ObjCModuleConfiguration;
 import org.jetbrains.jet.utils.ExceptionUtils;
 
-import java.io.File;
 import java.io.InputStreamReader;
 
 public class ObjCTestUtil {
     private ObjCTestUtil() {}
 
     @NotNull
-    public static JetCoreEnvironment createEnvironment(@NotNull Disposable disposable) {
-        CompilerConfiguration configuration = JetTestUtils.compilerConfigurationForTests(ConfigurationKind.ALL, TestJdkKind.MOCK_JDK);
-        return new JetCoreEnvironment(disposable, configuration);
+    public static JetCoreEnvironment createEnvironment(@NotNull Disposable disposable, @NotNull ConfigurationKind kind) {
+        return new JetCoreEnvironment(disposable, JetTestUtils.compilerConfigurationForTests(kind, TestJdkKind.MOCK_JDK));
     }
 
     @NotNull
@@ -52,18 +49,22 @@ public class ObjCTestUtil {
     }
 
     @NotNull
+    @SuppressWarnings("IOResourceOpenedButNotSafelyClosed")
     public static String runProcess(@NotNull String command) {
         try {
             Process process = Runtime.getRuntime().exec(command);
             process.waitFor();
 
-            //noinspection IOResourceOpenedButNotSafelyClosed
-            InputStreamReader input = new InputStreamReader(process.getInputStream());
-            String result = CharStreams.toString(input);
-            Closeables.closeQuietly(input);
+            InputStreamReader output = new InputStreamReader(process.getInputStream());
+            String result = CharStreams.toString(output);
+            Closeables.closeQuietly(output);
+
+            InputStreamReader errorStream = new InputStreamReader(process.getErrorStream());
+            String error = CharStreams.toString(errorStream);
+            Closeables.closeQuietly(errorStream);
 
             int exitCode = process.exitValue();
-            assert exitCode == 0 : "Process exited with code " + exitCode;
+            assert exitCode == 0 : "Process exited with code " + exitCode + ", result: " + result + ", error:\n" + error;
 
             return result;
         }

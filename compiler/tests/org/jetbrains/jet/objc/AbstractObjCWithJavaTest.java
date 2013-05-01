@@ -21,6 +21,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.UsefulTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.jet.ConfigurationKind;
 import org.jetbrains.jet.JetTestUtils;
 import org.jetbrains.jet.analyzer.AnalyzeExhaust;
 import org.jetbrains.jet.cli.jvm.compiler.CompileEnvironmentUtil;
@@ -57,7 +58,7 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
         super.setUp();
 
         tmpDir = JetTestUtils.tmpDirForTest(this);
-        environment = createEnvironment(getTestRootDisposable());
+        environment = createEnvironment(getTestRootDisposable(), ConfigurationKind.ALL);
     }
 
     @Override
