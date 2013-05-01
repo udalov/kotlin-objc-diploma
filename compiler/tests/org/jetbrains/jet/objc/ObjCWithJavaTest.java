@@ -43,7 +43,6 @@ import org.jetbrains.jet.utils.ExceptionUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,13 +70,7 @@ public class ObjCWithJavaTest extends UsefulTestCase {
         super.tearDown();
     }
 
-    private void doTest(@NotNull String... expected) {
-        List<String> actual = doTest();
-        assertEquals(Arrays.asList(expected), actual);
-    }
-
-    @NotNull
-    private List<String> doTest() {
+    private void doTest() {
         String fileNameCommon = TEST_DATA_PATH + getTestName(true);
         String header = fileNameCommon + ".h";
         String implementation = fileNameCommon + ".m";
@@ -98,11 +91,12 @@ public class ObjCWithJavaTest extends UsefulTestCase {
 
         generate(files, analyzeExhaust, codegen.getBindingContext());
 
-        return runCompiledKotlinClass();
+        String actual = runCompiledKotlinClass();
+        assertEquals("OK", actual);
     }
 
     @NotNull
-    private List<String> runCompiledKotlinClass() {
+    private String runCompiledKotlinClass() {
         String classpath = ".:" + tmpDir + ":" + getKotlinRuntimeJarFile();
         String libraryPath = ".:" + tmpDir + ":" + getKotlinNativeDylibFile().getParent();
 
@@ -163,6 +157,6 @@ public class ObjCWithJavaTest extends UsefulTestCase {
 
 
     public void testSimpleClassObject() {
-        doTest("Hello world from Objective-C!");
+        doTest();
     }
 }

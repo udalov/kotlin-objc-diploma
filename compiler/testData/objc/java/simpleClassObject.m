@@ -6,7 +6,7 @@
 
 + (void) hello
 {
-    printf("Hello world from Objective-C!\n");
+    printf("OK");
 }
 
 @end

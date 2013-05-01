@@ -17,28 +17,29 @@
 package org.jetbrains.jet.lang.resolve.objc;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jet.lang.DefaultModuleConfiguration;
 import org.jetbrains.jet.lang.ModuleConfiguration;
 import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.BindingTrace;
 import org.jetbrains.jet.lang.resolve.DescriptorUtils;
+import org.jetbrains.jet.lang.resolve.java.JavaBridgeConfiguration;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 public class ObjCModuleConfiguration implements ModuleConfiguration {
     private ObjCResolveFacade resolver;
-    private ModuleConfiguration delegateConfiguration;
+
+    // This is temporary to run Obj-C with Java tests
+    private JavaBridgeConfiguration delegateConfiguration;
 
     @Inject
     public void setResolver(@NotNull ObjCResolveFacade resolver) {
         this.resolver = resolver;
     }
 
-    @PostConstruct
-    public void init() {
-        this.delegateConfiguration = DefaultModuleConfiguration.INSTANCE;
+    @Inject
+    public void setDelegateConfiguration(@NotNull JavaBridgeConfiguration delegateConfiguration) {
+        this.delegateConfiguration = delegateConfiguration;
     }
 
     public ObjCResolveFacade getResolver() {

@@ -16,6 +16,8 @@
 
 package org.jetbrains.jet.objc;
 
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closeables;
 import com.intellij.openapi.Disposable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.ConfigurationKind;
@@ -29,19 +31,15 @@ import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.lang.resolve.objc.ObjCModuleConfiguration;
 import org.jetbrains.jet.utils.ExceptionUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ObjCTestUtil {
     private ObjCTestUtil() {}
 
     @NotNull
     public static JetCoreEnvironment createEnvironment(@NotNull Disposable disposable) {
-        CompilerConfiguration configuration = JetTestUtils.compilerConfigurationForTests(ConfigurationKind.JDK_ONLY, TestJdkKind.MOCK_JDK);
+        CompilerConfiguration configuration = JetTestUtils.compilerConfigurationForTests(ConfigurationKind.ALL, TestJdkKind.MOCK_JDK);
         return new JetCoreEnvironment(disposable, configuration);
     }
 
@@ -59,17 +57,15 @@ public class ObjCTestUtil {
     }
 
     @NotNull
-    public static List<String> runProcess(@NotNull String command) {
+    public static String runProcess(@NotNull String command) {
         try {
             Process process = Runtime.getRuntime().exec(command);
             process.waitFor();
 
-            List<String> result = readLines(process.getInputStream());
-
-            for (String line : readLines(process.getErrorStream())) {
-                System.err.println(line);
-            }
-            System.err.flush();
+            //noinspection IOResourceOpenedButNotSafelyClosed
+            InputStreamReader input = new InputStreamReader(process.getInputStream());
+            String result = CharStreams.toString(input);
+            Closeables.closeQuietly(input);
 
             int exitCode = process.exitValue();
             assert exitCode == 0 : "Process exited with code " + exitCode;
@@ -79,16 +75,5 @@ public class ObjCTestUtil {
         catch (Exception e) {
             throw ExceptionUtils.rethrow(e);
         }
-    }
-
-    @NotNull
-    private static List<String> readLines(@NotNull InputStream in) throws Exception {
-        List<String> result = new ArrayList<String>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            result.add(line);
-        }
-        return result;
     }
 }

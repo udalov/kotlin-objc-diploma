@@ -100,7 +100,9 @@ public class GenerateInjectors {
         generator.implementInterface(InjectorForTopDownAnalyzer.class);
         generateInjectorForTopDownAnalyzerCommon(generator);
         generator.addPublicField(ObjCModuleConfiguration.class);
-        generator.addField(DependencyClassByQualifiedNameResolverDummyImpl.class);
+        generator.addField(JavaBridgeConfiguration.class);
+        generator.addField(JavaDescriptorResolver.class);
+        generator.addField(PsiClassFinderImpl.class);
         generator.addPublicField(NamespaceFactoryImpl.class);
         generator.generate("compiler/objc/frontend.objc/src", "org.jetbrains.jet.di", "InjectorForTopDownAnalyzerForObjC",
                            GenerateInjectors.class);
