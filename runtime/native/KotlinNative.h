@@ -18,7 +18,7 @@ JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_dlopen
 /*
  * Class:     jet_runtime_objc_Native
  * Method:    objc_getClass
- * Signature: (Ljava/lang/String;)Ljet/runtime/objc/NativePointer;
+ * Signature: (Ljava/lang/String;)Ljet/runtime/objc/ID;
  */
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass
   (JNIEnv *, jclass, jstring);
@@ -26,7 +26,7 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass
 /*
  * Class:     jet_runtime_objc_Native
  * Method:    objc_msgSend
- * Signature: (Ljet/runtime/objc/NativePointer;Ljet/runtime/objc/NativePointer;[Ljava/lang/Object;)Ljet/runtime/objc/NativePointer;
+ * Signature: (Ljet/runtime/objc/ID;Ljet/runtime/objc/ID;[Ljava/lang/Object;)Ljet/runtime/objc/ID;
  */
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSend
   (JNIEnv *, jclass, jobject, jobject, jobjectArray);
@@ -34,7 +34,7 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSend
 /*
  * Class:     jet_runtime_objc_Native
  * Method:    sel_registerName
- * Signature: (Ljava/lang/String;)Ljet/runtime/objc/NativePointer;
+ * Signature: (Ljava/lang/String;)Ljet/runtime/objc/ID;
  */
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_sel_1registerName
   (JNIEnv *, jclass, jstring);

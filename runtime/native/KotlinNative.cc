@@ -10,18 +10,18 @@
 
 typedef jlong pointer_t;
 
-const char *const CLASS_NATIVE_POINTER = "jet/runtime/objc/NativePointer";
+const char *const CLASS_ID = "jet/runtime/objc/ID";
 
 // TODO: fail gracefully if any class/method/field is not found
 
-jclass getNativePointerClass(JNIEnv *env) {
-    return env->FindClass(CLASS_NATIVE_POINTER);
+jclass getIdClass(JNIEnv *env) {
+    return env->FindClass(CLASS_ID);
 }
 
 jobject createNativePointer(JNIEnv *env, pointer_t pointer) {
-    jclass nativePointer = getNativePointerClass(env);
-    jmethodID constructor = env->GetMethodID(nativePointer, "<init>", "(J)V");
-    return env->NewObject(nativePointer, constructor, pointer);
+    jclass idClass = getIdClass(env);
+    jmethodID constructor = env->GetMethodID(idClass, "<init>", "(J)V");
+    return env->NewObject(idClass, constructor, pointer);
 }
 
 
@@ -59,8 +59,8 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSend(
         jobject selector,
         jobjectArray argArray
 ) {
-    jclass nativePointer = getNativePointerClass(env);
-    jmethodID getPointer = env->GetMethodID(nativePointer, "getValue", "()J");
+    jclass idClass = getIdClass(env);
+    jmethodID getPointer = env->GetMethodID(idClass, "getValue", "()J");
 
     pointer_t receiverPointer = env->CallLongMethod(receiver, getPointer);
     pointer_t selectorPointer = env->CallLongMethod(selector, getPointer);

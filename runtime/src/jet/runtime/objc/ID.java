@@ -17,10 +17,10 @@
 package jet.runtime.objc;
 
 @SuppressWarnings("UnusedDeclaration")
-public class NativePointer {
+public class ID {
     public final long value;
 
-    public NativePointer(long value) {
+    public ID(long value) {
         this.value = value;
     }
 

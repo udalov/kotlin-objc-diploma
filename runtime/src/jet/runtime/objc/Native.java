@@ -26,9 +26,9 @@ public class Native {
 
     public static native void dlopen(String path);
 
-    public static native NativePointer objc_getClass(String name);
+    public static native ID objc_getClass(String name);
 
-    public static native NativePointer objc_msgSend(NativePointer receiver, NativePointer selector, Object... args);
+    public static native ID objc_msgSend(ID receiver, ID selector, Object... args);
 
-    public static native NativePointer sel_registerName(String name);
+    public static native ID sel_registerName(String name);
 }
