@@ -16,7 +16,6 @@
 
 package jet.runtime.objc;
 
-@SuppressWarnings("UnusedDeclaration")
 public class Native {
     private Native() {}
 

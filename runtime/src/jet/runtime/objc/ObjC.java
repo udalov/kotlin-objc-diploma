@@ -31,8 +31,7 @@ public class ObjC {
         }
     }
 
-    public static void sendMessageToClassObjectVoid(String className, String messageName, Object... args) {
-        ID receiver = Native.objc_getClass(className);
+    public static void sendMessageVoid(ID receiver, String messageName, Object... args) {
         ID selector = Native.sel_registerName(messageName);
         Native.objc_msgSend(receiver, selector, args);
     }

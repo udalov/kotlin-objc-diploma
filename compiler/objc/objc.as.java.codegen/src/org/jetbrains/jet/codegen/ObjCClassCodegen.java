@@ -16,6 +16,10 @@
 
 package org.jetbrains.jet.codegen;
 
+import jet.runtime.objc.ID;
+import jet.runtime.objc.ObjC;
+import jet.runtime.objc.ObjCClass;
+import jet.runtime.objc.ObjCObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.asm4.ClassWriter;
 import org.jetbrains.asm4.MethodVisitor;
@@ -37,14 +41,19 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.jetbrains.asm4.Opcodes.*;
+import static org.jetbrains.asm4.Type.VOID_TYPE;
+import static org.jetbrains.asm4.Type.getMethodDescriptor;
 import static org.jetbrains.jet.codegen.AsmUtil.genInitSingletonField;
 
 public class ObjCClassCodegen {
-    public static final String JET_RUNTIME_OBJC = "jet/runtime/objc/ObjC";
+    public static final String JET_RUNTIME_OBJC = Type.getType(ObjC.class).getInternalName();
 
-    public static final String JL_OBJECT = "Ljava/lang/Object;";
-    public static final String JL_STRING = "Ljava/lang/String;";
-    public static final Type JL_OBJECT_TYPE = Type.getType(JL_OBJECT);
+    public static final Type JL_OBJECT_TYPE = Type.getType(Object.class);
+    public static final Type JL_STRING_TYPE = Type.getType(String.class);
+
+    public static final Type ID_TYPE = Type.getType(ID.class);
+    public static final Type OBJC_CLASS_TYPE = Type.getType(ObjCClass.class);
+    public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
 
     private final JetTypeMapper typeMapper;
     private final ClassDescriptor descriptor;
@@ -110,10 +119,7 @@ public class ObjCClassCodegen {
         JetScope scope = descriptor.getMemberScope(Collections.<TypeProjection>emptyList());
         for (DeclarationDescriptor member : scope.getAllDescriptors()) {
             if (member instanceof FunctionDescriptor) {
-                // TODO: other kinds
-                if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
-                    generateClassObjectMethod((FunctionDescriptor) member);
-                }
+                generateMethod((FunctionDescriptor) member);
             }
         }
 
@@ -135,6 +141,10 @@ public class ObjCClassCodegen {
 
     @NotNull
     private Type computeSuperClassAsmType() {
+        if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
+            return OBJC_CLASS_TYPE;
+        }
+
         for (JetType supertype : descriptor.getTypeConstructor().getSupertypes()) {
             ClassifierDescriptor superDescriptor = supertype.getConstructor().getDeclarationDescriptor();
             assert superDescriptor instanceof ClassDescriptor : "Supertype is not a class for Obj-C descriptor: " + descriptor;
@@ -143,7 +153,11 @@ public class ObjCClassCodegen {
             }
         }
 
-        return JL_OBJECT_TYPE;
+        if (descriptor.getKind() == ClassKind.TRAIT) {
+            return JL_OBJECT_TYPE;
+        }
+
+        return OBJC_OBJECT_TYPE;
     }
 
     @NotNull
@@ -164,37 +178,59 @@ public class ObjCClassCodegen {
     }
 
     private void generateStaticInitializer() {
-        newMethod(ACC_PUBLIC | ACC_STATIC, "<clinit>", "()V", new MethodCodegen() {
+        newMethod(ACC_PUBLIC | ACC_STATIC, "<clinit>", getMethodDescriptor(VOID_TYPE), new MethodCodegen() {
             @Override
             public void generate(@NotNull InstructionAdapter v) {
                 if (classObjectAsmType != null) {
                     genInitSingletonField(asmType, JvmAbi.CLASS_OBJECT_FIELD, classObjectAsmType, v);
                 }
-                v.visitLdcInsn(dylib + "");
-                v.invokestatic(JET_RUNTIME_OBJC, "loadLibrary", "(" + JL_STRING + ")V");
-                v.areturn(Type.VOID_TYPE);
+                v.visitLdcInsn(dylib.toString());
+                v.invokestatic(JET_RUNTIME_OBJC, "loadLibrary", getMethodDescriptor(VOID_TYPE, JL_STRING_TYPE));
+                v.areturn(VOID_TYPE);
             }
         });
     }
 
     private void generateConstructor() {
-        newMethod(ACC_PUBLIC, "<init>", "()V", new MethodCodegen() {
-            @Override
-            public void generate(@NotNull InstructionAdapter v) {
-                v.load(0, JL_OBJECT_TYPE);
-                v.invokespecial(superClassAsmType.getInternalName(), "<init>", "()V");
-                v.areturn(Type.VOID_TYPE);
-            }
-        });
+        if (superClassAsmType.equals(OBJC_CLASS_TYPE)) {
+            newMethod(ACC_PUBLIC, "<init>", getMethodDescriptor(VOID_TYPE), new MethodCodegen() {
+                @Override
+                public void generate(@NotNull InstructionAdapter v) {
+                    v.load(0, asmType);
+                    v.visitLdcInsn(descriptor.getContainingDeclaration().getName().getName());
+                    v.invokespecial(OBJC_CLASS_TYPE.getInternalName(), "<init>", getMethodDescriptor(VOID_TYPE, JL_STRING_TYPE));
+                    v.areturn(VOID_TYPE);
+                }
+            });
+        }
+        else {
+            final String signature = getMethodDescriptor(VOID_TYPE, ID_TYPE);
+            newMethod(ACC_PUBLIC, "<init>", signature, new MethodCodegen() {
+                @Override
+                public void generate(@NotNull InstructionAdapter v) {
+                    v.load(0, asmType);
+                    v.load(1, ID_TYPE);
+                    v.invokespecial(superClassAsmType.getInternalName(), "<init>", signature);
+                    v.areturn(VOID_TYPE);
+                }
+            });
+        }
     }
 
-    private void generateClassObjectMethod(@NotNull FunctionDescriptor method) {
+    private void generateMethod(@NotNull FunctionDescriptor method) {
         final JvmMethodSignature signature = typeMapper.mapSignature(method.getName(), method);
 
         newMethod(ACC_PUBLIC, signature.getName(), signature.getAsmMethod().getDescriptor(), new MethodCodegen() {
             @Override
             public void generate(@NotNull InstructionAdapter v) {
-                v.visitLdcInsn(descriptor.getContainingDeclaration().getName().getName());
+                v.load(0, asmType);
+                if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
+                    v.invokevirtual(OBJC_CLASS_TYPE.getInternalName(), "getId", getMethodDescriptor(ID_TYPE));
+                }
+                else {
+                    v.getfield(OBJC_OBJECT_TYPE.getInternalName(), "id", ID_TYPE.getDescriptor());
+                }
+
                 v.visitLdcInsn(signature.getName());
 
                 // TODO: arguments
@@ -204,19 +240,13 @@ public class ObjCClassCodegen {
                 // TODO: not only void methods
                 v.invokestatic(
                         JET_RUNTIME_OBJC,
-                        "sendMessageToClassObjectVoid",
-                        "(" + JL_STRING + JL_STRING + "[" + JL_OBJECT
-                        + ")V"
+                        "sendMessageVoid",
+                        getMethodDescriptor(VOID_TYPE, ID_TYPE, JL_STRING_TYPE, Type.getType(Object[].class))
                 );
 
                 Type returnType = signature.getAsmMethod().getReturnType();
-                if (returnType.getSort() == Type.VOID) {
-                    v.areturn(Type.VOID_TYPE);
-                }
-                else {
-                    v.aconst(null);
-                    v.areturn(returnType);
-                }
+                StackValue.coerce(VOID_TYPE, returnType, v);
+                v.areturn(returnType);
             }
         });
     }
