@@ -1,0 +1,87 @@
+class {
+  name: "A"
+  method {
+    function {
+      name: "pv"
+      return_type: "*V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "pi"
+      return_type: "*I;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "poi"
+      return_type: "*OI;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "poc"
+      return_type: "*OC;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "pos"
+      return_type: "*OS;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "pv2"
+      return_type: "*V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "pv3"
+      return_type: "*V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "pv4"
+      return_type: "*V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "ppv"
+      return_type: "**V;;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "ppi"
+      return_type: "**I;;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "ppi2"
+      return_type: "**I;;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "ppi3"
+      return_type: "**I;;"
+    }
+    class_method: false
+  }
+}

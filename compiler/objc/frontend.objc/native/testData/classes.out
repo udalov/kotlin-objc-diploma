@@ -6,14 +6,14 @@ class {
   method {
     function {
       name: "foo"
-      return_type: "Void"
+      return_type: "V"
     }
     class_method: false
   }
   method {
     function {
       name: "bar"
-      return_type: "Int"
+      return_type: "I"
     }
     class_method: false
   }
@@ -23,14 +23,14 @@ class {
   method {
     function {
       name: "foo"
-      return_type: "Void"
+      return_type: "V"
     }
     class_method: true
   }
   method {
     function {
       name: "bar"
-      return_type: "Int"
+      return_type: "I"
     }
     class_method: true
   }

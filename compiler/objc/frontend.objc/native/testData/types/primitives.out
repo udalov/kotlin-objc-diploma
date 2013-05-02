@@ -1,0 +1,136 @@
+class {
+  name: "A"
+  method {
+    function {
+      name: "v"
+      return_type: "V"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "uc"
+      return_type: "UC"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "us"
+      return_type: "US"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "ui"
+      return_type: "UI"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "uj"
+      return_type: "UJ"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "uj2"
+      return_type: "UJ"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "c"
+      return_type: "C"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "oi_but_should_be_z"
+      return_type: "OI"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "oi_but_should_be_w"
+      return_type: "OI"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "s"
+      return_type: "S"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "i"
+      return_type: "I"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "j"
+      return_type: "J"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "j2"
+      return_type: "J"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f"
+      return_type: "F"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "d"
+      return_type: "D"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "todo"
+      return_type: "X(LongDouble)"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "oi"
+      return_type: "OI"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "oc"
+      return_type: "OC"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "os"
+      return_type: "OS"
+    }
+    class_method: false
+  }
+}

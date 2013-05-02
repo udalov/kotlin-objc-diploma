@@ -1,0 +1,20 @@
+class {
+  name: "A"
+  method {
+    function {
+      name: "todo"
+      return_type: "X(Unexposed)"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "todo2"
+      return_type: "X(Unexposed)"
+    }
+    class_method: false
+  }
+}
+protocol {
+  name: "P"
+}

@@ -1,4 +1,5 @@
 #include <fstream>
+#include <map>
 #include <vector>
 #include <string>
 
@@ -23,18 +24,94 @@ std::vector<std::string> extractProtocolNames(const CXIdxObjCProtocolRefListInfo
     return result;
 }
 
-std::string getCursorTypeSpelling(const CXType& cursorType) {
-    // TODO: full type serialization
-    auto type = cursorType;
-
+const CXType untypedefType(CXType type) {
     while (type.kind == CXType_Typedef) {
         auto declaration = clang_getTypeDeclaration(type);
         type = clang_getTypedefDeclUnderlyingType(declaration);
     }
     assertFalse(type.kind == CXType_Invalid);
+    return type;
+}
 
-    AutoCXString spelling = clang_getTypeKindSpelling(type.kind);
-    return spelling.str();
+const std::map<CXTypeKind, std::string>& initializePrimitiveTypesMap() {
+    static std::map<CXTypeKind, std::string> m;
+
+    m[CXType_Void] = "V";
+    m[CXType_UChar] = "UC";
+    m[CXType_UShort] = "US";
+    m[CXType_UInt] = "UI";
+    m[CXType_ULong] = m[CXType_ULongLong] = "UJ";
+    m[CXType_Char_S] = "C";
+    m[CXType_SChar] = "Z"; // BOOL in Objective-C
+    m[CXType_WChar] = "W";
+    m[CXType_Short] = "S";
+    m[CXType_Int] = "I";
+    m[CXType_Long] = m[CXType_LongLong] = "J";
+    m[CXType_Float] = "F";
+    m[CXType_Double] = "D";
+    // TODO: long double
+
+    m[CXType_ObjCId] = "OI";
+    m[CXType_ObjCClass] = "OC";
+    m[CXType_ObjCSel] = "OS";
+
+    return m;
+}
+
+// TODO: write a long explanation
+void serializeType(const CXType& type, std::string& result) {
+    // TODO: BlockPointer
+    // TODO: C function pointers, enums, structs: they are unexposed by clang
+    // TODO: ConstantArray (for ivars only)
+    // TODO: Record (for 'va_list' only?)
+
+    // TODO: list of protocols for ObjCInterface type
+
+    static auto primitiveTypes = initializePrimitiveTypesMap();
+
+    auto it = primitiveTypes.find(type.kind);
+    if (it != primitiveTypes.end()) {
+        result += it->second;
+        return;
+    }
+
+    if (type.kind == CXType_Typedef) {
+        serializeType(untypedefType(type), result);
+    } else if (type.kind == CXType_Pointer) {
+        result += "*";
+        auto pointeeType = clang_getPointeeType(type);
+        serializeType(pointeeType, result);
+        result += ";";
+    } else if (type.kind == CXType_ObjCObjectPointer) {
+        auto pointeeType = untypedefType(clang_getPointeeType(type));
+
+        if (pointeeType.kind == CXType_Unexposed) {
+            serializeType(pointeeType, result);
+        } else if (pointeeType.kind == CXType_ObjCInterface) {
+            result += "L";
+            auto declaration = clang_getTypeDeclaration(pointeeType);
+            assertFalse(clang_isInvalid(declaration.kind));
+            AutoCXString spelling = clang_getCursorSpelling(declaration);
+            result += spelling.str();
+            result += ";";
+        } else {
+            AutoCXString spelling = clang_getTypeKindSpelling(pointeeType.kind);
+            auto str = spelling.str();
+            failWithMsg("Unknown Objective-C pointee type: %s\n", str.c_str());
+        }
+    } else {
+        // Unsupported kind / unexposed type
+        result += "X(";
+        AutoCXString spelling = clang_getTypeKindSpelling(type.kind);
+        result += spelling.str();
+        result += ")";
+    }
+}
+
+std::string serializeType(const CXType& type) {
+    std::string result;
+    serializeType(type, result);
+    return result;
 }
 
 
@@ -130,7 +207,7 @@ void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassM
     auto function = method->mutable_function();
     function->set_name(info->entityInfo->name);
 
-    auto type = getCursorTypeSpelling(clang_getCursorResultType(info->cursor));
+    auto type = serializeType(clang_getCursorResultType(info->cursor));
     function->set_return_type(type);
 
     // TODO: handle variadic arguments
@@ -140,7 +217,7 @@ void indexMethod(const CXIdxDeclInfo *info, OutputCollector *data, bool isClassM
         auto parameter = function->add_parameter();
         AutoCXString name = clang_getCursorSpelling(argument);
         parameter->set_name(name.str());
-        auto type = getCursorTypeSpelling(clang_getCursorType(argument));
+        auto type = serializeType(clang_getCursorType(argument));
         parameter->set_type(type);
     }
 }
@@ -165,7 +242,7 @@ void indexProperty(const CXIdxDeclInfo *info, OutputCollector *data) {
 
     property->set_name(info->entityInfo->name);
 
-    auto type = getCursorTypeSpelling(clang_getCursorType(info->cursor));
+    auto type = serializeType(clang_getCursorType(info->cursor));
     property->set_type(type);
 }
 
@@ -181,7 +258,7 @@ void indexIvar(const CXIdxDeclInfo *info, OutputCollector *data) {
 
     ivar->set_name(info->entityInfo->name);
 
-    auto type = getCursorTypeSpelling(clang_getCursorType(info->cursor));
+    auto type = serializeType(clang_getCursorType(info->cursor));
     ivar->set_type(type);
 }
 

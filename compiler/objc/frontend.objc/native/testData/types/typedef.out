@@ -1,0 +1,38 @@
+class {
+  name: "A"
+  method {
+    function {
+      name: "i"
+      return_type: "I"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "pi"
+      return_type: "*I;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "ppi"
+      return_type: "**I;;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "la"
+      return_type: "LA;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "pla"
+      return_type: "*LA;;"
+    }
+    class_method: false
+  }
+}

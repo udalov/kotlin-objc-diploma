@@ -1,0 +1,31 @@
+class {
+  name: "A"
+  method {
+    function {
+      name: "la"
+      return_type: "LA;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "la2"
+      return_type: "LA;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "la3"
+      return_type: "LA;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "la4"
+      return_type: "LA;"
+    }
+    class_method: false
+  }
+}
