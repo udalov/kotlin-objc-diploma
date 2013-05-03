@@ -1,0 +1,29 @@
+package objc
+
+public trait <metaclass-for-A> {
+}
+
+public open class A {
+    public open fun f_Class() : jet.Any?
+    public open fun f_SEL() : jet.Any?
+    public open fun f_bool() : jet.Any?
+    public open fun f_char() : jet.Char
+    public open fun f_double() : jet.Double
+    public open fun f_float() : jet.Float
+    public open fun f_id() : jet.Any?
+    public open fun f_int() : jet.Int
+    public open fun f_long() : jet.Long
+    public open fun f_longdouble() : jet.Any?
+    public open fun f_longlong() : jet.Long
+    public open fun f_short() : jet.Short
+    public open fun f_uchar() : jet.Char
+    public open fun f_uint() : jet.Int
+    public open fun f_ulong() : jet.Long
+    public open fun f_ulonglong() : jet.Long
+    public open fun f_ushort() : jet.Short
+    public open fun f_void() : jet.Unit
+    public open fun f_wchar_t() : jet.Any?
+    
+    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    }
+}

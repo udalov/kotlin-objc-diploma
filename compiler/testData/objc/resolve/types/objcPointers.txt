@@ -1,0 +1,22 @@
+package objc
+
+public trait <metaclass-for-A> {
+}
+
+public trait <metaclass-for-B> {
+}
+
+public open class A {
+    public open fun a() : objc.A
+    public open fun aWithB(/*0*/ b : objc.B) : objc.A
+    public open fun b() : objc.B
+    
+    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    }
+}
+
+public open class B {
+    
+    public class object <class-object-for-B> : objc.<metaclass-for-B> {
+    }
+}

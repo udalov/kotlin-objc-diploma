@@ -16,7 +16,6 @@
 
 package org.jetbrains.jet.lang.resolve.objc;
 
-import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
@@ -31,7 +30,6 @@ import org.jetbrains.jet.lang.resolve.scopes.RedeclarationHandler;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
 import org.jetbrains.jet.lang.types.JetType;
-import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 
 import java.util.*;
 
@@ -43,6 +41,8 @@ public class ObjCDescriptorResolver {
 
     private static final String PROTOCOL_NAME_SUFFIX = "Protocol";
 
+    private final ObjCTypeResolver typeResolver;
+
     private final NamespaceDescriptorImpl namespace;
     private final Map<String, Name> protocolNames = new HashMap<String, Name>();
 
@@ -53,6 +53,8 @@ public class ObjCDescriptorResolver {
         namespace.initialize(scope);
 
         rootNamespace.addNamespace(namespace);
+
+        typeResolver = new ObjCTypeResolver(namespace);
     }
 
     @NotNull
@@ -138,13 +140,13 @@ public class ObjCDescriptorResolver {
         List<JetType> supertypes = new ArrayList<JetType>(clazz.getProtocolCount() + 1);
         if (clazz.hasBaseClass()) {
             Name baseName = Name.identifier(clazz.getBaseClass());
-            JetType supertype = createDeferredSupertype(baseName);
+            JetType supertype = typeResolver.createTypeForClass(baseName);
             supertypes.add(supertype);
         }
 
         for (String baseProtocolName : clazz.getProtocolList()) {
             Name baseName = nameForProtocol(baseProtocolName);
-            JetType supertype = createDeferredSupertype(baseName);
+            JetType supertype = typeResolver.createTypeForClass(baseName);
             supertypes.add(supertype);
         }
 
@@ -155,18 +157,13 @@ public class ObjCDescriptorResolver {
     }
 
     @NotNull
-    private JetType createDeferredSupertype(@NotNull Name baseClassName) {
-        return new ObjCDeferredType(namespace, baseClassName);
-    }
-
-    @NotNull
     private ObjCClassDescriptor resolveProtocol(@NotNull ObjCProtocol protocol) {
         Name name = nameForProtocol(protocol.getName());
 
         List<JetType> supertypes = new ArrayList<JetType>(protocol.getBaseProtocolCount());
         for (String baseProtocolName : protocol.getBaseProtocolList()) {
             Name baseName = nameForProtocol(baseProtocolName);
-            JetType supertype = createDeferredSupertype(baseName);
+            JetType supertype = typeResolver.createTypeForClass(baseName);
             supertypes.add(supertype);
         }
 
@@ -203,7 +200,7 @@ public class ObjCDescriptorResolver {
             assert supertype instanceof ObjCDeferredType : "Unexpected Obj-C supertype: " + supertype.getClass().getName();
             Name supertypeName = ((ObjCDeferredType) supertype).getClassName();
             Name superMetaName = ObjCMetaclassDescriptor.getMetaclassName(supertypeName);
-            supertypes.add(createDeferredSupertype(superMetaName));
+            supertypes.add(typeResolver.createTypeForClass(superMetaName));
         }
         return supertypes;
     }
@@ -245,7 +242,7 @@ public class ObjCDescriptorResolver {
             valueParameters.add(parameter);
         }
 
-        JetType returnType = newTempType(function.getReturnType());
+        JetType returnType = typeResolver.resolveType(function.getReturnType());
 
         descriptor.initialize(
                 /* receiverParameterType */ null,
@@ -262,7 +259,7 @@ public class ObjCDescriptorResolver {
     }
 
     @NotNull
-    private Name transformMethodName(@NotNull String name) {
+    private static Name transformMethodName(@NotNull String name) {
         // Objective-C method names are usually of form 'methodName:withParam:andOtherParam:'
         // Here we strip away everything but the first part
         // TODO: handle methods with the same effective signature or invent something different
@@ -283,30 +280,9 @@ public class ObjCDescriptorResolver {
                 index,
                 Collections.<AnnotationDescriptor>emptyList(),
                 name,
-                newTempType(parameter.getType()),
+                typeResolver.resolveType(parameter.getType()),
                 /* declaresDefaultValue */ false,
                 null
         );
-    }
-
-    private static final Map<String, JetType> BUILT_IN_TYPES = new ContainerUtil.ImmutableMapBuilder<String, JetType>()
-            .put("Void", KotlinBuiltIns.getInstance().getUnitType())
-            .put("Bool", KotlinBuiltIns.getInstance().getBooleanType())
-            .put("UShort", KotlinBuiltIns.getInstance().getShortType())
-            .put("UInt", KotlinBuiltIns.getInstance().getIntType())
-            .put("ULong", KotlinBuiltIns.getInstance().getLongType())
-            .put("ULongLong", KotlinBuiltIns.getInstance().getLongType())
-            .put("Short", KotlinBuiltIns.getInstance().getShortType())
-            .put("Int", KotlinBuiltIns.getInstance().getIntType())
-            .put("Long", KotlinBuiltIns.getInstance().getLongType())
-            .put("LongLong", KotlinBuiltIns.getInstance().getLongType())
-            .put("Float", KotlinBuiltIns.getInstance().getFloatType())
-            .put("Double", KotlinBuiltIns.getInstance().getDoubleType())
-            .build();
-
-    @NotNull
-    private JetType newTempType(@NotNull String name) {
-        JetType builtInType = BUILT_IN_TYPES.get(name);
-        return builtInType != null ? builtInType : KotlinBuiltIns.getInstance().getNullableAnyType();
     }
 }
