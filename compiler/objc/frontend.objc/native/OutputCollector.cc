@@ -47,3 +47,20 @@ ObjCProtocol *OutputCollector::loadProtocolByUSR(const std::string& usr) const {
 ObjCCategory *OutputCollector::loadCategoryByUSR(const std::string& usr) const {
     return loadByUSR(m_categories, usr);
 }
+
+
+void OutputCollector::saveForwardDeclaredClass(const std::string& usr, const std::string& name) {
+    m_forwardClasses.insert(make_pair(usr, name));
+}
+
+void OutputCollector::saveForwardDeclaredProtocol(const std::string& usr, const std::string& name) {
+    m_forwardProtocols.insert(make_pair(usr, name));
+}
+
+const std::set<std::pair<std::string, std::string>>& OutputCollector::loadForwardDeclaredClasses() const {
+    return m_forwardClasses;
+}
+
+const std::set<std::pair<std::string, std::string>>& OutputCollector::loadForwardDeclaredProtocols() const {
+    return m_forwardProtocols;
+}

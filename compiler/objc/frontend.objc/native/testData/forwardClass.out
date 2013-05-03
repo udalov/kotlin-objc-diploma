@@ -1,0 +1,13 @@
+class {
+  name: "B"
+  method {
+    function {
+      name: "foo"
+      return_type: "LA;"
+    }
+    class_method: false
+  }
+}
+class {
+  name: "A"
+}

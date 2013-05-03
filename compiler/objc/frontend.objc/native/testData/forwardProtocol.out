@@ -1,0 +1,7 @@
+class {
+  name: "B"
+  protocol: "P"
+}
+protocol {
+  name: "P"
+}

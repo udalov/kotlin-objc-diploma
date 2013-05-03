@@ -91,6 +91,13 @@ void doTest(const std::string& filename) {
 }
 
 int main(int argc, char *argv[]) {
-    recurseIntoFiles("testData", doTest);
+    if (argc > 1) {
+        for (int i = 1; i < argc; i++) {
+            doTest(argv[i]);
+        }
+    } else {
+        recurseIntoFiles("testData", doTest);
+    }
+
     return 0;
 }

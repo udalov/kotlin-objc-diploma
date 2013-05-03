@@ -116,15 +116,20 @@ std::string serializeType(const CXType& type) {
 
 
 void indexClass(const CXIdxDeclInfo *info, OutputCollector *data) {
-    if (!info->isDefinition) return;
-    auto interfaceDeclInfo = clang_index_getObjCInterfaceDeclInfo(info);
-    assertNotNull(interfaceDeclInfo);
-    auto containerDeclInfo = interfaceDeclInfo->containerInfo;
+    auto containerDeclInfo = clang_index_getObjCContainerDeclInfo(info);
     assertNotNull(containerDeclInfo);
-    if (containerDeclInfo->kind != CXIdxObjCContainer_Interface) {
-        // TODO: report a warning if it's @implementation
+    if (containerDeclInfo->kind == CXIdxObjCContainer_Implementation) {
+        // TODO: report a warning
+        return;
+    } else if (containerDeclInfo->kind == CXIdxObjCContainer_ForwardRef) {
+        data->saveForwardDeclaredClass(info->entityInfo->USR, info->entityInfo->name);
         return;
     }
+    assertEquals(containerDeclInfo->kind, CXIdxObjCContainer_Interface);
+    assertTrue(info->isDefinition);
+
+    auto interfaceDeclInfo = clang_index_getObjCInterfaceDeclInfo(info);
+    assertNotNull(interfaceDeclInfo);
 
     auto clazz = data->result().add_class_();
     clazz->set_name(info->entityInfo->name);
@@ -165,7 +170,14 @@ void indexCategory(const CXIdxDeclInfo *info, OutputCollector *data) {
 }
 
 void indexProtocol(const CXIdxDeclInfo *info, OutputCollector *data) {
-    if (!info->isDefinition) return;
+    auto containerDeclInfo = clang_index_getObjCContainerDeclInfo(info);
+    assertNotNull(containerDeclInfo);
+    if (containerDeclInfo->kind == CXIdxObjCContainer_ForwardRef) {
+        data->saveForwardDeclaredProtocol(info->entityInfo->USR, info->entityInfo->name);
+        return;
+    }
+    assertEquals(containerDeclInfo->kind, CXIdxObjCContainer_Interface);
+    assertTrue(info->isDefinition);
 
     auto protocol = data->result().add_protocol();
     protocol->set_name(info->entityInfo->name);
@@ -289,6 +301,34 @@ void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
     }
 }
 
+void runPostIndexTasks(OutputCollector *data) {
+    // For every forward-declared @class or @protocol which was never defined,
+    // we create an empty class or protocol here. This is needed because a
+    // pointer to such a class can still appear in the type position of method
+    // arguments or return type of a method, regardless of whether or not
+    // it was defined
+
+    auto classes = data->loadForwardDeclaredClasses();
+    for (auto clazz : classes) {
+        auto usr = clazz.first;
+        if (data->loadClassByUSR(usr)) continue;
+
+        auto name = clazz.second;
+        auto newClass = data->result().add_class_();
+        newClass->set_name(name);
+    }
+
+    auto protocols = data->loadForwardDeclaredProtocols();
+    for (auto protocol : protocols) {
+        auto usr = protocol.first;
+        if (data->loadProtocolByUSR(usr)) continue;
+
+        auto name = protocol.second;
+        auto newProtocol = data->result().add_protocol();
+        newProtocol->set_name(name);
+    }
+}
+
 
 void doIndex(const std::vector<std::string>& headers, const std::string& outputFile) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -299,19 +339,21 @@ void doIndex(const std::vector<std::string>& headers, const std::string& outputF
     IndexerCallbacks callbacks = {};
     callbacks.indexDeclaration = indexDeclaration;
 
-    OutputCollector clientData;
+    OutputCollector data;
 
     std::vector<const char *> args;
     std::transform(headers.begin(), headers.end(), std::back_inserter(args), std::mem_fun_ref(&std::string::c_str));
     args.push_back("-ObjC");
 
-    clang_indexSourceFile(action, &clientData, &callbacks, sizeof(callbacks), 0, 0,
+    clang_indexSourceFile(action, &data, &callbacks, sizeof(callbacks), 0, 0,
             &args[0], static_cast<int>(args.size()), 0, 0, 0, 0);
+
+    runPostIndexTasks(&data);
 
     clang_IndexAction_dispose(action);
     clang_disposeIndex(index);
 
-    clientData.writeToFile(outputFile);
+    data.writeToFile(outputFile);
 }
 
 void buildNativeIndex(const char *const *headers, int numHeaders, const char *outputFile) {

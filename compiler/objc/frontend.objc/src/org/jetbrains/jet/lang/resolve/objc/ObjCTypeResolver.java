@@ -48,6 +48,11 @@ public class ObjCTypeResolver {
             return builtInType;
         }
 
+        if ("LProtocol;".equals(type)) {
+            // TODO: for some reason Clang doesn't index forward declaration of the class named 'Protocol' in objc/Protocol.h
+            return KotlinBuiltIns.getInstance().getNullableAnyType();
+        }
+
         if (type.startsWith("L")) {
             String className = type.substring(1, type.indexOf(';'));
             return createTypeForClass(Name.identifier(className));
