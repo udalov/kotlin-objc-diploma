@@ -27,11 +27,9 @@ public class Native {
 
     public static native ID objc_getClass(String name);
 
-    public static native ID sel_registerName(String name);
-
     // TODO: provide versions for objc_msgSend with 0, 1, 2... arguments as an optimization
 
-    public static native long objc_msgSendPrimitive(ID receiver, ID selector, ID... args);
+    public static native long objc_msgSendPrimitive(ID receiver, String selectorName, ID... args);
 
-    public static native ObjCObject objc_msgSendObjCObject(ID receiver, ID selector, ID... args);
+    public static native ObjCObject objc_msgSendObjCObject(ID receiver, String selectorName, ID... args);
 }

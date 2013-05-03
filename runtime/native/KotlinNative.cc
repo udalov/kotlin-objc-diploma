@@ -24,6 +24,12 @@ jobject createNativePointer(JNIEnv *env, pointer_t pointer) {
     return env->NewObject(idClass, constructor, pointer);
 }
 
+SEL lookupSelector(JNIEnv *env, jstring name) {
+    const char *chars = env->GetStringUTFChars(name, 0);
+    SEL selector = sel_registerName(chars);
+    env->ReleaseStringUTFChars(name, chars);
+    return selector;
+}
 
 JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_dlopen(
         JNIEnv *env,
@@ -56,17 +62,15 @@ id sendMessage(
         JNIEnv *env,
         jclass clazz,
         jobject receiver,
-        jobject selector,
+        jstring selectorName,
         jobjectArray argArray
 ) {
     jclass idClass = getIdClass(env);
     jmethodID getValue = env->GetMethodID(idClass, "getValue", "()J");
-
     pointer_t receiverPointer = env->CallLongMethod(receiver, getValue);
-    pointer_t selectorPointer = env->CallLongMethod(selector, getValue);
+    SEL message = lookupSelector(env, selectorName);
 
     id objcReceiver = (id) receiverPointer;
-    SEL message = (SEL) selectorPointer;
 
     id result = objc_msgSend(objcReceiver, message);
 
@@ -77,10 +81,10 @@ JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive(
         JNIEnv *env,
         jclass clazz,
         jobject receiver,
-        jobject selector,
+        jstring selectorName,
         jobjectArray argArray
 ) {
-    id result = sendMessage(env, clazz, receiver, selector, argArray);
+    id result = sendMessage(env, clazz, receiver, selectorName, argArray);
     return (jlong) result;
 }
 
@@ -88,24 +92,11 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
         JNIEnv *env,
         jclass clazz,
         jobject receiver,
-        jobject selector,
+        jstring selectorName,
         jobjectArray argArray
 ) {
-    id result = sendMessage(env, clazz, receiver, selector, argArray);
+    id result = sendMessage(env, clazz, receiver, selectorName, argArray);
     // TODO: object_getClassName, new ...(result)
     return receiver;
 }
 
-
-JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_sel_1registerName(
-        JNIEnv *env,
-        jclass clazz,
-        jstring name
-) {
-    const char *chars = env->GetStringUTFChars(name, 0);
-    SEL selector = sel_registerName(chars);
-    env->ReleaseStringUTFChars(name, chars);
-
-    pointer_t pointer = (pointer_t) selector;
-    return createNativePointer(env, pointer);
-}

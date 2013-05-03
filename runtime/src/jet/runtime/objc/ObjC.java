@@ -32,15 +32,15 @@ public class ObjC {
     }
 
     public static void sendMessageVoid(ID receiver, String messageName, ID... args) {
-        Native.objc_msgSendPrimitive(receiver, Native.sel_registerName(messageName), args);
+        Native.objc_msgSendPrimitive(receiver, messageName, args);
     }
 
     public static int sendMessageInt(ID receiver, String messageName, ID... args) {
-        long result = Native.objc_msgSendPrimitive(receiver, Native.sel_registerName(messageName), args);
+        long result = Native.objc_msgSendPrimitive(receiver, messageName, args);
         return (int) result;
     }
 
     public static ObjCObject sendMessageObjCObject(ID receiver, String messageName, ID... args) {
-        return Native.objc_msgSendObjCObject(receiver, Native.sel_registerName(messageName), args);
+        return Native.objc_msgSendObjCObject(receiver, messageName, args);
     }
 }
