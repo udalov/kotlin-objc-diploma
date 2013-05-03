@@ -52,7 +52,7 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
 }
 
 
-JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSend(
+id sendMessage(
         JNIEnv *env,
         jclass clazz,
         jobject receiver,
@@ -60,17 +60,39 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSend(
         jobjectArray argArray
 ) {
     jclass idClass = getIdClass(env);
-    jmethodID getPointer = env->GetMethodID(idClass, "getValue", "()J");
+    jmethodID getValue = env->GetMethodID(idClass, "getValue", "()J");
 
-    pointer_t receiverPointer = env->CallLongMethod(receiver, getPointer);
-    pointer_t selectorPointer = env->CallLongMethod(selector, getPointer);
+    pointer_t receiverPointer = env->CallLongMethod(receiver, getValue);
+    pointer_t selectorPointer = env->CallLongMethod(selector, getValue);
 
-    Class objcClass = (Class) receiverPointer;
+    id objcReceiver = (id) receiverPointer;
     SEL message = (SEL) selectorPointer;
 
-    id objcClassReceiver = (id) objcClass;
-    objc_msgSend(objcClassReceiver, message);
+    id result = objc_msgSend(objcReceiver, message);
 
+    return result;
+}
+
+JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive(
+        JNIEnv *env,
+        jclass clazz,
+        jobject receiver,
+        jobject selector,
+        jobjectArray argArray
+) {
+    id result = sendMessage(env, clazz, receiver, selector, argArray);
+    return (jlong) result;
+}
+
+JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
+        JNIEnv *env,
+        jclass clazz,
+        jobject receiver,
+        jobject selector,
+        jobjectArray argArray
+) {
+    id result = sendMessage(env, clazz, receiver, selector, argArray);
+    // TODO: object_getClassName, new ...(result)
     return receiver;
 }
 

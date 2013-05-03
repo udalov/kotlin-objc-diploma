@@ -31,8 +31,16 @@ public class ObjC {
         }
     }
 
-    public static void sendMessageVoid(ID receiver, String messageName, Object... args) {
-        ID selector = Native.sel_registerName(messageName);
-        Native.objc_msgSend(receiver, selector, args);
+    public static void sendMessageVoid(ID receiver, String messageName, ID... args) {
+        Native.objc_msgSendPrimitive(receiver, Native.sel_registerName(messageName), args);
+    }
+
+    public static int sendMessageInt(ID receiver, String messageName, ID... args) {
+        long result = Native.objc_msgSendPrimitive(receiver, Native.sel_registerName(messageName), args);
+        return (int) result;
+    }
+
+    public static ObjCObject sendMessageObjCObject(ID receiver, String messageName, ID... args) {
+        return Native.objc_msgSendObjCObject(receiver, Native.sel_registerName(messageName), args);
     }
 }

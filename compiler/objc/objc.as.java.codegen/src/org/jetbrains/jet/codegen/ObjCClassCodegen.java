@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.jetbrains.asm4.Opcodes.*;
+import static org.jetbrains.asm4.Type.INT_TYPE;
 import static org.jetbrains.asm4.Type.VOID_TYPE;
 import static org.jetbrains.asm4.Type.getMethodDescriptor;
 import static org.jetbrains.jet.codegen.AsmUtil.genInitSingletonField;
@@ -235,17 +236,19 @@ public class ObjCClassCodegen {
 
                 // TODO: arguments
                 v.iconst(0);
-                v.newarray(JL_OBJECT_TYPE);
-
-                // TODO: not only void methods
-                v.invokestatic(
-                        JET_RUNTIME_OBJC,
-                        "sendMessageVoid",
-                        getMethodDescriptor(VOID_TYPE, ID_TYPE, JL_STRING_TYPE, Type.getType(Object[].class))
-                );
+                v.newarray(ID_TYPE);
 
                 Type returnType = signature.getAsmMethod().getReturnType();
-                StackValue.coerce(VOID_TYPE, returnType, v);
+
+                if (returnType.getSort() == Type.INT) {
+                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageInt", getMethodDescriptor(INT_TYPE, ID_TYPE, JL_STRING_TYPE, Type.getType(ID[].class)));
+                }
+                else {
+                    // TODO
+                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageVoid", getMethodDescriptor(VOID_TYPE, ID_TYPE, JL_STRING_TYPE, Type.getType(ID[].class)));
+                    StackValue.coerce(VOID_TYPE, returnType, v);
+                }
+
                 v.areturn(returnType);
             }
         });
