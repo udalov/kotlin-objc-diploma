@@ -41,6 +41,16 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
         doTest("compiler/testData/objc/java/returnInt.kt");
     }
     
+    @TestMetadata("returnObjCObject.kt")
+    public void testReturnObjCObject() throws Exception {
+        doTest("compiler/testData/objc/java/returnObjCObject.kt");
+    }
+    
+    @TestMetadata("returnObjCObjectIsCheck.kt")
+    public void testReturnObjCObjectIsCheck() throws Exception {
+        doTest("compiler/testData/objc/java/returnObjCObjectIsCheck.kt");
+    }
+    
     @TestMetadata("simpleClassObject.kt")
     public void testSimpleClassObject() throws Exception {
         doTest("compiler/testData/objc/java/simpleClassObject.kt");

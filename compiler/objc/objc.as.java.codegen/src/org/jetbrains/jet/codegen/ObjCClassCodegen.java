@@ -53,6 +53,7 @@ public class ObjCClassCodegen {
     public static final Type JL_STRING_TYPE = Type.getType(String.class);
 
     public static final Type ID_TYPE = Type.getType(ID.class);
+    public static final Type ID_ARRAY_TYPE = Type.getType(ID[].class);
     public static final Type OBJC_CLASS_TYPE = Type.getType(ObjCClass.class);
     public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
 
@@ -241,11 +242,15 @@ public class ObjCClassCodegen {
                 Type returnType = signature.getAsmMethod().getReturnType();
 
                 if (returnType.getSort() == Type.INT) {
-                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageInt", getMethodDescriptor(INT_TYPE, ID_TYPE, JL_STRING_TYPE, Type.getType(ID[].class)));
+                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageInt", getMethodDescriptor(INT_TYPE, ID_TYPE, JL_STRING_TYPE, ID_ARRAY_TYPE));
+                }
+                else if (returnType.getSort() == Type.OBJECT) {
+                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageObjCObject", getMethodDescriptor(OBJC_OBJECT_TYPE, ID_TYPE, JL_STRING_TYPE, ID_ARRAY_TYPE));
+                    StackValue.coerce(OBJC_OBJECT_TYPE, returnType, v);
                 }
                 else {
                     // TODO
-                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageVoid", getMethodDescriptor(VOID_TYPE, ID_TYPE, JL_STRING_TYPE, Type.getType(ID[].class)));
+                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageVoid", getMethodDescriptor(VOID_TYPE, ID_TYPE, JL_STRING_TYPE, ID_ARRAY_TYPE));
                     StackValue.coerce(VOID_TYPE, returnType, v);
                 }
 

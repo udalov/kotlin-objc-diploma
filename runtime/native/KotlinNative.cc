@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <memory>
+#include <string>
 #include <objc/message.h>
 #include <objc/objc.h>
 #include <objc/runtime.h>
@@ -11,6 +12,9 @@
 typedef jlong pointer_t;
 
 const char *const CLASS_ID = "jet/runtime/objc/ID";
+const char *const OBJC_OBJECT_CONSTRUCTOR = "(Ljet/runtime/objc/ID;)V";
+
+const std::string OBJC_PACKAGE_PREFIX = "objc/";
 
 // TODO: fail gracefully if any class/method/field is not found
 
@@ -60,7 +64,6 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
 
 id sendMessage(
         JNIEnv *env,
-        jclass clazz,
         jobject receiver,
         jstring selectorName,
         jobjectArray argArray
@@ -84,7 +87,7 @@ JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive(
         jstring selectorName,
         jobjectArray argArray
 ) {
-    id result = sendMessage(env, clazz, receiver, selectorName, argArray);
+    id result = sendMessage(env, receiver, selectorName, argArray);
     return (jlong) result;
 }
 
@@ -95,8 +98,24 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
         jstring selectorName,
         jobjectArray argArray
 ) {
-    id result = sendMessage(env, clazz, receiver, selectorName, argArray);
-    // TODO: object_getClassName, new ...(result)
-    return receiver;
+    id result = sendMessage(env, receiver, selectorName, argArray);
+    // TODO: don't call getClassName if result==nil
+    // TODO: free?
+    const char *className = object_getClassName(result);
+
+    std::string fqClassName = OBJC_PACKAGE_PREFIX + className;
+    jclass jvmClass = env->FindClass(fqClassName.c_str());
+
+    if (!jvmClass) {
+        // TODO: return new NotFoundObjCClass(className, result) or something
+        exit(1);
+    }
+
+    // Here we create an instance of this jclass, invoking a constructor which
+    // takes a single ID parameter
+    jmethodID constructor = env->GetMethodID(jvmClass, "<init>", OBJC_OBJECT_CONSTRUCTOR);
+
+    jobject idInstance = createNativePointer(env, (pointer_t) result);
+    return env->NewObject(jvmClass, constructor, idInstance);
 }
 
