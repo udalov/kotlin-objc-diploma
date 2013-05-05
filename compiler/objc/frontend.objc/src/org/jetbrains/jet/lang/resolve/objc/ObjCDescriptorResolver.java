@@ -231,9 +231,8 @@ public class ObjCDescriptorResolver {
     @NotNull
     private SimpleFunctionDescriptor resolveMethod(@NotNull ObjCMethod method, @NotNull ObjCClassDescriptor containingClass) {
         Function function = method.getFunction();
-        Name name = transformMethodName(function.getName());
-        SimpleFunctionDescriptorImpl descriptor = new SimpleFunctionDescriptorImpl(containingClass,
-                Collections.<AnnotationDescriptor>emptyList(), name, CallableMemberDescriptor.Kind.DECLARATION);
+        SimpleFunctionDescriptorImpl descriptor = new ObjCMethodDescriptor(containingClass,
+                Collections.<AnnotationDescriptor>emptyList(), function.getName());
 
         int params = function.getParameterCount();
         List<ValueParameterDescriptor> valueParameters = new ArrayList<ValueParameterDescriptor>(params);
@@ -256,16 +255,6 @@ public class ObjCDescriptorResolver {
         );
 
         return descriptor;
-    }
-
-    @NotNull
-    private static Name transformMethodName(@NotNull String name) {
-        // Objective-C method names are usually of form 'methodName:withParam:andOtherParam:'
-        // Here we strip away everything but the first part
-        // TODO: handle methods with the same effective signature or invent something different
-        int colon = name.indexOf(':');
-        String beforeColon = colon < 0 ? name : name.substring(0, colon);
-        return Name.identifier(beforeColon);
     }
 
     @NotNull

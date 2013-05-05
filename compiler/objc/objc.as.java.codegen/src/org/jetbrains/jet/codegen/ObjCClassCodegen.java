@@ -30,6 +30,7 @@ import org.jetbrains.jet.codegen.state.JetTypeMapper;
 import org.jetbrains.jet.codegen.state.JetTypeMapperMode;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.resolve.java.JvmAbi;
+import org.jetbrains.jet.lang.resolve.objc.ObjCMethodDescriptor;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.TypeProjection;
@@ -217,7 +218,7 @@ public class ObjCClassCodegen {
         }
     }
 
-    private void generateMethod(@NotNull FunctionDescriptor method) {
+    private void generateMethod(@NotNull final FunctionDescriptor method) {
         final JvmMethodSignature signature = typeMapper.mapSignature(method.getName(), method);
 
         newMethod(ACC_PUBLIC, signature.getName(), signature.getAsmMethod().getDescriptor(), new MethodCodegen() {
@@ -231,7 +232,7 @@ public class ObjCClassCodegen {
                     v.getfield(OBJC_OBJECT_TYPE.getInternalName(), "id", ID_TYPE.getDescriptor());
                 }
 
-                v.visitLdcInsn(signature.getName());
+                v.visitLdcInsn(getObjCMethodName(method));
 
                 // TODO: arguments
                 v.iconst(0);
@@ -275,5 +276,12 @@ public class ObjCClassCodegen {
                 v.areturn(returnType);
             }
         });
+    }
+
+    @NotNull
+    private static String getObjCMethodName(@NotNull FunctionDescriptor method) {
+        FunctionDescriptor unwrapped = CodegenUtil.unwrapFakeOverride(method);
+        assert unwrapped instanceof ObjCMethodDescriptor : "Obj-C method original is not an Obj-C method: " + method + ", " + unwrapped;
+        return ((ObjCMethodDescriptor) unwrapped).getObjCName();
     }
 }
