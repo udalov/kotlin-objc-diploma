@@ -36,8 +36,19 @@ public class ObjC {
     }
 
     public static int sendMessageInt(ID receiver, String messageName, ID... args) {
-        long result = Native.objc_msgSendPrimitive(receiver, messageName, args);
-        return (int) result;
+        return (int) Native.objc_msgSendPrimitive(receiver, messageName, args);
+    }
+
+    public static long sendMessageLong(ID receiver, String messageName, ID... args) {
+        return Native.objc_msgSendPrimitive(receiver, messageName, args);
+    }
+
+    public static short sendMessageShort(ID receiver, String messageName, ID... args) {
+        return (short) Native.objc_msgSendPrimitive(receiver, messageName, args);
+    }
+
+    public static char sendMessageChar(ID receiver, String messageName, ID... args) {
+        return (char) Native.objc_msgSendPrimitive(receiver, messageName, args);
     }
 
     public static ObjCObject sendMessageObjCObject(ID receiver, String messageName, ID... args) {

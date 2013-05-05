@@ -41,9 +41,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.jetbrains.asm4.Opcodes.*;
-import static org.jetbrains.asm4.Type.INT_TYPE;
-import static org.jetbrains.asm4.Type.VOID_TYPE;
-import static org.jetbrains.asm4.Type.getMethodDescriptor;
+import static org.jetbrains.asm4.Type.*;
 import static org.jetbrains.jet.codegen.AsmUtil.genInitSingletonField;
 
 public class ObjCClassCodegen {
@@ -241,18 +239,38 @@ public class ObjCClassCodegen {
 
                 Type returnType = signature.getAsmMethod().getReturnType();
 
+                String sendMessageNameSuffix;
+                Type sendMessageReturnType;
+
                 if (returnType.getSort() == Type.INT) {
-                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageInt", getMethodDescriptor(INT_TYPE, ID_TYPE, JL_STRING_TYPE, ID_ARRAY_TYPE));
+                    sendMessageNameSuffix = "Int";
+                    sendMessageReturnType = INT_TYPE;
+                }
+                else if (returnType.getSort() == Type.LONG) {
+                    sendMessageNameSuffix = "Long";
+                    sendMessageReturnType = LONG_TYPE;
+                }
+                else if (returnType.getSort() == Type.SHORT) {
+                    sendMessageNameSuffix = "Short";
+                    sendMessageReturnType = SHORT_TYPE;
+                }
+                else if (returnType.getSort() == Type.CHAR) {
+                    sendMessageNameSuffix = "Char";
+                    sendMessageReturnType = CHAR_TYPE;
                 }
                 else if (returnType.getSort() == Type.OBJECT) {
-                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageObjCObject", getMethodDescriptor(OBJC_OBJECT_TYPE, ID_TYPE, JL_STRING_TYPE, ID_ARRAY_TYPE));
-                    StackValue.coerce(OBJC_OBJECT_TYPE, returnType, v);
+                    sendMessageNameSuffix = "ObjCObject";
+                    sendMessageReturnType = OBJC_OBJECT_TYPE;
                 }
                 else {
                     // TODO
-                    v.invokestatic(JET_RUNTIME_OBJC, "sendMessageVoid", getMethodDescriptor(VOID_TYPE, ID_TYPE, JL_STRING_TYPE, ID_ARRAY_TYPE));
-                    StackValue.coerce(VOID_TYPE, returnType, v);
+                    sendMessageNameSuffix = "Void";
+                    sendMessageReturnType = VOID_TYPE;
                 }
+
+                v.invokestatic(JET_RUNTIME_OBJC, "sendMessage" + sendMessageNameSuffix,
+                               getMethodDescriptor(sendMessageReturnType, ID_TYPE, JL_STRING_TYPE, ID_ARRAY_TYPE));
+                StackValue.coerce(sendMessageReturnType, returnType, v);
 
                 v.areturn(returnType);
             }

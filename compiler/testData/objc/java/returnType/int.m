@@ -1,4 +1,4 @@
-#import "returnInt.h"
+#import "int.h"
 
 @implementation A
 + (int) foo {

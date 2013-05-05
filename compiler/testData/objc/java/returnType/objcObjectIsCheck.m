@@ -1,4 +1,4 @@
-#import "returnObjCObjectIsCheck.h"
+#import "objcObjectIsCheck.h"
 
 @implementation Printer
 - (void) print {
