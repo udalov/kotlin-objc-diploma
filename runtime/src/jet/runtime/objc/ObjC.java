@@ -53,6 +53,12 @@ public class ObjC {
         return (char) (l & 0xff);
     }
 
+    public static boolean sendMessageBoolean(ID receiver, String messageName, ID... args) {
+        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
+        // Native boolean is 8-bit, and the rest of l may contain garbage
+        return (l & 0xff) != 0;
+    }
+
     public static ObjCObject sendMessageObjCObject(ID receiver, String messageName, ID... args) {
         return Native.objc_msgSendObjCObject(receiver, messageName, args);
     }

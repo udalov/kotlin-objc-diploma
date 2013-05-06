@@ -96,6 +96,16 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
             JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/objc/java/returnType"), Pattern.compile("^(.+)\\.kt$"), true);
         }
         
+        @TestMetadata("bool.kt")
+        public void testBool() throws Exception {
+            doTest("compiler/testData/objc/java/returnType/bool.kt");
+        }
+        
+        @TestMetadata("char.kt")
+        public void testChar() throws Exception {
+            doTest("compiler/testData/objc/java/returnType/char.kt");
+        }
+        
         @TestMetadata("int.kt")
         public void testInt() throws Exception {
             doTest("compiler/testData/objc/java/returnType/int.kt");
@@ -116,9 +126,9 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
             doTest("compiler/testData/objc/java/returnType/objcObjectIsCheck.kt");
         }
         
-        @TestMetadata("otherPrimitives.kt")
-        public void testOtherPrimitives() throws Exception {
-            doTest("compiler/testData/objc/java/returnType/otherPrimitives.kt");
+        @TestMetadata("short.kt")
+        public void testShort() throws Exception {
+            doTest("compiler/testData/objc/java/returnType/short.kt");
         }
         
     }
