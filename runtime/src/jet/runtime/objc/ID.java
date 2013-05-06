@@ -17,7 +17,7 @@
 package jet.runtime.objc;
 
 @SuppressWarnings("UnusedDeclaration")
-public class ID {
+public final class ID {
     public final long value;
 
     public ID(long value) {
@@ -26,5 +26,20 @@ public class ID {
 
     public long getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "[ID " + value + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (value ^ (value >>> 32));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof ID && ((ID) o).value == value;
     }
 }

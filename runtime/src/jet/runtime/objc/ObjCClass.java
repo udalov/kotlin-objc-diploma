@@ -15,4 +15,21 @@ public abstract class ObjCClass {
         }
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "[ObjCClass " + className + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return className.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ObjCClass)) return false;
+        ObjCClass obj = (ObjCClass) o;
+        return className == null ? obj.className == null : className.equals(obj.className);
+    }
 }
