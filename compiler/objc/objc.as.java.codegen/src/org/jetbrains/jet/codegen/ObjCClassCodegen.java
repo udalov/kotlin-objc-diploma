@@ -25,6 +25,7 @@ import org.jetbrains.asm4.ClassWriter;
 import org.jetbrains.asm4.MethodVisitor;
 import org.jetbrains.asm4.Type;
 import org.jetbrains.asm4.commons.InstructionAdapter;
+import org.jetbrains.asm4.commons.Method;
 import org.jetbrains.jet.codegen.signature.JvmMethodSignature;
 import org.jetbrains.jet.codegen.state.JetTypeMapper;
 import org.jetbrains.jet.codegen.state.JetTypeMapperMode;
@@ -234,11 +235,10 @@ public class ObjCClassCodegen {
 
                 v.visitLdcInsn(getObjCMethodName(method));
 
-                // TODO: arguments
-                v.iconst(0);
-                v.newarray(ID_TYPE);
+                Method asmMethod = signature.getAsmMethod();
+                Type returnType = asmMethod.getReturnType();
 
-                Type returnType = signature.getAsmMethod().getReturnType();
+                putArgumentsAsIdArray(v, asmMethod.getArgumentTypes());
 
                 String sendMessageNameSuffix;
                 Type sendMessageReturnType;
@@ -274,6 +274,46 @@ public class ObjCClassCodegen {
                 StackValue.coerce(sendMessageReturnType, returnType, v);
 
                 v.areturn(returnType);
+            }
+
+            private void putArgumentsAsIdArray(@NotNull InstructionAdapter v, @NotNull Type[] argTypes) {
+                v.iconst(argTypes.length);
+                v.newarray(ID_TYPE);
+
+                for (int i = 0; i < argTypes.length; i++) {
+                    Type type = argTypes[i];
+
+                    v.dup();
+                    v.iconst(i);
+
+                    StackValue local = StackValue.local(i + 1, type);
+                    if (type.getSort() == Type.OBJECT) {
+                        // TODO: not only ObjCObject, also Pointer<T>, struct, enum...
+                        local.put(OBJC_OBJECT_TYPE, v);
+                        v.getfield(OBJC_OBJECT_TYPE.getInternalName(), "id", ID_TYPE.getDescriptor());
+                    }
+                    else {
+                        v.anew(ID_TYPE);
+                        v.dup();
+                        if (type.getSort() == Type.DOUBLE) {
+                            local.put(DOUBLE_TYPE, v);
+                            // TODO: or doubleToLongBits?
+                            v.invokestatic("java/lang/Double", "doubleToRawLongBits", "(D)J");
+                        }
+                        else if (type.getSort() == Type.FLOAT) {
+                            local.put(FLOAT_TYPE, v);
+                            // TODO: or floatToIntBits?
+                            v.invokestatic("java/lang/Float", "floatToRawIntBits", "(F)I");
+                            StackValue.coerce(INT_TYPE, LONG_TYPE, v);
+                        }
+                        else {
+                            local.put(LONG_TYPE, v);
+                        }
+                        v.invokespecial(ID_TYPE.getInternalName(), "<init>", "(J)V");
+                    }
+
+                    v.astore(ID_TYPE);
+                }
             }
         });
     }

@@ -5,24 +5,24 @@
 #include <cstdio>
 #include <memory>
 #include <string>
+#include <vector>
 #include <objc/message.h>
 #include <objc/objc.h>
 #include <objc/runtime.h>
-
-typedef jlong pointer_t;
 
 const char *const CLASS_ID = "jet/runtime/objc/ID";
 const char *const OBJC_OBJECT_CONSTRUCTOR = "(Ljet/runtime/objc/ID;)V";
 
 const std::string OBJC_PACKAGE_PREFIX = "objc/";
 
+// TODO: hide everything util under a namespace
 // TODO: fail gracefully if any class/method/field is not found
 
 jclass getIdClass(JNIEnv *env) {
     return env->FindClass(CLASS_ID);
 }
 
-jobject createNativePointer(JNIEnv *env, pointer_t pointer) {
+jobject createNativePointer(JNIEnv *env, void *pointer) {
     jclass idClass = getIdClass(env);
     jmethodID constructor = env->GetMethodID(idClass, "<init>", "(J)V");
     return env->NewObject(idClass, constructor, pointer);
@@ -56,26 +56,108 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
     const char *chars = env->GetStringUTFChars(name, 0);
     id objcClass = objc_getClass(chars);
     env->ReleaseStringUTFChars(name, chars);
-
-    pointer_t pointer = (pointer_t) objcClass;
-    return createNativePointer(env, pointer);
+    return createNativePointer(env, objcClass);
 }
 
 
+id constructNSInvocation(id receiver, SEL selector, const std::vector<id>& args) {
+    static SEL methodSignatureForSelector = sel_registerName("methodSignatureForSelector:");
+    static id invocationClass = objc_getClass("NSInvocation");
+    static SEL invocationWithMethodSignature = sel_registerName("invocationWithMethodSignature:");
+    static SEL setTarget = sel_registerName("setTarget:");
+    static SEL setSelector = sel_registerName("setSelector:");
+
+    id signature = objc_msgSend(receiver, methodSignatureForSelector, selector);
+    id invocation = objc_msgSend(invocationClass, invocationWithMethodSignature, signature);
+    objc_msgSend(invocation, setTarget, receiver);
+    objc_msgSend(invocation, setSelector, selector);
+    
+    for (size_t i = 0, n = args.size(); i < n; i++) {
+        static SEL setArgument = sel_registerName("setArgument:atIndex:");
+        // From NSInvocation Class Reference:
+        // "Indices 0 and 1 indicate the hidden arguments self and _cmd, respectively"
+        objc_msgSend(invocation, setArgument, &args[i], i + 2);
+    }
+
+    return invocation;
+}
+
+bool selectorReturnsVoid(id receiver, SEL selector) {
+    Method method = class_getInstanceMethod(object_getClass(receiver), selector);
+    char returnType[2];
+    method_getReturnType(method, returnType, 2);
+    return !strcmp(returnType, "v");
+}
+
+std::vector<id> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArray) {
+    jsize length = env->GetArrayLength(argArray);
+    std::vector<id> args;
+    if (!length) return args;
+
+    // TODO: cache ID and getValue somehow
+    jclass idClass = getIdClass(env);
+    jmethodID getValue = env->GetMethodID(idClass, "getValue", "()J");
+
+    args.reserve(length);
+    for (jsize i = 0; i < length; i++) {
+        jobject argObject = env->GetObjectArrayElement(argArray, i);
+        id arg = (id) env->CallLongMethod(argObject, getValue);
+        args.push_back(arg);
+    }
+
+    return args;
+}
+
+id createAutoreleasePool() {
+    static id autoreleasePoolClass = objc_getClass("NSAutoreleasePool");
+    static SEL alloc = sel_registerName("alloc");
+    static SEL init = sel_registerName("init");
+    id pool = objc_msgSend(autoreleasePoolClass, alloc);
+    return objc_msgSend(pool, init);
+}
+
+void drainAutoreleasePool(id pool) {
+    static SEL drain = sel_registerName("drain");
+    objc_msgSend(pool, drain);
+}
+
 id sendMessage(
         JNIEnv *env,
-        jobject receiver,
+        jobject receiverJObject,
         jstring selectorName,
         jobjectArray argArray
 ) {
     jclass idClass = getIdClass(env);
     jmethodID getValue = env->GetMethodID(idClass, "getValue", "()J");
-    pointer_t receiverPointer = env->CallLongMethod(receiver, getValue);
-    SEL message = lookupSelector(env, selectorName);
 
-    id objcReceiver = (id) receiverPointer;
+    id receiver = (id) env->CallLongMethod(receiverJObject, getValue);
+    SEL selector = lookupSelector(env, selectorName);
+    std::vector<id> args = extractArgumentsFromJArray(env, argArray);
 
-    id result = objc_msgSend(objcReceiver, message);
+    // At this point, all we have to do is to call objc_msgSend(receiver,
+    // selector, args) and get the result. Unfortunately, there's no portable
+    // way of passing arguments to objc_msgSend, so we use NSInvocation to
+    // put arguments on stack and get the result. Since it's Objective-C
+    // runtime now, we also need to create NSAutoreleasePool to prevent the
+    // runtime from spawning error messages about memory leaks
+
+    // TODO: use libffi here instead, it's faster and less cumbersome
+
+    id pool = createAutoreleasePool();
+
+    id invocation = constructNSInvocation(receiver, selector, args);
+    static SEL invoke = sel_registerName("invoke");
+    objc_msgSend(invocation, invoke);
+
+    id buffer[1];
+    if (!selectorReturnsVoid(receiver, selector)) {
+        // It's illegal to call '-getReturnValue:' for void methods
+        static SEL getReturnValue = sel_registerName("getReturnValue:");
+        objc_msgSend(invocation, getReturnValue, buffer);
+    }
+    id result = buffer[0];
+
+    drainAutoreleasePool(pool);
 
     return result;
 }
@@ -115,7 +197,7 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
     // takes a single ID parameter
     jmethodID constructor = env->GetMethodID(jvmClass, "<init>", OBJC_OBJECT_CONSTRUCTOR);
 
-    jobject idInstance = createNativePointer(env, (pointer_t) result);
+    jobject idInstance = createNativePointer(env, result);
     return env->NewObject(jvmClass, constructor, idInstance);
 }
 

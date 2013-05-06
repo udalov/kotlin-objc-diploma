@@ -48,7 +48,9 @@ public class ObjC {
     }
 
     public static char sendMessageChar(ID receiver, String messageName, ID... args) {
-        return (char) Native.objc_msgSendPrimitive(receiver, messageName, args);
+        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
+        // Native char is 8-bit, and the rest of l may contain garbage
+        return (char) (l & 0xff);
     }
 
     public static ObjCObject sendMessageObjCObject(ID receiver, String messageName, ID... args) {

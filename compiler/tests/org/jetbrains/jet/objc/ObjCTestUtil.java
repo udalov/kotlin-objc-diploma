@@ -62,7 +62,7 @@ public class ObjCTestUtil {
             InputStreamReader errorStream = new InputStreamReader(process.getErrorStream());
             String error = CharStreams.toString(errorStream);
             Closeables.closeQuietly(errorStream);
-            System.err.println(error);
+            System.err.print(error);
 
             int exitCode = process.exitValue();
             assert exitCode == 0 : "Process exited with code " + exitCode + ", result: " + result;
