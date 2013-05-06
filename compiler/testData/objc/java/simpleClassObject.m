@@ -1,11 +1,9 @@
-#include "simpleClassObject.h"
-
-#include <stdio.h>
+#import "simpleClassObject.h"
+#import <stdio.h>
 
 @implementation Simple
 
-+ (void) hello
-{
++ (void) hello {
     printf("OK");
 }
 

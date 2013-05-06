@@ -1,4 +1,5 @@
 #import "int.h"
+#import <stdio.h>
 
 @implementation A
 + (void) printOKIf42: (int) arg {

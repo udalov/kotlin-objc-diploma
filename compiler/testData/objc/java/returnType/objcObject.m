@@ -1,4 +1,5 @@
 #import "objcObject.h"
+#import <stdio.h>
 
 @implementation OKPrinter
 - (void) printOK {

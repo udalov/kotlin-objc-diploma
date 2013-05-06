@@ -1,4 +1,4 @@
-#include <Foundation/Foundation.h>
+#import <Foundation/NSObject.h>
 
 @interface Simple : NSObject
 

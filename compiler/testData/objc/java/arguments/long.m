@@ -1,4 +1,5 @@
 #import "long.h"
+#import <stdio.h>
 
 @implementation A
 + (void) foo: (long) arg {

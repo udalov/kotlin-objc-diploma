@@ -1,4 +1,5 @@
 #import "objcObjectIsCheck.h"
+#import <stdio.h>
 
 @implementation Printer
 - (void) print {

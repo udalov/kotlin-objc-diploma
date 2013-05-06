@@ -1,4 +1,5 @@
 #import "short.h"
+#import <stdio.h>
 
 @implementation A
 + (void) printOKIf42: (short) arg {
