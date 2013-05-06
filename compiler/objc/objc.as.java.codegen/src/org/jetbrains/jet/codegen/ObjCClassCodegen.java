@@ -263,6 +263,14 @@ public class ObjCClassCodegen {
                     sendMessageNameSuffix = "Boolean";
                     sendMessageReturnType = BOOLEAN_TYPE;
                 }
+                else if (returnType.getSort() == Type.DOUBLE) {
+                    sendMessageNameSuffix = "Double";
+                    sendMessageReturnType = DOUBLE_TYPE;
+                }
+                else if (returnType.getSort() == Type.FLOAT) {
+                    sendMessageNameSuffix = "Float";
+                    sendMessageReturnType = FLOAT_TYPE;
+                }
                 else if (returnType.getSort() == Type.OBJECT) {
                     sendMessageNameSuffix = "ObjCObject";
                     sendMessageReturnType = OBJC_OBJECT_TYPE;

@@ -59,6 +59,16 @@ public class ObjC {
         return (l & 0xff) != 0;
     }
 
+    public static double sendMessageDouble(ID receiver, String messageName, ID... args) {
+        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
+        return Double.longBitsToDouble(l);
+    }
+
+    public static float sendMessageFloat(ID receiver, String messageName, ID... args) {
+        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
+        return Float.intBitsToFloat((int) l);
+    }
+
     public static ObjCObject sendMessageObjCObject(ID receiver, String messageName, ID... args) {
         return Native.objc_msgSendObjCObject(receiver, messageName, args);
     }

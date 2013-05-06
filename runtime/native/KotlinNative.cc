@@ -82,10 +82,13 @@ id constructNSInvocation(id receiver, SEL selector, const std::vector<id>& args)
     return invocation;
 }
 
-bool selectorReturnsVoid(id receiver, SEL selector) {
-    Method method = class_getInstanceMethod(object_getClass(receiver), selector);
-    char returnType[2];
-    method_getReturnType(method, returnType, 2);
+bool selectorReturnsVoid(id invocation) {
+    static SEL methodSignature = sel_registerName("methodSignature");
+    static SEL methodReturnType = sel_registerName("methodReturnType");
+
+    id signature = objc_msgSend(invocation, methodSignature);
+    // TODO: free?
+    const char *returnType = (const char *) objc_msgSend(signature, methodReturnType);
     return !strcmp(returnType, "v");
 }
 
@@ -150,7 +153,7 @@ id sendMessage(
     objc_msgSend(invocation, invoke);
 
     id buffer[1];
-    if (!selectorReturnsVoid(receiver, selector)) {
+    if (!selectorReturnsVoid(invocation)) {
         // It's illegal to call '-getReturnValue:' for void methods
         static SEL getReturnValue = sel_registerName("getReturnValue:");
         objc_msgSend(invocation, getReturnValue, buffer);
