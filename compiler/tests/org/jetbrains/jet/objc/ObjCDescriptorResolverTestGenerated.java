@@ -154,6 +154,11 @@ public class ObjCDescriptorResolverTestGenerated extends AbstractObjCDescriptorR
             JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/objc/resolve/types"), Pattern.compile("^(.+)\\.h$"), true);
         }
         
+        @TestMetadata("functionTypes.h")
+        public void testFunctionTypes() throws Exception {
+            doTest("compiler/testData/objc/resolve/types/functionTypes.h");
+        }
+        
         @TestMetadata("objcPointers.h")
         public void testObjcPointers() throws Exception {
             doTest("compiler/testData/objc/resolve/types/objcPointers.h");

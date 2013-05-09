@@ -1,0 +1,115 @@
+class {
+  name: "A"
+  method {
+    function {
+      name: "f01"
+      return_type: "*(.)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f02"
+      return_type: "*(.)I;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f03"
+      return_type: "*(.)*V;;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f04"
+      return_type: "*(.)*I;;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f05"
+      return_type: "*()V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f06"
+      return_type: "*(*V;)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f07"
+      return_type: "*(I)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f08"
+      return_type: "*(*I;)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f09"
+      return_type: "*(I*I;*V;I)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f10"
+      return_type: "*(*(.)V;)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f11"
+      return_type: "*(*()V;)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f12"
+      return_type: "*(I.)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f13"
+      return_type: "*(*()V;.)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f14"
+      return_type: "*(*(I.)V;)V;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f15"
+      return_type: "*(OIOIOS)LA;;"
+    }
+    class_method: false
+  }
+  method {
+    function {
+      name: "f16"
+      return_type: "*(*(I*C;)V;*(.)*V;;.)V;"
+    }
+    class_method: false
+  }
+}

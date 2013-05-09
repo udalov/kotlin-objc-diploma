@@ -61,7 +61,7 @@ const std::map<CXTypeKind, std::string>& initializePrimitiveTypesMap() {
 // TODO: write a long explanation
 void serializeType(const CXType& type, std::string& result) {
     // TODO: BlockPointer
-    // TODO: C function pointers, enums, structs: they are unexposed by clang
+    // TODO: enums, structs: they are unexposed by clang
     // TODO: ConstantArray (for ivars only)
     // TODO: Record (for 'va_list' only?)
 
@@ -72,6 +72,21 @@ void serializeType(const CXType& type, std::string& result) {
     auto it = primitiveTypes.find(type.kind);
     if (it != primitiveTypes.end()) {
         result += it->second;
+        return;
+    }
+
+    auto resultType = clang_getResultType(type);
+    if (resultType.kind != CXType_Invalid) {
+        result += "(";
+        auto numArgs = clang_getNumArgTypes(type);
+        for (auto i = 0; i < numArgs; i++) {
+            serializeType(clang_getArgType(type, i), result);
+        }
+        if (clang_isFunctionTypeVariadic(type)) {
+            result += ".";
+        }
+        result += ")";
+        serializeType(resultType, result);
         return;
     }
 
