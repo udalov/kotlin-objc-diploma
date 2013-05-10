@@ -39,6 +39,14 @@ JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject
   (JNIEnv *, jclass, jobject, jstring, jobjectArray);
 
+/*
+ * Class:     jet_runtime_objc_Native
+ * Method:    createNativeClosureForFunction
+ * Signature: (Ljava/lang/Object;I)Ljet/runtime/objc/ID;
+ */
+JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_createNativeClosureForFunction
+  (JNIEnv *, jclass, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif

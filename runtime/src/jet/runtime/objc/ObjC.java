@@ -72,4 +72,8 @@ public class ObjC {
     public static ObjCObject sendMessageObjCObject(ID receiver, String messageName, ID... args) {
         return Native.objc_msgSendObjCObject(receiver, messageName, args);
     }
+
+    public static ID createNativeClosureForFunction(Object function, int arity) {
+        return Native.createNativeClosureForFunction(function, arity);
+    }
 }

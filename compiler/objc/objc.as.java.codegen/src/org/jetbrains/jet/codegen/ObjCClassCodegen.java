@@ -25,7 +25,6 @@ import org.jetbrains.asm4.ClassWriter;
 import org.jetbrains.asm4.MethodVisitor;
 import org.jetbrains.asm4.Type;
 import org.jetbrains.asm4.commons.InstructionAdapter;
-import org.jetbrains.asm4.commons.Method;
 import org.jetbrains.jet.codegen.signature.JvmMethodSignature;
 import org.jetbrains.jet.codegen.state.JetTypeMapper;
 import org.jetbrains.jet.codegen.state.JetTypeMapperMode;
@@ -35,6 +34,7 @@ import org.jetbrains.jet.lang.resolve.objc.ObjCMethodDescriptor;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.TypeProjection;
+import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -235,14 +235,12 @@ public class ObjCClassCodegen {
 
                 v.visitLdcInsn(getObjCMethodName(method));
 
-                Method asmMethod = signature.getAsmMethod();
-                Type returnType = asmMethod.getReturnType();
-
-                putArgumentsAsIdArray(v, asmMethod.getArgumentTypes());
+                putArgumentsAsIdArray(v);
 
                 String sendMessageNameSuffix;
                 Type sendMessageReturnType;
 
+                Type returnType = signature.getAsmMethod().getReturnType();
                 if (returnType.getSort() == Type.INT) {
                     sendMessageNameSuffix = "Int";
                     sendMessageReturnType = INT_TYPE;
@@ -288,18 +286,32 @@ public class ObjCClassCodegen {
                 v.areturn(returnType);
             }
 
-            private void putArgumentsAsIdArray(@NotNull InstructionAdapter v, @NotNull Type[] argTypes) {
-                v.iconst(argTypes.length);
+            private void putArgumentsAsIdArray(@NotNull InstructionAdapter v) {
+                List<ValueParameterDescriptor> parameters = method.getValueParameters();
+
+                v.iconst(parameters.size());
                 v.newarray(ID_TYPE);
 
-                for (int i = 0; i < argTypes.length; i++) {
-                    Type type = argTypes[i];
+                for (ValueParameterDescriptor parameter : parameters) {
+                    JetType type = parameter.getType();
+                    Type asmType = typeMapper.mapType(type);
+                    int i = parameter.getIndex();
 
                     v.dup();
                     v.iconst(i);
 
-                    StackValue local = StackValue.local(i + 1, type);
-                    if (type.getSort() == Type.OBJECT) {
+                    StackValue local = StackValue.local(i + 1, asmType);
+                    if (KotlinBuiltIns.getInstance().isFunctionType(type)) {
+                        List<TypeProjection> projections = type.getArguments();
+                        // -1 for return type
+                        int arity = projections.size() - 1;
+
+                        local.put(JL_OBJECT_TYPE, v);
+                        v.iconst(arity);
+                        v.invokestatic(JET_RUNTIME_OBJC, "createNativeClosureForFunction",
+                                       getMethodDescriptor(ID_TYPE, JL_OBJECT_TYPE, INT_TYPE));
+                    }
+                    else if (asmType.getSort() == Type.OBJECT) {
                         // TODO: not only ObjCObject, also Pointer<T>, struct, enum...
                         local.put(OBJC_OBJECT_TYPE, v);
                         v.getfield(OBJC_OBJECT_TYPE.getInternalName(), "id", ID_TYPE.getDescriptor());
@@ -307,12 +319,12 @@ public class ObjCClassCodegen {
                     else {
                         v.anew(ID_TYPE);
                         v.dup();
-                        if (type.getSort() == Type.DOUBLE) {
+                        if (asmType.getSort() == Type.DOUBLE) {
                             local.put(DOUBLE_TYPE, v);
                             // TODO: or doubleToLongBits?
                             v.invokestatic("java/lang/Double", "doubleToRawLongBits", "(D)J");
                         }
-                        else if (type.getSort() == Type.FLOAT) {
+                        else if (asmType.getSort() == Type.FLOAT) {
                             local.put(FLOAT_TYPE, v);
                             // TODO: or floatToIntBits?
                             v.invokestatic("java/lang/Float", "floatToRawIntBits", "(F)I");

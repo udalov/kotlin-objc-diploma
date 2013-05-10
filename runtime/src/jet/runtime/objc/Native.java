@@ -32,4 +32,6 @@ public class Native {
     public static native long objc_msgSendPrimitive(ID receiver, String selectorName, ID... args);
 
     public static native ObjCObject objc_msgSendObjCObject(ID receiver, String selectorName, ID... args);
+
+    public static native ID createNativeClosureForFunction(Object function, int arity);
 }

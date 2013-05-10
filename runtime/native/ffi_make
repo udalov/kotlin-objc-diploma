@@ -1,0 +1,27 @@
+#!/bin/bash
+
+FFI_DEST=`pwd`/ffi
+rm -rf $FFI_DEST
+mkdir -p $FFI_DEST
+
+FFI_SRC=`mktemp -d /tmp/libffi.XXXX`
+
+pushd $FFI_SRC
+
+curl ftp://sourceware.org/pub/libffi/libffi-3.0.13.tar.gz | tar xz --strip=1
+
+# TODO: figure out correct flags to stop ld warnings
+ARCH="-arch i386 -arch x86_64"
+CC=cc CFLAGS="-O2 $ARCH" LDFLAGS="$ARCH" ./configure --enable-debug --disable-dependency-tracking --enable-static --disable-shared --with-pic=yes
+make
+
+cd x86*
+cp -vRL include/*.h $FFI_DEST/
+
+cd .libs
+libtool -static -o libffi.dylib libffi.a
+mv -v libffi.dylib $FFI_DEST/
+
+popd
+
+rm -rf $FFI_SRC

@@ -2,13 +2,17 @@
 
 #include <dlfcn.h>
 
+#include <ffi.h>
+
+#include <objc/message.h>
+#include <objc/objc.h>
+#include <objc/runtime.h>
+
+#include <cassert>
 #include <cstdio>
 #include <memory>
 #include <string>
 #include <vector>
-#include <objc/message.h>
-#include <objc/objc.h>
-#include <objc/runtime.h>
 
 const char *const CLASS_ID = "jet/runtime/objc/ID";
 const char *const OBJC_OBJECT_CONSTRUCTOR = "(Ljet/runtime/objc/ID;)V";
@@ -16,6 +20,8 @@ const char *const OBJC_OBJECT_CONSTRUCTOR = "(Ljet/runtime/objc/ID;)V";
 const std::string OBJC_PACKAGE_PREFIX = "objc/";
 
 // TODO: hide everything util under a namespace
+// TODO: process all possible JNI errors
+// TODO: delete local JNI references where there can be too many of them
 // TODO: fail gracefully if any class/method/field is not found
 
 jclass getIdClass(JNIEnv *env) {
@@ -204,3 +210,87 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
     return env->NewObject(jvmClass, constructor, idInstance);
 }
 
+// --------------------------------------------------------
+// Closures
+// --------------------------------------------------------
+
+struct ClosureData {
+    ffi_cif cif;
+    ffi_closure *closure;
+    void *fun;
+    JavaVM *vm;
+    jobject function;
+    int arity;
+};
+
+void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
+    ClosureData *data = (ClosureData *) userData;
+    JavaVM *vm = data->vm;
+    JNIEnv *env;
+
+    int attached = vm->GetEnv((void **) &env, JNI_VERSION_1_6);
+    if (!attached) {
+        // TODO: test native threads
+        if (vm->AttachCurrentThread((void **) &env, 0) != JNI_OK) {
+            fprintf(stderr, "Error attaching native thread to VM\n");
+            return;
+        }
+    }
+
+    env->PushLocalFrame(16);
+
+    jclass function0 = env->FindClass("jet/Function0");
+    jmethodID invoke = env->GetMethodID(function0, "invoke", "()Ljava/lang/Object;");
+
+    jobject result = env->CallObjectMethod(data->function, invoke);
+
+    // TODO: cast result to id properly and save to *ret
+    *(int *)ret = 0;
+
+    if (!attached) {
+        vm->DetachCurrentThread();
+    }
+
+    // TODO: deallocate closure, ClosureData, 'function' global reference, etc.
+}
+
+JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_createNativeClosureForFunction(
+        JNIEnv *env,
+        jclass clazz,
+        jobject function,
+        jint arity
+) {
+    // TODO: arity > 0
+    assert(arity == 0 || "Callbacks with parameters aren't supported yet");
+
+    ClosureData *data = new ClosureData;
+
+    if (jint vm = env->GetJavaVM(&data->vm)) {
+        fprintf(stderr, "Error getting Java VM: %d\n", vm);
+        return 0;
+    }
+
+    data->function = env->NewGlobalRef(function);
+    env->DeleteLocalRef(function);
+
+    data->arity = arity;
+
+    ffi_type *args[1];
+    if (ffi_prep_cif(&data->cif, FFI_DEFAULT_ABI, 0, &ffi_type_void, args) != FFI_OK) {
+        fprintf(stderr, "Error preparing CIF\n");
+        return 0;
+    }
+
+    data->closure = (ffi_closure *) ffi_closure_alloc(sizeof(ffi_closure), &data->fun);
+    if (!data->closure) {
+        fprintf(stderr, "Error allocating closure\n");
+        return 0;
+    }
+    
+    if (ffi_prep_closure_loc(data->closure, &data->cif, &closureHandler, data, data->fun) != FFI_OK) {
+        fprintf(stderr, "Error preparing closure\n");
+        return 0;
+    }
+
+    return createNativePointer(env, data->fun);
+}
