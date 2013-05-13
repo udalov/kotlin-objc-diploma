@@ -62,7 +62,7 @@ const std::map<CXTypeKind, std::string>& initializePrimitiveTypesMap() {
 void serializeType(const CXType& type, std::string& result) {
     // TODO: BlockPointer
     // TODO: enums, structs: they are unexposed by clang
-    // TODO: ConstantArray (for ivars only)
+    // TODO: ConstantArray (in structs?)
     // TODO: Record (for 'va_list' only?)
 
     // TODO: list of protocols for ObjCInterface type
@@ -277,22 +277,6 @@ void indexProperty(const CXIdxDeclInfo *info, OutputCollector *data) {
     property->set_type(type);
 }
 
-ObjCIvar *createIvarInItsContainer(const CXIdxDeclInfo *info, OutputCollector *data) {
-    auto container = getNotNullSemanticContainerUSR(info);
-    auto clazz = data->loadClassByUSR(container);
-    return clazz ? clazz->add_ivar() : nullptr;
-}
-
-void indexIvar(const CXIdxDeclInfo *info, OutputCollector *data) {
-    ObjCIvar *ivar = createIvarInItsContainer(info, data);
-    assertNotNull(ivar);
-
-    ivar->set_name(info->entityInfo->name);
-
-    auto type = serializeType(clang_getCursorType(info->cursor));
-    ivar->set_type(type);
-}
-
 void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
     assertNotNull(clientData);
     assertNotNull(info);
@@ -313,8 +297,6 @@ void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo *info) {
             indexMethod(info, data, true); break;
         case CXIdxEntity_ObjCProperty:
             indexProperty(info, data); break;
-        case CXIdxEntity_ObjCIvar:
-            indexIvar(info, data); break;
         default:
             break;
     }

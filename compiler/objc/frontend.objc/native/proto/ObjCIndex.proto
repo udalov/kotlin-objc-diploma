@@ -22,11 +22,6 @@ message ObjCProperty {
     // TODO: attributes like copy/readonly/nonatomic
 }
 
-message ObjCIvar {
-    required string name = 1;
-    required string type = 2;
-}
-
 message ObjCClass {
     required string name = 1;
     optional string base_class = 2;
@@ -34,7 +29,6 @@ message ObjCClass {
     repeated string category = 4;
     repeated ObjCMethod method = 5;
     repeated ObjCProperty property = 6;
-    repeated ObjCIvar ivar = 7;
 }
 
 message ObjCProtocol {
