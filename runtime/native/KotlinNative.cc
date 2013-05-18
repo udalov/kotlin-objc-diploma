@@ -184,22 +184,30 @@ JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive(
 
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
         JNIEnv *env,
-        jclass clazz,
+        jclass,
         jobject receiver,
         jstring selectorName,
         jobjectArray argArray
 ) {
     id result = sendMessage(env, receiver, selectorName, argArray);
     // TODO: don't call getClassName if result==nil
-    // TODO: free?
-    const char *className = object_getClassName(result);
+    Class clazz = object_getClass(result);
 
-    std::string fqClassName = OBJC_PACKAGE_PREFIX + className;
-    jclass jvmClass = env->FindClass(fqClassName.c_str());
+    jclass jvmClass = NULL;
+    while (clazz != Nil) {
+        // TODO: free?
+        const char *className = class_getName(clazz);
+        std::string fqClassName = OBJC_PACKAGE_PREFIX + className;
+        if ((jvmClass = env->FindClass(fqClassName.c_str()))) break;
+        env->ExceptionClear();
+
+        clazz = class_getSuperclass(clazz);
+    }
 
     if (!jvmClass) {
+        fprintf(stderr, "Class not found for object of class: %s\n", object_getClassName(result));
         // TODO: return new NotFoundObjCClass(className, result) or something
-        exit(1);
+        exit(42);
     }
 
     // Here we create an instance of this jclass, invoking a constructor which

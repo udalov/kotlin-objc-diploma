@@ -149,6 +149,11 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
             doTest("compiler/testData/objc/java/returnType/long.kt");
         }
         
+        @TestMetadata("nsstring.kt")
+        public void testNsstring() throws Exception {
+            doTest("compiler/testData/objc/java/returnType/nsstring.kt");
+        }
+        
         @TestMetadata("objcObject.kt")
         public void testObjcObject() throws Exception {
             doTest("compiler/testData/objc/java/returnType/objcObject.kt");
