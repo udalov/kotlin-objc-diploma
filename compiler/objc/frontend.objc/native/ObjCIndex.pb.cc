@@ -134,10 +134,11 @@ void protobuf_AssignDesc_ObjCIndex_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ObjCIvar));
   ObjCClass_descriptor_ = file->message_type(4);
-  static const int ObjCClass_offsets_[6] = {
+  static const int ObjCClass_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, base_class_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, protocol_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, category_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, method_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, property_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCClass, ivar_),
@@ -172,9 +173,8 @@ void protobuf_AssignDesc_ObjCIndex_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ObjCProtocol));
   ObjCCategory_descriptor_ = file->message_type(6);
-  static const int ObjCCategory_offsets_[5] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, class_name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, category_name_),
+  static const int ObjCCategory_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, base_protocol_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, method_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ObjCCategory, property_),
@@ -276,21 +276,21 @@ void protobuf_AddDesc_ObjCIndex_2eproto() {
     "\033\n\010function\030\001 \002(\0132\t.Function\022\024\n\014class_me"
     "thod\030\002 \002(\010\"*\n\014ObjCProperty\022\014\n\004name\030\001 \002(\t"
     "\022\014\n\004type\030\002 \002(\t\"&\n\010ObjCIvar\022\014\n\004name\030\001 \002(\t"
-    "\022\014\n\004type\030\002 \002(\t\"\226\001\n\tObjCClass\022\014\n\004name\030\001 \002"
+    "\022\014\n\004type\030\002 \002(\t\"\250\001\n\tObjCClass\022\014\n\004name\030\001 \002"
     "(\t\022\022\n\nbase_class\030\002 \001(\t\022\020\n\010protocol\030\003 \003(\t"
-    "\022\033\n\006method\030\004 \003(\0132\013.ObjCMethod\022\037\n\010propert"
-    "y\030\005 \003(\0132\r.ObjCProperty\022\027\n\004ivar\030\006 \003(\0132\t.O"
-    "bjCIvar\"q\n\014ObjCProtocol\022\014\n\004name\030\001 \002(\t\022\025\n"
-    "\rbase_protocol\030\002 \003(\t\022\033\n\006method\030\003 \003(\0132\013.O"
-    "bjCMethod\022\037\n\010property\030\004 \003(\0132\r.ObjCProper"
-    "ty\"\216\001\n\014ObjCCategory\022\022\n\nclass_name\030\001 \002(\t\022"
-    "\025\n\rcategory_name\030\002 \002(\t\022\025\n\rbase_protocol\030"
-    "\003 \003(\t\022\033\n\006method\030\004 \003(\0132\013.ObjCMethod\022\037\n\010pr"
-    "operty\030\005 \003(\0132\r.ObjCProperty\"n\n\017Translati"
-    "onUnit\022\031\n\005class\030\001 \003(\0132\n.ObjCClass\022\037\n\010pro"
-    "tocol\030\002 \003(\0132\r.ObjCProtocol\022\037\n\010category\030\003"
-    " \003(\0132\r.ObjCCategoryB%\n#org.jetbrains.jet"
-    ".lang.resolve.objc", 858);
+    "\022\020\n\010category\030\004 \003(\t\022\033\n\006method\030\005 \003(\0132\013.Obj"
+    "CMethod\022\037\n\010property\030\006 \003(\0132\r.ObjCProperty"
+    "\022\027\n\004ivar\030\007 \003(\0132\t.ObjCIvar\"q\n\014ObjCProtoco"
+    "l\022\014\n\004name\030\001 \002(\t\022\025\n\rbase_protocol\030\002 \003(\t\022\033"
+    "\n\006method\030\003 \003(\0132\013.ObjCMethod\022\037\n\010property\030"
+    "\004 \003(\0132\r.ObjCProperty\"q\n\014ObjCCategory\022\014\n\004"
+    "name\030\001 \002(\t\022\025\n\rbase_protocol\030\002 \003(\t\022\033\n\006met"
+    "hod\030\003 \003(\0132\013.ObjCMethod\022\037\n\010property\030\004 \003(\013"
+    "2\r.ObjCProperty\"n\n\017TranslationUnit\022\031\n\005cl"
+    "ass\030\001 \003(\0132\n.ObjCClass\022\037\n\010protocol\030\002 \003(\0132"
+    "\r.ObjCProtocol\022\037\n\010category\030\003 \003(\0132\r.ObjCC"
+    "ategoryB%\n#org.jetbrains.jet.lang.resolv"
+    "e.objc", 846);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ObjCIndex.proto", &protobuf_RegisterTypes);
   Function::default_instance_ = new Function();
@@ -1753,6 +1753,7 @@ void ObjCIvar::Swap(ObjCIvar* other) {
 const int ObjCClass::kNameFieldNumber;
 const int ObjCClass::kBaseClassFieldNumber;
 const int ObjCClass::kProtocolFieldNumber;
+const int ObjCClass::kCategoryFieldNumber;
 const int ObjCClass::kMethodFieldNumber;
 const int ObjCClass::kPropertyFieldNumber;
 const int ObjCClass::kIvarFieldNumber;
@@ -1828,6 +1829,7 @@ void ObjCClass::Clear() {
     }
   }
   protocol_.Clear();
+  category_.Clear();
   method_.Clear();
   property_.Clear();
   ivar_.Clear();
@@ -1888,12 +1890,30 @@ bool ObjCClass::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(26)) goto parse_protocol;
-        if (input->ExpectTag(34)) goto parse_method;
+        if (input->ExpectTag(34)) goto parse_category;
         break;
       }
       
-      // repeated .ObjCMethod method = 4;
+      // repeated string category = 4;
       case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_category:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->add_category()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->category(0).data(), this->category(0).length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_category;
+        if (input->ExpectTag(42)) goto parse_method;
+        break;
+      }
+      
+      // repeated .ObjCMethod method = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_method:
@@ -1902,13 +1922,13 @@ bool ObjCClass::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_method;
-        if (input->ExpectTag(42)) goto parse_property;
+        if (input->ExpectTag(42)) goto parse_method;
+        if (input->ExpectTag(50)) goto parse_property;
         break;
       }
       
-      // repeated .ObjCProperty property = 5;
-      case 5: {
+      // repeated .ObjCProperty property = 6;
+      case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_property:
@@ -1917,13 +1937,13 @@ bool ObjCClass::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(42)) goto parse_property;
-        if (input->ExpectTag(50)) goto parse_ivar;
+        if (input->ExpectTag(50)) goto parse_property;
+        if (input->ExpectTag(58)) goto parse_ivar;
         break;
       }
       
-      // repeated .ObjCIvar ivar = 6;
-      case 6: {
+      // repeated .ObjCIvar ivar = 7;
+      case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_ivar:
@@ -1932,7 +1952,7 @@ bool ObjCClass::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(50)) goto parse_ivar;
+        if (input->ExpectTag(58)) goto parse_ivar;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1982,22 +2002,31 @@ void ObjCClass::SerializeWithCachedSizes(
       3, this->protocol(i), output);
   }
   
-  // repeated .ObjCMethod method = 4;
+  // repeated string category = 4;
+  for (int i = 0; i < this->category_size(); i++) {
+  ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+    this->category(i).data(), this->category(i).length(),
+    ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      4, this->category(i), output);
+  }
+  
+  // repeated .ObjCMethod method = 5;
   for (int i = 0; i < this->method_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->method(i), output);
+      5, this->method(i), output);
   }
   
-  // repeated .ObjCProperty property = 5;
+  // repeated .ObjCProperty property = 6;
   for (int i = 0; i < this->property_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->property(i), output);
+      6, this->property(i), output);
   }
   
-  // repeated .ObjCIvar ivar = 6;
+  // repeated .ObjCIvar ivar = 7;
   for (int i = 0; i < this->ivar_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      6, this->ivar(i), output);
+      7, this->ivar(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -2037,25 +2066,34 @@ void ObjCClass::SerializeWithCachedSizes(
       WriteStringToArray(3, this->protocol(i), target);
   }
   
-  // repeated .ObjCMethod method = 4;
+  // repeated string category = 4;
+  for (int i = 0; i < this->category_size(); i++) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->category(i).data(), this->category(i).length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteStringToArray(4, this->category(i), target);
+  }
+  
+  // repeated .ObjCMethod method = 5;
   for (int i = 0; i < this->method_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        4, this->method(i), target);
+        5, this->method(i), target);
   }
   
-  // repeated .ObjCProperty property = 5;
+  // repeated .ObjCProperty property = 6;
   for (int i = 0; i < this->property_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        5, this->property(i), target);
+        6, this->property(i), target);
   }
   
-  // repeated .ObjCIvar ivar = 6;
+  // repeated .ObjCIvar ivar = 7;
   for (int i = 0; i < this->ivar_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        6, this->ivar(i), target);
+        7, this->ivar(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -2091,7 +2129,14 @@ int ObjCClass::ByteSize() const {
       this->protocol(i));
   }
   
-  // repeated .ObjCMethod method = 4;
+  // repeated string category = 4;
+  total_size += 1 * this->category_size();
+  for (int i = 0; i < this->category_size(); i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+      this->category(i));
+  }
+  
+  // repeated .ObjCMethod method = 5;
   total_size += 1 * this->method_size();
   for (int i = 0; i < this->method_size(); i++) {
     total_size +=
@@ -2099,7 +2144,7 @@ int ObjCClass::ByteSize() const {
         this->method(i));
   }
   
-  // repeated .ObjCProperty property = 5;
+  // repeated .ObjCProperty property = 6;
   total_size += 1 * this->property_size();
   for (int i = 0; i < this->property_size(); i++) {
     total_size +=
@@ -2107,7 +2152,7 @@ int ObjCClass::ByteSize() const {
         this->property(i));
   }
   
-  // repeated .ObjCIvar ivar = 6;
+  // repeated .ObjCIvar ivar = 7;
   total_size += 1 * this->ivar_size();
   for (int i = 0; i < this->ivar_size(); i++) {
     total_size +=
@@ -2141,6 +2186,7 @@ void ObjCClass::MergeFrom(const ::google::protobuf::Message& from) {
 void ObjCClass::MergeFrom(const ObjCClass& from) {
   GOOGLE_CHECK_NE(&from, this);
   protocol_.MergeFrom(from.protocol_);
+  category_.MergeFrom(from.category_);
   method_.MergeFrom(from.method_);
   property_.MergeFrom(from.property_);
   ivar_.MergeFrom(from.ivar_);
@@ -2187,6 +2233,7 @@ void ObjCClass::Swap(ObjCClass* other) {
     std::swap(name_, other->name_);
     std::swap(base_class_, other->base_class_);
     protocol_.Swap(&other->protocol_);
+    category_.Swap(&other->category_);
     method_.Swap(&other->method_);
     property_.Swap(&other->property_);
     ivar_.Swap(&other->ivar_);
@@ -2566,8 +2613,7 @@ void ObjCProtocol::Swap(ObjCProtocol* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int ObjCCategory::kClassNameFieldNumber;
-const int ObjCCategory::kCategoryNameFieldNumber;
+const int ObjCCategory::kNameFieldNumber;
 const int ObjCCategory::kBaseProtocolFieldNumber;
 const int ObjCCategory::kMethodFieldNumber;
 const int ObjCCategory::kPropertyFieldNumber;
@@ -2589,8 +2635,7 @@ ObjCCategory::ObjCCategory(const ObjCCategory& from)
 
 void ObjCCategory::SharedCtor() {
   _cached_size_ = 0;
-  class_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  category_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2599,11 +2644,8 @@ ObjCCategory::~ObjCCategory() {
 }
 
 void ObjCCategory::SharedDtor() {
-  if (class_name_ != &::google::protobuf::internal::kEmptyString) {
-    delete class_name_;
-  }
-  if (category_name_ != &::google::protobuf::internal::kEmptyString) {
-    delete category_name_;
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    delete name_;
   }
   if (this != default_instance_) {
   }
@@ -2631,14 +2673,9 @@ ObjCCategory* ObjCCategory::New() const {
 
 void ObjCCategory::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (has_class_name()) {
-      if (class_name_ != &::google::protobuf::internal::kEmptyString) {
-        class_name_->clear();
-      }
-    }
-    if (has_category_name()) {
-      if (category_name_ != &::google::protobuf::internal::kEmptyString) {
-        category_name_->clear();
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::kEmptyString) {
+        name_->clear();
       }
     }
   }
@@ -2655,41 +2692,24 @@ bool ObjCCategory::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required string class_name = 1;
+      // required string name = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_class_name()));
+                input, this->mutable_name()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->class_name().data(), this->class_name().length(),
+            this->name().data(), this->name().length(),
             ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(18)) goto parse_category_name;
+        if (input->ExpectTag(18)) goto parse_base_protocol;
         break;
       }
       
-      // required string category_name = 2;
+      // repeated string base_protocol = 2;
       case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_category_name:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_category_name()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->category_name().data(), this->category_name().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(26)) goto parse_base_protocol;
-        break;
-      }
-      
-      // repeated string base_protocol = 3;
-      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_base_protocol:
@@ -2701,13 +2721,13 @@ bool ObjCCategory::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_base_protocol;
-        if (input->ExpectTag(34)) goto parse_method;
+        if (input->ExpectTag(18)) goto parse_base_protocol;
+        if (input->ExpectTag(26)) goto parse_method;
         break;
       }
       
-      // repeated .ObjCMethod method = 4;
-      case 4: {
+      // repeated .ObjCMethod method = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_method:
@@ -2716,13 +2736,13 @@ bool ObjCCategory::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_method;
-        if (input->ExpectTag(42)) goto parse_property;
+        if (input->ExpectTag(26)) goto parse_method;
+        if (input->ExpectTag(34)) goto parse_property;
         break;
       }
       
-      // repeated .ObjCProperty property = 5;
-      case 5: {
+      // repeated .ObjCProperty property = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_property:
@@ -2731,7 +2751,7 @@ bool ObjCCategory::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(42)) goto parse_property;
+        if (input->ExpectTag(34)) goto parse_property;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -2754,43 +2774,34 @@ bool ObjCCategory::MergePartialFromCodedStream(
 
 void ObjCCategory::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required string class_name = 1;
-  if (has_class_name()) {
+  // required string name = 1;
+  if (has_name()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->class_name().data(), this->class_name().length(),
+      this->name().data(), this->name().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      1, this->class_name(), output);
+      1, this->name(), output);
   }
   
-  // required string category_name = 2;
-  if (has_category_name()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->category_name().data(), this->category_name().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      2, this->category_name(), output);
-  }
-  
-  // repeated string base_protocol = 3;
+  // repeated string base_protocol = 2;
   for (int i = 0; i < this->base_protocol_size(); i++) {
   ::google::protobuf::internal::WireFormat::VerifyUTF8String(
     this->base_protocol(i).data(), this->base_protocol(i).length(),
     ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      3, this->base_protocol(i), output);
+      2, this->base_protocol(i), output);
   }
   
-  // repeated .ObjCMethod method = 4;
+  // repeated .ObjCMethod method = 3;
   for (int i = 0; i < this->method_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->method(i), output);
+      3, this->method(i), output);
   }
   
-  // repeated .ObjCProperty property = 5;
+  // repeated .ObjCProperty property = 4;
   for (int i = 0; i < this->property_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->property(i), output);
+      4, this->property(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -2801,47 +2812,37 @@ void ObjCCategory::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* ObjCCategory::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required string class_name = 1;
-  if (has_class_name()) {
+  // required string name = 1;
+  if (has_name()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->class_name().data(), this->class_name().length(),
+      this->name().data(), this->name().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->class_name(), target);
+        1, this->name(), target);
   }
   
-  // required string category_name = 2;
-  if (has_category_name()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->category_name().data(), this->category_name().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->category_name(), target);
-  }
-  
-  // repeated string base_protocol = 3;
+  // repeated string base_protocol = 2;
   for (int i = 0; i < this->base_protocol_size(); i++) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->base_protocol(i).data(), this->base_protocol(i).length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteStringToArray(3, this->base_protocol(i), target);
+      WriteStringToArray(2, this->base_protocol(i), target);
   }
   
-  // repeated .ObjCMethod method = 4;
+  // repeated .ObjCMethod method = 3;
   for (int i = 0; i < this->method_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        4, this->method(i), target);
+        3, this->method(i), target);
   }
   
-  // repeated .ObjCProperty property = 5;
+  // repeated .ObjCProperty property = 4;
   for (int i = 0; i < this->property_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        5, this->property(i), target);
+        4, this->property(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -2855,29 +2856,22 @@ int ObjCCategory::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required string class_name = 1;
-    if (has_class_name()) {
+    // required string name = 1;
+    if (has_name()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->class_name());
-    }
-    
-    // required string category_name = 2;
-    if (has_category_name()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->category_name());
+          this->name());
     }
     
   }
-  // repeated string base_protocol = 3;
+  // repeated string base_protocol = 2;
   total_size += 1 * this->base_protocol_size();
   for (int i = 0; i < this->base_protocol_size(); i++) {
     total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
       this->base_protocol(i));
   }
   
-  // repeated .ObjCMethod method = 4;
+  // repeated .ObjCMethod method = 3;
   total_size += 1 * this->method_size();
   for (int i = 0; i < this->method_size(); i++) {
     total_size +=
@@ -2885,7 +2879,7 @@ int ObjCCategory::ByteSize() const {
         this->method(i));
   }
   
-  // repeated .ObjCProperty property = 5;
+  // repeated .ObjCProperty property = 4;
   total_size += 1 * this->property_size();
   for (int i = 0; i < this->property_size(); i++) {
     total_size +=
@@ -2922,11 +2916,8 @@ void ObjCCategory::MergeFrom(const ObjCCategory& from) {
   method_.MergeFrom(from.method_);
   property_.MergeFrom(from.property_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_class_name()) {
-      set_class_name(from.class_name());
-    }
-    if (from.has_category_name()) {
-      set_category_name(from.category_name());
+    if (from.has_name()) {
+      set_name(from.name());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -2945,7 +2936,7 @@ void ObjCCategory::CopyFrom(const ObjCCategory& from) {
 }
 
 bool ObjCCategory::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   for (int i = 0; i < method_size(); i++) {
     if (!this->method(i).IsInitialized()) return false;
@@ -2958,8 +2949,7 @@ bool ObjCCategory::IsInitialized() const {
 
 void ObjCCategory::Swap(ObjCCategory* other) {
   if (other != this) {
-    std::swap(class_name_, other->class_name_);
-    std::swap(category_name_, other->category_name_);
+    std::swap(name_, other->name_);
     base_protocol_.Swap(&other->base_protocol_);
     method_.Swap(&other->method_);
     property_.Swap(&other->property_);

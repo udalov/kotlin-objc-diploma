@@ -1,19 +1,20 @@
 class {
   name: "A"
+  category: "A+"
 }
 class {
   name: "B"
+  category: "B+B"
 }
 class {
   name: "C"
+  category: "C+CC"
 }
 category {
-  class_name: "A"
-  category_name: ""
+  name: "A+"
 }
 category {
-  class_name: "B"
-  category_name: "B"
+  name: "B+B"
   method {
     function {
       name: "foo"
@@ -30,8 +31,7 @@ category {
   }
 }
 category {
-  class_name: "C"
-  category_name: "CC"
+  name: "C+CC"
   method {
     function {
       name: "foo"

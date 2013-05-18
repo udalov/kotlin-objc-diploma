@@ -171,9 +171,13 @@ void indexCategory(const CXIdxDeclInfo *info, OutputCollector *data) {
     assertNotNull(categoryDeclInfo);
     
     auto category = data->result().add_category();
-    category->set_class_name(categoryDeclInfo->objcClass->name);
+    // TODO: this name is not unique for nameless categories, either drop them or fix this
+    auto name = std::string(categoryDeclInfo->objcClass->name) + "+" + info->entityInfo->name;
+    category->set_name(name);
 
-    category->set_category_name(info->entityInfo->name);
+    auto clazz = data->loadClassByUSR(categoryDeclInfo->objcClass->USR);
+    assertNotNull(clazz);
+    clazz->add_category(name);
     
     auto protocols = categoryDeclInfo->protocols;
     assertNotNull(protocols);

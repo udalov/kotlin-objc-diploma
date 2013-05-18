@@ -2754,7 +2754,12 @@ public final class ObjCIndex {
     int getProtocolCount();
     String getProtocol(int index);
     
-    // repeated .ObjCMethod method = 4;
+    // repeated string category = 4;
+    java.util.List<String> getCategoryList();
+    int getCategoryCount();
+    String getCategory(int index);
+    
+    // repeated .ObjCMethod method = 5;
     java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod> 
         getMethodList();
     org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod getMethod(int index);
@@ -2764,7 +2769,7 @@ public final class ObjCIndex {
     org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethodOrBuilder getMethodOrBuilder(
         int index);
     
-    // repeated .ObjCProperty property = 5;
+    // repeated .ObjCProperty property = 6;
     java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty> 
         getPropertyList();
     org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty getProperty(int index);
@@ -2774,7 +2779,7 @@ public final class ObjCIndex {
     org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCPropertyOrBuilder getPropertyOrBuilder(
         int index);
     
-    // repeated .ObjCIvar ivar = 6;
+    // repeated .ObjCIvar ivar = 7;
     java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar> 
         getIvarList();
     org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar getIvar(int index);
@@ -2891,8 +2896,22 @@ public final class ObjCIndex {
       return protocol_.get(index);
     }
     
-    // repeated .ObjCMethod method = 4;
-    public static final int METHOD_FIELD_NUMBER = 4;
+    // repeated string category = 4;
+    public static final int CATEGORY_FIELD_NUMBER = 4;
+    private com.google.protobuf.LazyStringList category_;
+    public java.util.List<String>
+        getCategoryList() {
+      return category_;
+    }
+    public int getCategoryCount() {
+      return category_.size();
+    }
+    public String getCategory(int index) {
+      return category_.get(index);
+    }
+    
+    // repeated .ObjCMethod method = 5;
+    public static final int METHOD_FIELD_NUMBER = 5;
     private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod> method_;
     public java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod> getMethodList() {
       return method_;
@@ -2912,8 +2931,8 @@ public final class ObjCIndex {
       return method_.get(index);
     }
     
-    // repeated .ObjCProperty property = 5;
-    public static final int PROPERTY_FIELD_NUMBER = 5;
+    // repeated .ObjCProperty property = 6;
+    public static final int PROPERTY_FIELD_NUMBER = 6;
     private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty> property_;
     public java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty> getPropertyList() {
       return property_;
@@ -2933,8 +2952,8 @@ public final class ObjCIndex {
       return property_.get(index);
     }
     
-    // repeated .ObjCIvar ivar = 6;
-    public static final int IVAR_FIELD_NUMBER = 6;
+    // repeated .ObjCIvar ivar = 7;
+    public static final int IVAR_FIELD_NUMBER = 7;
     private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar> ivar_;
     public java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar> getIvarList() {
       return ivar_;
@@ -2958,6 +2977,7 @@ public final class ObjCIndex {
       name_ = "";
       baseClass_ = "";
       protocol_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      category_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       method_ = java.util.Collections.emptyList();
       property_ = java.util.Collections.emptyList();
       ivar_ = java.util.Collections.emptyList();
@@ -3005,14 +3025,17 @@ public final class ObjCIndex {
       for (int i = 0; i < protocol_.size(); i++) {
         output.writeBytes(3, protocol_.getByteString(i));
       }
+      for (int i = 0; i < category_.size(); i++) {
+        output.writeBytes(4, category_.getByteString(i));
+      }
       for (int i = 0; i < method_.size(); i++) {
-        output.writeMessage(4, method_.get(i));
+        output.writeMessage(5, method_.get(i));
       }
       for (int i = 0; i < property_.size(); i++) {
-        output.writeMessage(5, property_.get(i));
+        output.writeMessage(6, property_.get(i));
       }
       for (int i = 0; i < ivar_.size(); i++) {
-        output.writeMessage(6, ivar_.get(i));
+        output.writeMessage(7, ivar_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -3040,17 +3063,26 @@ public final class ObjCIndex {
         size += dataSize;
         size += 1 * getProtocolList().size();
       }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < category_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(category_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getCategoryList().size();
+      }
       for (int i = 0; i < method_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, method_.get(i));
+          .computeMessageSize(5, method_.get(i));
       }
       for (int i = 0; i < property_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, property_.get(i));
+          .computeMessageSize(6, property_.get(i));
       }
       for (int i = 0; i < ivar_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, ivar_.get(i));
+          .computeMessageSize(7, ivar_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3185,21 +3217,23 @@ public final class ObjCIndex {
         bitField0_ = (bitField0_ & ~0x00000002);
         protocol_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000004);
+        category_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000008);
         if (methodBuilder_ == null) {
           method_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
         } else {
           methodBuilder_.clear();
         }
         if (propertyBuilder_ == null) {
           property_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
         } else {
           propertyBuilder_.clear();
         }
         if (ivarBuilder_ == null) {
           ivar_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000040);
         } else {
           ivarBuilder_.clear();
         }
@@ -3255,28 +3289,34 @@ public final class ObjCIndex {
           bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.protocol_ = protocol_;
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          category_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              category_);
+          bitField0_ = (bitField0_ & ~0x00000008);
+        }
+        result.category_ = category_;
         if (methodBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
             method_ = java.util.Collections.unmodifiableList(method_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.method_ = method_;
         } else {
           result.method_ = methodBuilder_.build();
         }
         if (propertyBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          if (((bitField0_ & 0x00000020) == 0x00000020)) {
             property_ = java.util.Collections.unmodifiableList(property_);
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
           }
           result.property_ = property_;
         } else {
           result.property_ = propertyBuilder_.build();
         }
         if (ivarBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          if (((bitField0_ & 0x00000040) == 0x00000040)) {
             ivar_ = java.util.Collections.unmodifiableList(ivar_);
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000040);
           }
           result.ivar_ = ivar_;
         } else {
@@ -3314,11 +3354,21 @@ public final class ObjCIndex {
           }
           onChanged();
         }
+        if (!other.category_.isEmpty()) {
+          if (category_.isEmpty()) {
+            category_ = other.category_;
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            ensureCategoryIsMutable();
+            category_.addAll(other.category_);
+          }
+          onChanged();
+        }
         if (methodBuilder_ == null) {
           if (!other.method_.isEmpty()) {
             if (method_.isEmpty()) {
               method_ = other.method_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureMethodIsMutable();
               method_.addAll(other.method_);
@@ -3331,7 +3381,7 @@ public final class ObjCIndex {
               methodBuilder_.dispose();
               methodBuilder_ = null;
               method_ = other.method_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000010);
               methodBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getMethodFieldBuilder() : null;
@@ -3344,7 +3394,7 @@ public final class ObjCIndex {
           if (!other.property_.isEmpty()) {
             if (property_.isEmpty()) {
               property_ = other.property_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000020);
             } else {
               ensurePropertyIsMutable();
               property_.addAll(other.property_);
@@ -3357,7 +3407,7 @@ public final class ObjCIndex {
               propertyBuilder_.dispose();
               propertyBuilder_ = null;
               property_ = other.property_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000020);
               propertyBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getPropertyFieldBuilder() : null;
@@ -3370,7 +3420,7 @@ public final class ObjCIndex {
           if (!other.ivar_.isEmpty()) {
             if (ivar_.isEmpty()) {
               ivar_ = other.ivar_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000040);
             } else {
               ensureIvarIsMutable();
               ivar_.addAll(other.ivar_);
@@ -3383,7 +3433,7 @@ public final class ObjCIndex {
               ivarBuilder_.dispose();
               ivarBuilder_ = null;
               ivar_ = other.ivar_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000040);
               ivarBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getIvarFieldBuilder() : null;
@@ -3461,18 +3511,23 @@ public final class ObjCIndex {
               break;
             }
             case 34: {
+              ensureCategoryIsMutable();
+              category_.add(input.readBytes());
+              break;
+            }
+            case 42: {
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod.Builder subBuilder = org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addMethod(subBuilder.buildPartial());
               break;
             }
-            case 42: {
+            case 50: {
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty.Builder subBuilder = org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addProperty(subBuilder.buildPartial());
               break;
             }
-            case 50: {
+            case 58: {
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar.Builder subBuilder = org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addIvar(subBuilder.buildPartial());
@@ -3612,13 +3667,69 @@ public final class ObjCIndex {
         onChanged();
       }
       
-      // repeated .ObjCMethod method = 4;
+      // repeated string category = 4;
+      private com.google.protobuf.LazyStringList category_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureCategoryIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          category_ = new com.google.protobuf.LazyStringArrayList(category_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      public java.util.List<String>
+          getCategoryList() {
+        return java.util.Collections.unmodifiableList(category_);
+      }
+      public int getCategoryCount() {
+        return category_.size();
+      }
+      public String getCategory(int index) {
+        return category_.get(index);
+      }
+      public Builder setCategory(
+          int index, String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureCategoryIsMutable();
+        category_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addCategory(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureCategoryIsMutable();
+        category_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllCategory(
+          java.lang.Iterable<String> values) {
+        ensureCategoryIsMutable();
+        super.addAll(values, category_);
+        onChanged();
+        return this;
+      }
+      public Builder clearCategory() {
+        category_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        onChanged();
+        return this;
+      }
+      void addCategory(com.google.protobuf.ByteString value) {
+        ensureCategoryIsMutable();
+        category_.add(value);
+        onChanged();
+      }
+      
+      // repeated .ObjCMethod method = 5;
       private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod> method_ =
         java.util.Collections.emptyList();
       private void ensureMethodIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
           method_ = new java.util.ArrayList<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod>(method_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000010;
          }
       }
       
@@ -3734,7 +3845,7 @@ public final class ObjCIndex {
       public Builder clearMethod() {
         if (methodBuilder_ == null) {
           method_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           methodBuilder_.clear();
@@ -3790,7 +3901,7 @@ public final class ObjCIndex {
           methodBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod.Builder, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethodOrBuilder>(
                   method_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  ((bitField0_ & 0x00000010) == 0x00000010),
                   getParentForChildren(),
                   isClean());
           method_ = null;
@@ -3798,13 +3909,13 @@ public final class ObjCIndex {
         return methodBuilder_;
       }
       
-      // repeated .ObjCProperty property = 5;
+      // repeated .ObjCProperty property = 6;
       private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty> property_ =
         java.util.Collections.emptyList();
       private void ensurePropertyIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
           property_ = new java.util.ArrayList<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty>(property_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
          }
       }
       
@@ -3920,7 +4031,7 @@ public final class ObjCIndex {
       public Builder clearProperty() {
         if (propertyBuilder_ == null) {
           property_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
           onChanged();
         } else {
           propertyBuilder_.clear();
@@ -3976,7 +4087,7 @@ public final class ObjCIndex {
           propertyBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty.Builder, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCPropertyOrBuilder>(
                   property_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  ((bitField0_ & 0x00000020) == 0x00000020),
                   getParentForChildren(),
                   isClean());
           property_ = null;
@@ -3984,13 +4095,13 @@ public final class ObjCIndex {
         return propertyBuilder_;
       }
       
-      // repeated .ObjCIvar ivar = 6;
+      // repeated .ObjCIvar ivar = 7;
       private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar> ivar_ =
         java.util.Collections.emptyList();
       private void ensureIvarIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
           ivar_ = new java.util.ArrayList<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar>(ivar_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000040;
          }
       }
       
@@ -4106,7 +4217,7 @@ public final class ObjCIndex {
       public Builder clearIvar() {
         if (ivarBuilder_ == null) {
           ivar_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000040);
           onChanged();
         } else {
           ivarBuilder_.clear();
@@ -4162,7 +4273,7 @@ public final class ObjCIndex {
           ivarBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvar.Builder, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCIvarOrBuilder>(
                   ivar_,
-                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  ((bitField0_ & 0x00000040) == 0x00000040),
                   getParentForChildren(),
                   isClean());
           ivar_ = null;
@@ -5248,20 +5359,16 @@ public final class ObjCIndex {
   public interface ObjCCategoryOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string class_name = 1;
-    boolean hasClassName();
-    String getClassName();
+    // required string name = 1;
+    boolean hasName();
+    String getName();
     
-    // required string category_name = 2;
-    boolean hasCategoryName();
-    String getCategoryName();
-    
-    // repeated string base_protocol = 3;
+    // repeated string base_protocol = 2;
     java.util.List<String> getBaseProtocolList();
     int getBaseProtocolCount();
     String getBaseProtocol(int index);
     
-    // repeated .ObjCMethod method = 4;
+    // repeated .ObjCMethod method = 3;
     java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod> 
         getMethodList();
     org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod getMethod(int index);
@@ -5271,7 +5378,7 @@ public final class ObjCIndex {
     org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethodOrBuilder getMethodOrBuilder(
         int index);
     
-    // repeated .ObjCProperty property = 5;
+    // repeated .ObjCProperty property = 4;
     java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty> 
         getPropertyList();
     org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty getProperty(int index);
@@ -5310,14 +5417,14 @@ public final class ObjCIndex {
     }
     
     private int bitField0_;
-    // required string class_name = 1;
-    public static final int CLASS_NAME_FIELD_NUMBER = 1;
-    private java.lang.Object className_;
-    public boolean hasClassName() {
+    // required string name = 1;
+    public static final int NAME_FIELD_NUMBER = 1;
+    private java.lang.Object name_;
+    public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getClassName() {
-      java.lang.Object ref = className_;
+    public String getName() {
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -5325,57 +5432,25 @@ public final class ObjCIndex {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          className_ = s;
+          name_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getClassNameBytes() {
-      java.lang.Object ref = className_;
+    private com.google.protobuf.ByteString getNameBytes() {
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        className_ = b;
+        name_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     
-    // required string category_name = 2;
-    public static final int CATEGORY_NAME_FIELD_NUMBER = 2;
-    private java.lang.Object categoryName_;
-    public boolean hasCategoryName() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public String getCategoryName() {
-      java.lang.Object ref = categoryName_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          categoryName_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getCategoryNameBytes() {
-      java.lang.Object ref = categoryName_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        categoryName_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // repeated string base_protocol = 3;
-    public static final int BASE_PROTOCOL_FIELD_NUMBER = 3;
+    // repeated string base_protocol = 2;
+    public static final int BASE_PROTOCOL_FIELD_NUMBER = 2;
     private com.google.protobuf.LazyStringList baseProtocol_;
     public java.util.List<String>
         getBaseProtocolList() {
@@ -5388,8 +5463,8 @@ public final class ObjCIndex {
       return baseProtocol_.get(index);
     }
     
-    // repeated .ObjCMethod method = 4;
-    public static final int METHOD_FIELD_NUMBER = 4;
+    // repeated .ObjCMethod method = 3;
+    public static final int METHOD_FIELD_NUMBER = 3;
     private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod> method_;
     public java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod> getMethodList() {
       return method_;
@@ -5409,8 +5484,8 @@ public final class ObjCIndex {
       return method_.get(index);
     }
     
-    // repeated .ObjCProperty property = 5;
-    public static final int PROPERTY_FIELD_NUMBER = 5;
+    // repeated .ObjCProperty property = 4;
+    public static final int PROPERTY_FIELD_NUMBER = 4;
     private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty> property_;
     public java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty> getPropertyList() {
       return property_;
@@ -5431,8 +5506,7 @@ public final class ObjCIndex {
     }
     
     private void initFields() {
-      className_ = "";
-      categoryName_ = "";
+      name_ = "";
       baseProtocol_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       method_ = java.util.Collections.emptyList();
       property_ = java.util.Collections.emptyList();
@@ -5442,11 +5516,7 @@ public final class ObjCIndex {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
-      if (!hasClassName()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasCategoryName()) {
+      if (!hasName()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -5470,19 +5540,16 @@ public final class ObjCIndex {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getClassNameBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getCategoryNameBytes());
+        output.writeBytes(1, getNameBytes());
       }
       for (int i = 0; i < baseProtocol_.size(); i++) {
-        output.writeBytes(3, baseProtocol_.getByteString(i));
+        output.writeBytes(2, baseProtocol_.getByteString(i));
       }
       for (int i = 0; i < method_.size(); i++) {
-        output.writeMessage(4, method_.get(i));
+        output.writeMessage(3, method_.get(i));
       }
       for (int i = 0; i < property_.size(); i++) {
-        output.writeMessage(5, property_.get(i));
+        output.writeMessage(4, property_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -5495,11 +5562,7 @@ public final class ObjCIndex {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getClassNameBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getCategoryNameBytes());
+          .computeBytesSize(1, getNameBytes());
       }
       {
         int dataSize = 0;
@@ -5512,11 +5575,11 @@ public final class ObjCIndex {
       }
       for (int i = 0; i < method_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, method_.get(i));
+          .computeMessageSize(3, method_.get(i));
       }
       for (int i = 0; i < property_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, property_.get(i));
+          .computeMessageSize(4, property_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5644,21 +5707,19 @@ public final class ObjCIndex {
       
       public Builder clear() {
         super.clear();
-        className_ = "";
+        name_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        categoryName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         baseProtocol_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         if (methodBuilder_ == null) {
           method_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
           methodBuilder_.clear();
         }
         if (propertyBuilder_ == null) {
           property_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           propertyBuilder_.clear();
         }
@@ -5703,30 +5764,26 @@ public final class ObjCIndex {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.className_ = className_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.categoryName_ = categoryName_;
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        result.name_ = name_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           baseProtocol_ = new com.google.protobuf.UnmodifiableLazyStringList(
               baseProtocol_);
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.baseProtocol_ = baseProtocol_;
         if (methodBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
             method_ = java.util.Collections.unmodifiableList(method_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.method_ = method_;
         } else {
           result.method_ = methodBuilder_.build();
         }
         if (propertyBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
             property_ = java.util.Collections.unmodifiableList(property_);
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.property_ = property_;
         } else {
@@ -5748,16 +5805,13 @@ public final class ObjCIndex {
       
       public Builder mergeFrom(org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCCategory other) {
         if (other == org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCCategory.getDefaultInstance()) return this;
-        if (other.hasClassName()) {
-          setClassName(other.getClassName());
-        }
-        if (other.hasCategoryName()) {
-          setCategoryName(other.getCategoryName());
+        if (other.hasName()) {
+          setName(other.getName());
         }
         if (!other.baseProtocol_.isEmpty()) {
           if (baseProtocol_.isEmpty()) {
             baseProtocol_ = other.baseProtocol_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureBaseProtocolIsMutable();
             baseProtocol_.addAll(other.baseProtocol_);
@@ -5768,7 +5822,7 @@ public final class ObjCIndex {
           if (!other.method_.isEmpty()) {
             if (method_.isEmpty()) {
               method_ = other.method_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureMethodIsMutable();
               method_.addAll(other.method_);
@@ -5781,7 +5835,7 @@ public final class ObjCIndex {
               methodBuilder_.dispose();
               methodBuilder_ = null;
               method_ = other.method_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000004);
               methodBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getMethodFieldBuilder() : null;
@@ -5794,7 +5848,7 @@ public final class ObjCIndex {
           if (!other.property_.isEmpty()) {
             if (property_.isEmpty()) {
               property_ = other.property_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensurePropertyIsMutable();
               property_.addAll(other.property_);
@@ -5807,7 +5861,7 @@ public final class ObjCIndex {
               propertyBuilder_.dispose();
               propertyBuilder_ = null;
               property_ = other.property_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000008);
               propertyBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getPropertyFieldBuilder() : null;
@@ -5821,11 +5875,7 @@ public final class ObjCIndex {
       }
       
       public final boolean isInitialized() {
-        if (!hasClassName()) {
-          
-          return false;
-        }
-        if (!hasCategoryName()) {
+        if (!hasName()) {
           
           return false;
         }
@@ -5869,26 +5919,21 @@ public final class ObjCIndex {
             }
             case 10: {
               bitField0_ |= 0x00000001;
-              className_ = input.readBytes();
+              name_ = input.readBytes();
               break;
             }
             case 18: {
-              bitField0_ |= 0x00000002;
-              categoryName_ = input.readBytes();
-              break;
-            }
-            case 26: {
               ensureBaseProtocolIsMutable();
               baseProtocol_.add(input.readBytes());
               break;
             }
-            case 34: {
+            case 26: {
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod.Builder subBuilder = org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addMethod(subBuilder.buildPartial());
               break;
             }
-            case 42: {
+            case 34: {
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty.Builder subBuilder = org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addProperty(subBuilder.buildPartial());
@@ -5900,84 +5945,48 @@ public final class ObjCIndex {
       
       private int bitField0_;
       
-      // required string class_name = 1;
-      private java.lang.Object className_ = "";
-      public boolean hasClassName() {
+      // required string name = 1;
+      private java.lang.Object name_ = "";
+      public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getClassName() {
-        java.lang.Object ref = className_;
+      public String getName() {
+        java.lang.Object ref = name_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          className_ = s;
+          name_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setClassName(String value) {
+      public Builder setName(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        className_ = value;
+        name_ = value;
         onChanged();
         return this;
       }
-      public Builder clearClassName() {
+      public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        className_ = getDefaultInstance().getClassName();
+        name_ = getDefaultInstance().getName();
         onChanged();
         return this;
       }
-      void setClassName(com.google.protobuf.ByteString value) {
+      void setName(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000001;
-        className_ = value;
+        name_ = value;
         onChanged();
       }
       
-      // required string category_name = 2;
-      private java.lang.Object categoryName_ = "";
-      public boolean hasCategoryName() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      public String getCategoryName() {
-        java.lang.Object ref = categoryName_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          categoryName_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      public Builder setCategoryName(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        categoryName_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearCategoryName() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        categoryName_ = getDefaultInstance().getCategoryName();
-        onChanged();
-        return this;
-      }
-      void setCategoryName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
-        categoryName_ = value;
-        onChanged();
-      }
-      
-      // repeated string base_protocol = 3;
+      // repeated string base_protocol = 2;
       private com.google.protobuf.LazyStringList baseProtocol_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureBaseProtocolIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
           baseProtocol_ = new com.google.protobuf.LazyStringArrayList(baseProtocol_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000002;
          }
       }
       public java.util.List<String>
@@ -6018,7 +6027,7 @@ public final class ObjCIndex {
       }
       public Builder clearBaseProtocol() {
         baseProtocol_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -6028,13 +6037,13 @@ public final class ObjCIndex {
         onChanged();
       }
       
-      // repeated .ObjCMethod method = 4;
+      // repeated .ObjCMethod method = 3;
       private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod> method_ =
         java.util.Collections.emptyList();
       private void ensureMethodIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
           method_ = new java.util.ArrayList<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod>(method_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000004;
          }
       }
       
@@ -6150,7 +6159,7 @@ public final class ObjCIndex {
       public Builder clearMethod() {
         if (methodBuilder_ == null) {
           method_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           methodBuilder_.clear();
@@ -6206,7 +6215,7 @@ public final class ObjCIndex {
           methodBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethod.Builder, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCMethodOrBuilder>(
                   method_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  ((bitField0_ & 0x00000004) == 0x00000004),
                   getParentForChildren(),
                   isClean());
           method_ = null;
@@ -6214,13 +6223,13 @@ public final class ObjCIndex {
         return methodBuilder_;
       }
       
-      // repeated .ObjCProperty property = 5;
+      // repeated .ObjCProperty property = 4;
       private java.util.List<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty> property_ =
         java.util.Collections.emptyList();
       private void ensurePropertyIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
           property_ = new java.util.ArrayList<org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty>(property_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000008;
          }
       }
       
@@ -6336,7 +6345,7 @@ public final class ObjCIndex {
       public Builder clearProperty() {
         if (propertyBuilder_ == null) {
           property_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           propertyBuilder_.clear();
@@ -6392,7 +6401,7 @@ public final class ObjCIndex {
           propertyBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCProperty.Builder, org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCPropertyOrBuilder>(
                   property_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  ((bitField0_ & 0x00000008) == 0x00000008),
                   getParentForChildren(),
                   isClean());
           property_ = null;
@@ -7605,21 +7614,21 @@ public final class ObjCIndex {
       "\033\n\010function\030\001 \002(\0132\t.Function\022\024\n\014class_me" +
       "thod\030\002 \002(\010\"*\n\014ObjCProperty\022\014\n\004name\030\001 \002(\t" +
       "\022\014\n\004type\030\002 \002(\t\"&\n\010ObjCIvar\022\014\n\004name\030\001 \002(\t" +
-      "\022\014\n\004type\030\002 \002(\t\"\226\001\n\tObjCClass\022\014\n\004name\030\001 \002" +
+      "\022\014\n\004type\030\002 \002(\t\"\250\001\n\tObjCClass\022\014\n\004name\030\001 \002" +
       "(\t\022\022\n\nbase_class\030\002 \001(\t\022\020\n\010protocol\030\003 \003(\t" +
-      "\022\033\n\006method\030\004 \003(\0132\013.ObjCMethod\022\037\n\010propert",
-      "y\030\005 \003(\0132\r.ObjCProperty\022\027\n\004ivar\030\006 \003(\0132\t.O" +
-      "bjCIvar\"q\n\014ObjCProtocol\022\014\n\004name\030\001 \002(\t\022\025\n" +
-      "\rbase_protocol\030\002 \003(\t\022\033\n\006method\030\003 \003(\0132\013.O" +
-      "bjCMethod\022\037\n\010property\030\004 \003(\0132\r.ObjCProper" +
-      "ty\"\216\001\n\014ObjCCategory\022\022\n\nclass_name\030\001 \002(\t\022" +
-      "\025\n\rcategory_name\030\002 \002(\t\022\025\n\rbase_protocol\030" +
-      "\003 \003(\t\022\033\n\006method\030\004 \003(\0132\013.ObjCMethod\022\037\n\010pr" +
-      "operty\030\005 \003(\0132\r.ObjCProperty\"n\n\017Translati" +
-      "onUnit\022\031\n\005class\030\001 \003(\0132\n.ObjCClass\022\037\n\010pro" +
-      "tocol\030\002 \003(\0132\r.ObjCProtocol\022\037\n\010category\030\003",
-      " \003(\0132\r.ObjCCategoryB%\n#org.jetbrains.jet" +
-      ".lang.resolve.objc"
+      "\022\020\n\010category\030\004 \003(\t\022\033\n\006method\030\005 \003(\0132\013.Obj",
+      "CMethod\022\037\n\010property\030\006 \003(\0132\r.ObjCProperty" +
+      "\022\027\n\004ivar\030\007 \003(\0132\t.ObjCIvar\"q\n\014ObjCProtoco" +
+      "l\022\014\n\004name\030\001 \002(\t\022\025\n\rbase_protocol\030\002 \003(\t\022\033" +
+      "\n\006method\030\003 \003(\0132\013.ObjCMethod\022\037\n\010property\030" +
+      "\004 \003(\0132\r.ObjCProperty\"q\n\014ObjCCategory\022\014\n\004" +
+      "name\030\001 \002(\t\022\025\n\rbase_protocol\030\002 \003(\t\022\033\n\006met" +
+      "hod\030\003 \003(\0132\013.ObjCMethod\022\037\n\010property\030\004 \003(\013" +
+      "2\r.ObjCProperty\"n\n\017TranslationUnit\022\031\n\005cl" +
+      "ass\030\001 \003(\0132\n.ObjCClass\022\037\n\010protocol\030\002 \003(\0132" +
+      "\r.ObjCProtocol\022\037\n\010category\030\003 \003(\0132\r.ObjCC",
+      "ategoryB%\n#org.jetbrains.jet.lang.resolv" +
+      "e.objc"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -7671,7 +7680,7 @@ public final class ObjCIndex {
           internal_static_ObjCClass_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ObjCClass_descriptor,
-              new java.lang.String[] { "Name", "BaseClass", "Protocol", "Method", "Property", "Ivar", },
+              new java.lang.String[] { "Name", "BaseClass", "Protocol", "Category", "Method", "Property", "Ivar", },
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCClass.class,
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCClass.Builder.class);
           internal_static_ObjCProtocol_descriptor =
@@ -7687,7 +7696,7 @@ public final class ObjCIndex {
           internal_static_ObjCCategory_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ObjCCategory_descriptor,
-              new java.lang.String[] { "ClassName", "CategoryName", "BaseProtocol", "Method", "Property", },
+              new java.lang.String[] { "Name", "BaseProtocol", "Method", "Property", },
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCCategory.class,
               org.jetbrains.jet.lang.resolve.objc.ObjCIndex.ObjCCategory.Builder.class);
           internal_static_TranslationUnit_descriptor =
