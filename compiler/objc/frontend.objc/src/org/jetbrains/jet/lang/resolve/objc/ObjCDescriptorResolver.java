@@ -89,6 +89,18 @@ public class ObjCDescriptorResolver {
             resolveClassObject(descriptor, metaclass);
         }
 
+        for (ObjCCategory category : tu.getCategoryList()) {
+            ObjCClassDescriptor descriptor = resolveCategory(category);
+            classes.add(descriptor);
+            scope.addClassifierAlias(descriptor.getName(), descriptor);
+
+            ObjCClassDescriptor metaclass = resolveMetaclass(descriptor, category.getMethodList());
+            classes.add(metaclass);
+            scope.addClassifierAlias(metaclass.getName(), metaclass);
+
+            resolveClassObject(descriptor, metaclass);
+        }
+
         for (ObjCClassDescriptor descriptor : classes) {
             descriptor.initialize();
 
@@ -137,7 +149,7 @@ public class ObjCDescriptorResolver {
     private ObjCClassDescriptor resolveClass(@NotNull ObjCClass clazz) {
         Name name = Name.identifier(clazz.getName());
 
-        List<JetType> supertypes = new ArrayList<JetType>(clazz.getProtocolCount() + 1);
+        List<JetType> supertypes = new ArrayList<JetType>(clazz.getProtocolCount() + clazz.getCategoryCount() + 1);
         if (clazz.hasBaseClass()) {
             Name baseName = Name.identifier(clazz.getBaseClass());
             JetType supertype = typeResolver.createTypeForClass(baseName);
@@ -146,6 +158,12 @@ public class ObjCDescriptorResolver {
 
         for (String baseProtocolName : clazz.getProtocolList()) {
             Name baseName = nameForProtocol(baseProtocolName);
+            JetType supertype = typeResolver.createTypeForClass(baseName);
+            supertypes.add(supertype);
+        }
+
+        for (String categoryName : clazz.getCategoryList()) {
+            Name baseName = Name.identifier(categoryName);
             JetType supertype = typeResolver.createTypeForClass(baseName);
             supertypes.add(supertype);
         }
@@ -169,6 +187,23 @@ public class ObjCDescriptorResolver {
 
         ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name, supertypes);
         addMethodsToClassScope(protocol.getMethodList(), descriptor, MethodKind.INSTANCE_METHOD);
+
+        return descriptor;
+    }
+
+    @NotNull
+    private ObjCClassDescriptor resolveCategory(@NotNull ObjCCategory category) {
+        Name name = Name.identifier(category.getName());
+
+        List<JetType> supertypes = new ArrayList<JetType>(category.getBaseProtocolCount());
+        for (String baseProtocolName : category.getBaseProtocolList()) {
+            Name baseName = nameForProtocol(baseProtocolName);
+            JetType supertype = typeResolver.createTypeForClass(baseName);
+            supertypes.add(supertype);
+        }
+
+        ObjCClassDescriptor descriptor = new ObjCClassDescriptor(namespace, ClassKind.TRAIT, Modality.ABSTRACT, name, supertypes);
+        addMethodsToClassScope(category.getMethodList(), descriptor, MethodKind.INSTANCE_METHOD);
 
         return descriptor;
     }

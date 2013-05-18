@@ -1,0 +1,25 @@
+package objc
+
+public trait <metaclass-for-A+Cat> {
+    public open fun bar() : jet.Unit
+}
+
+public trait <metaclass-for-A> : objc.<metaclass-for-A+Cat> {
+    public open override /*1*/ /*fake_override*/ fun bar() : jet.Unit
+}
+
+public open class A : objc.A+Cat {
+    public open override /*1*/ /*fake_override*/ fun foo() : jet.Unit
+    
+    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+        public open override /*1*/ /*fake_override*/ fun bar() : jet.Unit
+    }
+}
+
+public trait A+Cat {
+    public open fun foo() : jet.Unit
+    
+    public class object <class-object-for-A+Cat> : objc.<metaclass-for-A+Cat> {
+        public open override /*1*/ /*fake_override*/ fun bar() : jet.Unit
+    }
+}

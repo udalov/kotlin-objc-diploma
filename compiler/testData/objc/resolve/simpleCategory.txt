@@ -1,10 +1,28 @@
 package objc
 
-public trait <metaclass-for-A> {
+public trait <metaclass-for-A+> {
 }
 
-public open class A {
+public trait <metaclass-for-A+Cat> {
+}
+
+public trait <metaclass-for-A> : objc.<metaclass-for-A+>, objc.<metaclass-for-A+Cat> {
+}
+
+public open class A : objc.A+, objc.A+Cat {
     
     public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    }
+}
+
+public trait A+ {
+    
+    public class object <class-object-for-A+> : objc.<metaclass-for-A+> {
+    }
+}
+
+public trait A+Cat {
+    
+    public class object <class-object-for-A+Cat> : objc.<metaclass-for-A+Cat> {
     }
 }
