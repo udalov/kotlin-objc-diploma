@@ -31,6 +31,10 @@ public class ObjC {
         }
     }
 
+    public static ID getClass(String name) {
+        return Native.objc_getClass(name);
+    }
+
     public static void sendMessageVoid(ID receiver, String messageName, ID... args) {
         Native.objc_msgSendPrimitive(receiver, messageName, args);
     }

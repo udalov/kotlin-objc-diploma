@@ -143,10 +143,6 @@ public class ObjCClassCodegen {
 
     @NotNull
     private Type computeSuperClassAsmType() {
-        if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
-            return OBJC_CLASS_TYPE;
-        }
-
         for (JetType supertype : descriptor.getTypeConstructor().getSupertypes()) {
             ClassifierDescriptor superDescriptor = supertype.getConstructor().getDeclarationDescriptor();
             assert superDescriptor instanceof ClassDescriptor : "Supertype is not a class for Obj-C descriptor: " + descriptor;
@@ -194,25 +190,26 @@ public class ObjCClassCodegen {
     }
 
     private void generateConstructor() {
-        if (superClassAsmType.equals(OBJC_CLASS_TYPE)) {
+        final String objcObjectConstructor = getMethodDescriptor(VOID_TYPE, ID_TYPE);
+        if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
             newMethod(ACC_PUBLIC, "<init>", getMethodDescriptor(VOID_TYPE), new MethodCodegen() {
                 @Override
                 public void generate(@NotNull InstructionAdapter v) {
                     v.load(0, asmType);
                     v.visitLdcInsn(descriptor.getContainingDeclaration().getName().getName());
-                    v.invokespecial(OBJC_CLASS_TYPE.getInternalName(), "<init>", getMethodDescriptor(VOID_TYPE, JL_STRING_TYPE));
+                    v.invokestatic(JET_RUNTIME_OBJC, "getClass", getMethodDescriptor(ID_TYPE, JL_STRING_TYPE));
+                    v.invokespecial(superClassAsmType.getInternalName(), "<init>", objcObjectConstructor);
                     v.areturn(VOID_TYPE);
                 }
             });
         }
         else {
-            final String signature = getMethodDescriptor(VOID_TYPE, ID_TYPE);
-            newMethod(ACC_PUBLIC, "<init>", signature, new MethodCodegen() {
+            newMethod(ACC_PUBLIC, "<init>", objcObjectConstructor, new MethodCodegen() {
                 @Override
                 public void generate(@NotNull InstructionAdapter v) {
                     v.load(0, asmType);
                     v.load(1, ID_TYPE);
-                    v.invokespecial(superClassAsmType.getInternalName(), "<init>", signature);
+                    v.invokespecial(superClassAsmType.getInternalName(), "<init>", objcObjectConstructor);
                     v.areturn(VOID_TYPE);
                 }
             });
@@ -226,12 +223,7 @@ public class ObjCClassCodegen {
             @Override
             public void generate(@NotNull InstructionAdapter v) {
                 v.load(0, asmType);
-                if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
-                    v.invokevirtual(OBJC_CLASS_TYPE.getInternalName(), "getId", getMethodDescriptor(ID_TYPE));
-                }
-                else {
-                    v.getfield(OBJC_OBJECT_TYPE.getInternalName(), "id", ID_TYPE.getDescriptor());
-                }
+                v.getfield(OBJC_OBJECT_TYPE.getInternalName(), "id", ID_TYPE.getDescriptor());
 
                 v.visitLdcInsn(getObjCMethodName(method));
 
