@@ -210,6 +210,10 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
         exit(42);
     }
 
+    // TODO: release in finalize
+    static SEL retain = sel_registerName("retain");
+    objc_msgSend(result, retain);
+
     // Here we create an instance of this jclass, invoking a constructor which
     // takes a single ID parameter
     jmethodID constructor = env->GetMethodID(jvmClass, "<init>", OBJC_OBJECT_CONSTRUCTOR);
