@@ -208,12 +208,12 @@ public class InjectorForTopDownAnalyzerForObjC implements InjectorForTopDownAnal
 
         javaBridgeConfiguration.setJavaSemanticServices(javaSemanticServices);
 
-        javaDescriptorResolver.setClassResolver(javaClassResolver);
-        javaDescriptorResolver.setConstructorResolver(javaConstructorResolver);
-        javaDescriptorResolver.setFunctionResolver(javaFunctionResolver);
-        javaDescriptorResolver.setInnerClassResolver(javaInnerClassResolver);
-        javaDescriptorResolver.setNamespaceResolver(javaNamespaceResolver);
-        javaDescriptorResolver.setPropertiesResolver(javaPropertyResolver);
+        this.javaDescriptorResolver.setClassResolver(javaClassResolver);
+        this.javaDescriptorResolver.setConstructorResolver(javaConstructorResolver);
+        this.javaDescriptorResolver.setFunctionResolver(javaFunctionResolver);
+        this.javaDescriptorResolver.setInnerClassResolver(javaInnerClassResolver);
+        this.javaDescriptorResolver.setNamespaceResolver(javaNamespaceResolver);
+        this.javaDescriptorResolver.setPropertiesResolver(javaPropertyResolver);
 
         psiClassFinder.setProject(project);
 
@@ -395,6 +395,10 @@ public class InjectorForTopDownAnalyzerForObjC implements InjectorForTopDownAnal
     
     public ObjCModuleConfiguration getObjCModuleConfiguration() {
         return this.objCModuleConfiguration;
+    }
+    
+    public JavaDescriptorResolver getJavaDescriptorResolver() {
+        return this.javaDescriptorResolver;
     }
     
     public NamespaceFactoryImpl getNamespaceFactory() {

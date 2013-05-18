@@ -32,6 +32,7 @@ import org.jetbrains.jet.lang.resolve.*;
 import org.jetbrains.jet.lang.resolve.lazy.ResolveSession;
 import org.jetbrains.jet.lang.resolve.name.Name;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,11 +48,11 @@ public enum AnalyzerFacadeForObjC implements AnalyzerFacade {
             @NotNull List<AnalyzerScriptParameter> scriptParameters,
             @NotNull Predicate<PsiFile> filesToAnalyzeCompletely
     ) {
-        ModuleDescriptorImpl owner = new ModuleDescriptorImpl(
-                Name.special("<module>"),
-                DefaultModuleConfiguration.DEFAULT_JET_IMPORTS,
-                PlatformToKotlinClassMap.EMPTY
-        );
+        List<ImportPath> imports = new ArrayList<ImportPath>();
+        imports.add(new ImportPath("jet.objc.*"));
+        imports.addAll(DefaultModuleConfiguration.DEFAULT_JET_IMPORTS);
+
+        ModuleDescriptorImpl owner = new ModuleDescriptorImpl(Name.special("<module>"), imports, PlatformToKotlinClassMap.EMPTY);
 
         TopDownAnalysisParameters topDownAnalysisParameters = new TopDownAnalysisParameters(
                 filesToAnalyzeCompletely, false, false, scriptParameters
@@ -63,6 +64,9 @@ public enum AnalyzerFacadeForObjC implements AnalyzerFacade {
                 project, topDownAnalysisParameters,
                 new ObservableBindingTrace(trace), owner);
         owner.setModuleConfiguration(injector.getObjCModuleConfiguration());
+
+        // TODO: this is temporary to resolve Objective-C built-ins from Java compiled classes in runtime
+        ObjCBuiltIns.initialize(injector.getJavaDescriptorResolver());
 
         try {
             injector.getTopDownAnalyzer().analyzeFiles(files, scriptParameters);
