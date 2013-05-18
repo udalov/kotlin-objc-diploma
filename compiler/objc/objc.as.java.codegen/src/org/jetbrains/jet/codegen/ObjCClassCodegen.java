@@ -292,6 +292,7 @@ public class ObjCClassCodegen {
                 v.iconst(parameters.size());
                 v.newarray(ID_TYPE);
 
+                int localIndex = 1;
                 for (ValueParameterDescriptor parameter : parameters) {
                     JetType type = parameter.getType();
                     Type asmType = typeMapper.mapType(type);
@@ -300,7 +301,9 @@ public class ObjCClassCodegen {
                     v.dup();
                     v.iconst(i);
 
-                    StackValue local = StackValue.local(i + 1, asmType);
+                    StackValue local = StackValue.local(localIndex, asmType);
+                    localIndex += asmType.getSize();
+
                     if (KotlinBuiltIns.getInstance().isFunctionType(type)) {
                         List<TypeProjection> projections = type.getArguments();
                         // -1 for return type
