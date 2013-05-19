@@ -32,17 +32,29 @@ public class Pointer<T> {
     // TODO: KotlinSignature for all methods which return Pointer
 
     public static Pointer<Character> allocateChar() {
-        return new Pointer<Character>(Native.malloc(CHAR_SIZE));
+        return allocateChars(1);
+    }
+
+    public static Pointer<Character> allocateChars(long size) {
+        return new Pointer<Character>(Native.malloc(size * CHAR_SIZE));
     }
 
 
     public char getChar() {
-        return (char) Native.getWord(peer);
+        return getChar(0);
+    }
+
+    public char getChar(long offset) {
+        return (char) (Native.getWord(peer + offset) & 0xff);
     }
 
 
     public void setChar(char c) {
-        Native.setWord(peer, (byte) c);
+        setChar(0, c);
+    }
+
+    public void setChar(long offset, char c) {
+        Native.setWord(peer + offset, (byte) c);
     }
 
 
@@ -51,6 +63,32 @@ public class Pointer<T> {
         Pointer<Character> pointer = allocateChar();
         pointer.setChar(c);
         return pointer;
+    }
+
+    // TODO: support different encodings and stuff
+    @KotlinSignature("fun pointerToString(s: String): Pointer<Char>")
+    public static Pointer<Character> pointerToString(String s) {
+        // TODO: not very optimal, use a native function instead
+        int n = s.length();
+        Pointer<Character> pointer = allocateChars(n + 1);
+        for (int i = 0; i < n; i++) {
+            pointer.setChar(i, s.charAt(i));
+        }
+        pointer.setChar(n, (char) 0);
+        return pointer;
+    }
+
+    @KotlinSignature("fun getString(): String")
+    public String getString() {
+        // TODO: not very optimal, use a native function instead
+        StringBuilder sb = new StringBuilder();
+        char c;
+        int offset = 0;
+        while ((c = getChar(offset)) != 0) {
+            sb.append(c);
+            offset++;
+        }
+        return sb.toString();
     }
 
     public void release() {
