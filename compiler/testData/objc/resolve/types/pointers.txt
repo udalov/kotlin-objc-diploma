@@ -1,0 +1,24 @@
+package objc
+
+public trait <metaclass-for-A> {
+}
+
+public open class A {
+    public open fun pa() : jet.objc.Pointer<objc.A>
+    public open fun pc() : jet.objc.Pointer<jet.Char>
+    public open fun pd() : jet.objc.Pointer<jet.Double>
+    public open fun pf() : jet.objc.Pointer<jet.Float>
+    public open fun pfun() : jet.objc.Pointer<() -> jet.Unit>
+    public open fun pi() : jet.objc.Pointer<jet.Int>
+    public open fun pj() : jet.objc.Pointer<jet.Long>
+    public open fun pppv() : jet.objc.Pointer<jet.objc.Pointer<jet.objc.Pointer<out jet.Any?>>>
+    public open fun ppv() : jet.objc.Pointer<jet.objc.Pointer<out jet.Any?>>
+    public open fun ps() : jet.objc.Pointer<jet.Short>
+    public open fun pv1() : jet.objc.Pointer<out jet.Any?>
+    public open fun pv2() : jet.objc.Pointer<out jet.Any?>
+    public open fun pv3() : jet.objc.Pointer<out jet.Any?>
+    public open fun pv4() : jet.objc.Pointer<out jet.Any?>
+    
+    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    }
+}

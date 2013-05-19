@@ -182,6 +182,11 @@ public class ObjCDescriptorResolverTestGenerated extends AbstractObjCDescriptorR
             doTest("compiler/testData/objc/resolve/types/objcPointers.h");
         }
         
+        @TestMetadata("pointers.h")
+        public void testPointers() throws Exception {
+            doTest("compiler/testData/objc/resolve/types/pointers.h");
+        }
+        
         @TestMetadata("primitives.h")
         public void testPrimitives() throws Exception {
             doTest("compiler/testData/objc/resolve/types/primitives.h");

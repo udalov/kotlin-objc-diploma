@@ -17,7 +17,14 @@
 package org.jetbrains.jet.lang.resolve.objc;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jet.lang.types.DependencyClassByQualifiedNameResolver;
+import org.jetbrains.jet.lang.descriptors.ClassDescriptor;
+import org.jetbrains.jet.lang.descriptors.annotations.AnnotationDescriptor;
+import org.jetbrains.jet.lang.resolve.name.FqName;
+import org.jetbrains.jet.lang.types.*;
+import org.jetbrains.jet.util.lazy.RecursionIntolerantLazyValue;
+
+import java.util.Collections;
+import java.util.List;
 
 public class ObjCBuiltIns {
     private static ObjCBuiltIns instance = null;
@@ -35,6 +42,37 @@ public class ObjCBuiltIns {
         return instance;
     }
 
+    private final ClassDescriptor pointerClass;
+
     private ObjCBuiltIns(@NotNull DependencyClassByQualifiedNameResolver resolver) {
+        pointerClass = resolver.resolveClass(new FqName("jet.objc.Pointer"));
+    }
+
+    private static class BuiltInType extends DeferredTypeBase {
+        protected BuiltInType(@NotNull final ClassDescriptor descriptor, @NotNull final List<TypeProjection> projections) {
+            super(new RecursionIntolerantLazyValue<JetType>() {
+                @Override
+                protected JetType compute() {
+                    return new JetTypeImpl(
+                            Collections.<AnnotationDescriptor>emptyList(),
+                            descriptor.getTypeConstructor(),
+                            false,
+                            projections,
+                            descriptor.getMemberScope(projections)
+                    );
+                }
+            });
+        }
+    }
+
+    @NotNull
+    public JetType getPointerType(@NotNull JetType pointee) {
+        return new BuiltInType(pointerClass, Collections.singletonList(new TypeProjection(Variance.INVARIANT, pointee)));
+    }
+
+    @NotNull
+    public JetType getOpaquePointerType() {
+        TypeProjection projection = SubstitutionUtils.makeStarProjection(pointerClass.getTypeConstructor().getParameters().get(0));
+        return new BuiltInType(pointerClass, Collections.singletonList(projection));
     }
 }

@@ -43,7 +43,7 @@ public abstract class AbstractObjCDescriptorResolverTest extends TestCaseWithTmp
         assert header.endsWith(".h") : header;
         File expected = new File(header.substring(0, header.length() - ".h".length()) + ".txt");
 
-        JetCoreEnvironment environment = createEnvironment(getTestRootDisposable(), ConfigurationKind.JDK_ONLY);
+        JetCoreEnvironment environment = createEnvironment(getTestRootDisposable(), ConfigurationKind.ALL);
         ObjCInteropParameters.saveHeaders(environment.getProject(), new File(header));
 
         AnalyzeExhaust analyzeExhaust = AnalyzerFacadeForObjC.INSTANCE.analyzeFiles(

@@ -135,11 +135,15 @@ public class ObjCTypeResolver {
                 return createFunctionType(paramTypes, returnType);
             }
 
+            if (advance("*V;")) {
+                // Special case for "void *"
+                return ObjCBuiltIns.getInstance().getOpaquePointerType();
+            }
+
             if (advance("*")) {
-                // TODO: support pointers
-                parse();
+                JetType pointee = parse();
                 expect(";");
-                return KotlinBuiltIns.getInstance().getNullableAnyType();
+                return ObjCBuiltIns.getInstance().getPointerType(pointee);
             }
 
             if (at("X(")) {

@@ -6,20 +6,20 @@ public trait <metaclass-for-A> {
 public open class A {
     public open fun f01() : () -> jet.Unit
     public open fun f02() : () -> jet.Int
-    public open fun f03() : () -> jet.Any?
-    public open fun f04() : () -> jet.Any?
+    public open fun f03() : () -> jet.objc.Pointer<out jet.Any?>
+    public open fun f04() : () -> jet.objc.Pointer<jet.Int>
     public open fun f05() : () -> jet.Unit
-    public open fun f06() : (jet.Any?) -> jet.Unit
+    public open fun f06() : (jet.objc.Pointer<out jet.Any?>) -> jet.Unit
     public open fun f07() : (jet.Int) -> jet.Unit
-    public open fun f08() : (jet.Any?) -> jet.Unit
-    public open fun f09() : (jet.Int, jet.Any?, jet.Any?, jet.Int) -> jet.Unit
+    public open fun f08() : (jet.objc.Pointer<jet.Int>) -> jet.Unit
+    public open fun f09() : (jet.Int, jet.objc.Pointer<jet.Int>, jet.objc.Pointer<out jet.Any?>, jet.Int) -> jet.Unit
     public open fun f10() : (() -> jet.Unit) -> jet.Unit
     public open fun f11() : (() -> jet.Unit) -> jet.Unit
     public open fun f12() : (jet.Int) -> jet.Unit
     public open fun f13() : (() -> jet.Unit) -> jet.Unit
     public open fun f14() : ((jet.Int) -> jet.Unit) -> jet.Unit
     public open fun f15() : (jet.Any?, jet.Any?, jet.Any?) -> objc.A
-    public open fun f16() : ((jet.Int, jet.Any?) -> jet.Unit, () -> jet.Any?) -> jet.Unit
+    public open fun f16() : ((jet.Int, jet.objc.Pointer<jet.Char>) -> jet.Unit, () -> jet.objc.Pointer<out jet.Any?>) -> jet.Unit
     
     public class object <class-object-for-A> : objc.<metaclass-for-A> {
     }
