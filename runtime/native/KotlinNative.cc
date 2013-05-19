@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#define L2A(x) ((void *)(x))
+
 const char *const CLASS_ID = "jet/runtime/objc/ID";
 const char *const OBJC_OBJECT_CONSTRUCTOR = "(Ljet/runtime/objc/ID;)V";
 
@@ -116,7 +118,7 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
 }
 
 
-id constructNSInvocation(id receiver, SEL selector, const std::vector<id>& args) {
+id constructNSInvocation(id receiver, SEL selector, const std::vector<void *>& args) {
     static SEL methodSignatureForSelector = sel_registerName("methodSignatureForSelector:");
     static id invocationClass = objc_getClass("NSInvocation");
     static SEL invocationWithMethodSignature = sel_registerName("invocationWithMethodSignature:");
@@ -148,20 +150,49 @@ bool selectorReturnsVoid(id invocation) {
     return !strcmp(returnType, "v");
 }
 
-std::vector<id> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArray) {
+void *createNativeClosureForFunction(JNIEnv *env, jobject function, jint arity);
+
+std::vector<void *> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArray) {
     jsize length = env->GetArrayLength(argArray);
-    std::vector<id> args;
+    std::vector<void *> args;
     if (!length) return args;
 
-    // TODO: cache ID and getValue somehow
-    jclass idClass = getIdClass(env);
-    jmethodID getValue = env->GetMethodID(idClass, "getValue", "()J");
+    // TODO: cache everything somehow
+    jclass callbackFunctionClass = env->FindClass("jet/objc/CallbackFunction");
+    jfieldID functionField = env->GetFieldID(callbackFunctionClass, "function", "Ljava/lang/Object;");
+    jfieldID arityField = env->GetFieldID(callbackFunctionClass, "arity", "I");
+
+    jclass pointerClass = env->FindClass("jet/objc/Pointer");
+    jfieldID peerField = env->GetFieldID(pointerClass, "peer", "J");
+
+    jclass objcObjectClass = env->FindClass("jet/objc/ObjCObject");
+    jfieldID idField = env->GetFieldID(objcObjectClass, "id", "Ljet/runtime/objc/ID;");
+
+    jclass idClass = env->FindClass("jet/runtime/objc/ID");
+    jfieldID idValueField = env->GetFieldID(idClass, "value", "J");
+
+    jclass primitiveValueClass = env->FindClass("jet/objc/PrimitiveValue");
+    jfieldID valueField = env->GetFieldID(primitiveValueClass, "value", "J");
 
     args.reserve(length);
     for (jsize i = 0; i < length; i++) {
-        jobject argObject = env->GetObjectArrayElement(argArray, i);
-        id arg = (id) env->CallLongMethod(argObject, getValue);
-        args.push_back(arg);
+        jobject arg = env->GetObjectArrayElement(argArray, i);
+        if (env->IsInstanceOf(arg, callbackFunctionClass)) {
+            jobject function = env->GetObjectField(arg, functionField);
+            jint arity = env->GetIntField(arg, arityField);
+            void *closure = createNativeClosureForFunction(env, function, arity);
+            args.push_back(closure);
+        } else if (env->IsInstanceOf(arg, pointerClass)) {
+            jlong peer = env->GetLongField(arg, peerField);
+            args.push_back(L2A(peer));
+        } else if (env->IsInstanceOf(arg, objcObjectClass)) {
+            jobject oid = env->GetObjectField(arg, idField);
+            jlong pointer = env->GetLongField(oid, idValueField);
+            args.push_back(L2A(pointer));
+        } else if (env->IsInstanceOf(arg, primitiveValueClass)) {
+            jlong value = env->GetLongField(arg, valueField);
+            args.push_back(L2A(value));
+        }
     }
 
     return args;
@@ -191,7 +222,7 @@ id sendMessage(
 
     id receiver = (id) env->CallLongMethod(receiverJObject, getValue);
     SEL selector = lookupSelector(env, selectorName);
-    std::vector<id> args = extractArgumentsFromJArray(env, argArray);
+    std::vector<void *> args = extractArgumentsFromJArray(env, argArray);
 
     // At this point, all we have to do is to call objc_msgSend(receiver,
     // selector, args) and get the result. Unfortunately, there's no portable
@@ -316,12 +347,7 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     // TODO: deallocate closure, ClosureData, 'function' global reference, etc.
 }
 
-JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_createNativeClosureForFunction(
-        JNIEnv *env,
-        jclass clazz,
-        jobject function,
-        jint arity
-) {
+void *createNativeClosureForFunction(JNIEnv *env, jobject function, jint arity) {
     // TODO: arity > 0
     assert(arity == 0 || "Callbacks with parameters aren't supported yet");
 
@@ -354,5 +380,5 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_createNativeClosureForFun
         return 0;
     }
 
-    return createNativePointer(env, data->fun);
+    return data->fun;
 }

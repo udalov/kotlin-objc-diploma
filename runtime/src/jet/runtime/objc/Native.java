@@ -16,6 +16,9 @@
 
 package jet.runtime.objc;
 
+import jet.objc.NativeValue;
+import jet.objc.ObjCObject;
+
 public class Native {
     private Native() {}
 
@@ -37,11 +40,9 @@ public class Native {
 
     public static native ID objc_getClass(String name);
 
-    // TODO: provide versions for objc_msgSend with 0, 1, 2... arguments as an optimization
+    public static native long objc_msgSendPrimitive(ID receiver, String selectorName, NativeValue... args);
 
-    public static native long objc_msgSendPrimitive(ID receiver, String selectorName, ID... args);
-
-    public static native ObjCObject objc_msgSendObjCObject(ID receiver, String selectorName, ID... args);
+    public static native ObjCObject objc_msgSendObjCObject(ID receiver, String selectorName, NativeValue... args);
 
     public static native ID createNativeClosureForFunction(Object function, int arity);
 }

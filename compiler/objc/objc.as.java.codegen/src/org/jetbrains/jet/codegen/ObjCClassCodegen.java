@@ -16,10 +16,8 @@
 
 package org.jetbrains.jet.codegen;
 
-import jet.objc.NativeHelpers;
-import jet.objc.Pointer;
+import jet.objc.*;
 import jet.runtime.objc.ID;
-import jet.runtime.objc.ObjCObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.asm4.ClassWriter;
 import org.jetbrains.asm4.MethodVisitor;
@@ -54,9 +52,12 @@ public class ObjCClassCodegen {
     public static final Type JL_STRING_TYPE = Type.getType(String.class);
 
     public static final Type ID_TYPE = Type.getType(ID.class);
-    public static final Type ID_ARRAY_TYPE = Type.getType(ID[].class);
     public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
     public static final Type POINTER_TYPE = Type.getType(Pointer.class);
+    public static final Type NATIVE_VALUE_TYPE = Type.getType(NativeValue.class);
+    public static final Type NATIVE_VALUE_ARRAY_TYPE = Type.getType(NativeValue[].class);
+    public static final Type CALLBACK_FUNCTION_TYPE = Type.getType(CallbackFunction.class);
+    public static final Type PRIMITIVE_VALUE_TYPE = Type.getType(PrimitiveValue.class);
 
     private final JetTypeMapper typeMapper;
     private final ClassDescriptor descriptor;
@@ -228,7 +229,7 @@ public class ObjCClassCodegen {
 
                 v.visitLdcInsn(getObjCMethodName(method));
 
-                putArgumentsAsIdArray(v);
+                putArgumentsAsNativeValueArray(v);
 
                 String sendMessageNameSuffix;
                 Type sendMessageReturnType;
@@ -277,17 +278,17 @@ public class ObjCClassCodegen {
                 }
 
                 v.invokestatic(JET_RUNTIME_OBJC, "sendMessage" + sendMessageNameSuffix,
-                               getMethodDescriptor(sendMessageReturnType, ID_TYPE, JL_STRING_TYPE, ID_ARRAY_TYPE));
+                               getMethodDescriptor(sendMessageReturnType, ID_TYPE, JL_STRING_TYPE, NATIVE_VALUE_ARRAY_TYPE));
                 StackValue.coerce(sendMessageReturnType, returnType, v);
 
                 v.areturn(returnType);
             }
 
-            private void putArgumentsAsIdArray(@NotNull InstructionAdapter v) {
+            private void putArgumentsAsNativeValueArray(@NotNull InstructionAdapter v) {
                 List<ValueParameterDescriptor> parameters = method.getValueParameters();
 
                 v.iconst(parameters.size());
-                v.newarray(ID_TYPE);
+                v.newarray(NATIVE_VALUE_TYPE);
 
                 int localIndex = 1;
                 for (ValueParameterDescriptor parameter : parameters) {
@@ -306,25 +307,21 @@ public class ObjCClassCodegen {
                         // -1 for return type
                         int arity = projections.size() - 1;
 
+                        v.anew(CALLBACK_FUNCTION_TYPE);
+                        v.dup();
                         local.put(JL_OBJECT_TYPE, v);
                         v.iconst(arity);
-                        v.invokestatic(JET_RUNTIME_OBJC, "createNativeClosureForFunction",
-                                       getMethodDescriptor(ID_TYPE, JL_OBJECT_TYPE, INT_TYPE));
+                        v.invokespecial(CALLBACK_FUNCTION_TYPE.getInternalName(), "<init>",
+                                        getMethodDescriptor(VOID_TYPE, JL_OBJECT_TYPE, INT_TYPE));
                     }
                     else if (ObjCBuiltIns.getInstance().isPointerType(type)) {
-                        v.anew(ID_TYPE);
-                        v.dup();
                         local.put(POINTER_TYPE, v);
-                        v.getfield(POINTER_TYPE.getInternalName(), "peer", LONG_TYPE.getDescriptor());
-                        v.invokespecial(ID_TYPE.getInternalName(), "<init>", "(J)V");
                     }
                     else if (asmType.getSort() == Type.OBJECT) {
-                        // TODO: not only ObjCObject, also Pointer<T>, struct, enum...
                         local.put(OBJC_OBJECT_TYPE, v);
-                        v.getfield(OBJC_OBJECT_TYPE.getInternalName(), "id", ID_TYPE.getDescriptor());
                     }
                     else {
-                        v.anew(ID_TYPE);
+                        v.anew(PRIMITIVE_VALUE_TYPE);
                         v.dup();
                         if (asmType.getSort() == Type.DOUBLE) {
                             local.put(DOUBLE_TYPE, v);
@@ -340,10 +337,10 @@ public class ObjCClassCodegen {
                         else {
                             local.put(LONG_TYPE, v);
                         }
-                        v.invokespecial(ID_TYPE.getInternalName(), "<init>", "(J)V");
+                        v.invokespecial(PRIMITIVE_VALUE_TYPE.getInternalName(), "<init>", getMethodDescriptor(VOID_TYPE, LONG_TYPE));
                     }
 
-                    v.astore(ID_TYPE);
+                    v.astore(NATIVE_VALUE_TYPE);
                 }
             }
         });
