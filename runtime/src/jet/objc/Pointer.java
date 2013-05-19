@@ -16,5 +16,44 @@
 
 package jet.objc;
 
+import jet.runtime.objc.Native;
+import jet.runtime.typeinfo.KotlinSignature;
+
+@SuppressWarnings("UnusedDeclaration")
 public class Pointer<T> {
+    public static final int CHAR_SIZE = 1;
+
+    public final long peer;
+
+    private Pointer(long peer) {
+        this.peer = peer;
+    }
+
+    // TODO: KotlinSignature for all methods which return Pointer
+
+    public static Pointer<Character> allocateChar() {
+        return new Pointer<Character>(Native.malloc(CHAR_SIZE));
+    }
+
+
+    public char getChar() {
+        return (char) Native.getWord(peer);
+    }
+
+
+    public void setChar(char c) {
+        Native.setWord(peer, (byte) c);
+    }
+
+
+    @KotlinSignature("fun pointerToChar(c: Char): Pointer<Char>")
+    public static Pointer<Character> pointerToChar(char c) {
+        Pointer<Character> pointer = allocateChar();
+        pointer.setChar(c);
+        return pointer;
+    }
+
+    public void release() {
+        Native.free(peer);
+    }
 }

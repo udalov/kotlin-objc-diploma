@@ -88,6 +88,11 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
             doTest("compiler/testData/objc/java/arguments/objcObject.kt");
         }
         
+        @TestMetadata("pointerToChar.kt")
+        public void testPointerToChar() throws Exception {
+            doTest("compiler/testData/objc/java/arguments/pointerToChar.kt");
+        }
+        
         @TestMetadata("short.kt")
         public void testShort() throws Exception {
             doTest("compiler/testData/objc/java/arguments/short.kt");

@@ -25,6 +25,16 @@ public class Native {
 
     public static native void dlopen(String path);
 
+
+    public static native long malloc(long bytes);
+
+    public static native void free(long pointer);
+
+    public static native long getWord(long pointer);
+
+    public static native void setWord(long pointer, long value);
+
+
     public static native ID objc_getClass(String name);
 
     // TODO: provide versions for objc_msgSend with 0, 1, 2... arguments as an optimization

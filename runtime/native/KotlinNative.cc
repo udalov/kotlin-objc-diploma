@@ -41,6 +41,11 @@ SEL lookupSelector(JNIEnv *env, jstring name) {
     return selector;
 }
 
+
+// --------------------------------------------------------
+// Dynamic libraries
+// --------------------------------------------------------
+
 JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_dlopen(
         JNIEnv *env,
         jclass clazz,
@@ -48,11 +53,56 @@ JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_dlopen(
 ) {
     const char *chars = env->GetStringUTFChars(path, 0);
     if (!dlopen(chars, RTLD_GLOBAL)) {
-        // TODO: report an error
+        // TODO: report an error properly
+        fprintf(stderr, "Library not found: %s\n", chars);
+        exit(42);
     }
     env->ReleaseStringUTFChars(path, chars);
 }
 
+
+// --------------------------------------------------------
+// Pointers
+// --------------------------------------------------------
+
+JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_malloc(
+        JNIEnv *env,
+        jclass,
+        jlong bytes
+) {
+    void *memory = malloc(bytes);
+    return *(jlong *)&memory;
+}
+
+JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_free(
+        JNIEnv *env,
+        jclass,
+        jlong pointer
+) {
+    free(*(void **)&pointer);
+}
+
+JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_getWord(
+        JNIEnv *env,
+        jclass,
+        jlong pointer
+) {
+    return *(jlong *)pointer;
+}
+
+JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_setWord(
+        JNIEnv *env,
+        jclass,
+        jlong pointer,
+        jlong value
+) {
+    *(jlong *)pointer = value;
+}
+
+
+// --------------------------------------------------------
+// Objective-C
+// --------------------------------------------------------
 
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
         JNIEnv *env,

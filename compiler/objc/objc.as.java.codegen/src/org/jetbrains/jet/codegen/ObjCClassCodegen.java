@@ -16,9 +16,9 @@
 
 package org.jetbrains.jet.codegen;
 
+import jet.objc.Pointer;
 import jet.runtime.objc.ID;
 import jet.runtime.objc.ObjC;
-import jet.runtime.objc.ObjCClass;
 import jet.runtime.objc.ObjCObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.asm4.ClassWriter;
@@ -30,6 +30,7 @@ import org.jetbrains.jet.codegen.state.JetTypeMapper;
 import org.jetbrains.jet.codegen.state.JetTypeMapperMode;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.resolve.java.JvmAbi;
+import org.jetbrains.jet.lang.resolve.objc.ObjCBuiltIns;
 import org.jetbrains.jet.lang.resolve.objc.ObjCMethodDescriptor;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
@@ -54,8 +55,8 @@ public class ObjCClassCodegen {
 
     public static final Type ID_TYPE = Type.getType(ID.class);
     public static final Type ID_ARRAY_TYPE = Type.getType(ID[].class);
-    public static final Type OBJC_CLASS_TYPE = Type.getType(ObjCClass.class);
     public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
+    public static final Type POINTER_TYPE = Type.getType(Pointer.class);
 
     private final JetTypeMapper typeMapper;
     private final ClassDescriptor descriptor;
@@ -305,6 +306,13 @@ public class ObjCClassCodegen {
                         v.iconst(arity);
                         v.invokestatic(JET_RUNTIME_OBJC, "createNativeClosureForFunction",
                                        getMethodDescriptor(ID_TYPE, JL_OBJECT_TYPE, INT_TYPE));
+                    }
+                    else if (ObjCBuiltIns.getInstance().isPointerType(type)) {
+                        v.anew(ID_TYPE);
+                        v.dup();
+                        local.put(POINTER_TYPE, v);
+                        v.getfield(POINTER_TYPE.getInternalName(), "peer", LONG_TYPE.getDescriptor());
+                        v.invokespecial(ID_TYPE.getInternalName(), "<init>", "(J)V");
                     }
                     else if (asmType.getSort() == Type.OBJECT) {
                         // TODO: not only ObjCObject, also Pointer<T>, struct, enum...

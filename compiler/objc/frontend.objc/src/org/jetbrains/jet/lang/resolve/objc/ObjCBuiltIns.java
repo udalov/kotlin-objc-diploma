@@ -75,4 +75,8 @@ public class ObjCBuiltIns {
         TypeProjection projection = SubstitutionUtils.makeStarProjection(pointerClass.getTypeConstructor().getParameters().get(0));
         return new BuiltInType(pointerClass, Collections.singletonList(projection));
     }
+
+    public boolean isPointerType(@NotNull JetType type) {
+        return pointerClass == type.getConstructor().getDeclarationDescriptor();
+    }
 }

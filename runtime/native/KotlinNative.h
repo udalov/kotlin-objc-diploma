@@ -17,6 +17,38 @@ JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_dlopen
 
 /*
  * Class:     jet_runtime_objc_Native
+ * Method:    malloc
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_malloc
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     jet_runtime_objc_Native
+ * Method:    free
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_free
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     jet_runtime_objc_Native
+ * Method:    getWord
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_getWord
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     jet_runtime_objc_Native
+ * Method:    setWord
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_setWord
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     jet_runtime_objc_Native
  * Method:    objc_getClass
  * Signature: (Ljava/lang/String;)Ljet/runtime/objc/ID;
  */
