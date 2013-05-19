@@ -25,7 +25,7 @@ public class Pointer<T> {
 
     public final long peer;
 
-    private Pointer(long peer) {
+    /* package */ Pointer(long peer) {
         this.peer = peer;
     }
 

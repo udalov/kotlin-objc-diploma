@@ -137,14 +137,24 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
             JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/objc/java/pointers"), Pattern.compile("^(.+)\\.kt$"), true);
         }
         
+        @TestMetadata("argNSString.kt")
+        public void testArgNSString() throws Exception {
+            doTest("compiler/testData/objc/java/pointers/argNSString.kt");
+        }
+        
+        @TestMetadata("argString.kt")
+        public void testArgString() throws Exception {
+            doTest("compiler/testData/objc/java/pointers/argString.kt");
+        }
+        
         @TestMetadata("pointerToChar.kt")
         public void testPointerToChar() throws Exception {
             doTest("compiler/testData/objc/java/pointers/pointerToChar.kt");
         }
         
-        @TestMetadata("string.kt")
-        public void testString() throws Exception {
-            doTest("compiler/testData/objc/java/pointers/string.kt");
+        @TestMetadata("returnString.kt")
+        public void testReturnString() throws Exception {
+            doTest("compiler/testData/objc/java/pointers/returnString.kt");
         }
         
     }

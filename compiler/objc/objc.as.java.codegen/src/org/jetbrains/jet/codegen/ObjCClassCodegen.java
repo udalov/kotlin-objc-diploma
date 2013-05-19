@@ -16,9 +16,9 @@
 
 package org.jetbrains.jet.codegen;
 
+import jet.objc.NativeHelpers;
 import jet.objc.Pointer;
 import jet.runtime.objc.ID;
-import jet.runtime.objc.ObjC;
 import jet.runtime.objc.ObjCObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.asm4.ClassWriter;
@@ -48,7 +48,7 @@ import static org.jetbrains.asm4.Type.*;
 import static org.jetbrains.jet.codegen.AsmUtil.genInitSingletonField;
 
 public class ObjCClassCodegen {
-    public static final String JET_RUNTIME_OBJC = Type.getType(ObjC.class).getInternalName();
+    public static final String JET_RUNTIME_OBJC = Type.getType(NativeHelpers.class).getInternalName();
 
     public static final Type JL_OBJECT_TYPE = Type.getType(Object.class);
     public static final Type JL_STRING_TYPE = Type.getType(String.class);
@@ -261,6 +261,10 @@ public class ObjCClassCodegen {
                 else if (returnType.getSort() == Type.FLOAT) {
                     sendMessageNameSuffix = "Float";
                     sendMessageReturnType = FLOAT_TYPE;
+                }
+                else if (returnType.equals(POINTER_TYPE)) {
+                    sendMessageNameSuffix = "Pointer";
+                    sendMessageReturnType = POINTER_TYPE;
                 }
                 else if (returnType.getSort() == Type.OBJECT) {
                     sendMessageNameSuffix = "ObjCObject";

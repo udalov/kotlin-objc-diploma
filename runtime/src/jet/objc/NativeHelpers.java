@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package jet.runtime.objc;
+package jet.objc;
+
+import jet.runtime.objc.ID;
+import jet.runtime.objc.Native;
+import jet.runtime.objc.ObjCObject;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("UnusedDeclaration")
-public class ObjC {
-    private ObjC() {}
+public class NativeHelpers {
+    private NativeHelpers() {}
 
     private static final Set<String> LOADED_LIBRARIES = new HashSet<String>();
 
@@ -75,6 +79,11 @@ public class ObjC {
 
     public static ObjCObject sendMessageObjCObject(ID receiver, String messageName, ID... args) {
         return Native.objc_msgSendObjCObject(receiver, messageName, args);
+    }
+
+    public static Pointer<?> sendMessagePointer(ID receiver, String messageName, ID... args) {
+        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
+        return new Pointer<Object>(l);
     }
 
     public static ID createNativeClosureForFunction(Object function, int arity) {
