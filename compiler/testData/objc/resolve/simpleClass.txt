@@ -5,6 +5,6 @@ public trait <metaclass-for-A> {
 
 public open class A : jet.objc.ObjCObject {
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.A {
     }
 }

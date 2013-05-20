@@ -1,10 +1,13 @@
+@interface NSObject
+@end
+
 typedef int int_really;
 
 @class A;
 
 typedef A A_really;
 
-@interface A
+@interface A : NSObject
 - (int_really) f_int;
 - (int_really *) f_pint;
 - (int_really **) f_ppint;

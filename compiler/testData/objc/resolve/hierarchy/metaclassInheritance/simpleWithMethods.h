@@ -1,4 +1,7 @@
-@interface Base
+@interface NSObject
+@end
+
+@interface Base : NSObject
 + (void)baseMethod;
 @end
 

@@ -11,18 +11,12 @@ public trait <metaclass-for-A> : objc.<metaclass-for-A+>, objc.<metaclass-for-A+
 
 public open class A : jet.objc.ObjCObject, objc.A+, objc.A+Cat {
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.A {
     }
 }
 
 public trait A+ {
-    
-    public class object <class-object-for-A+> : objc.<metaclass-for-A+> {
-    }
 }
 
 public trait A+Cat {
-    
-    public class object <class-object-for-A+Cat> : objc.<metaclass-for-A+Cat> {
-    }
 }

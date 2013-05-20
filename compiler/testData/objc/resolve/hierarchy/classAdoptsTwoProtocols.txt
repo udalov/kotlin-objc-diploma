@@ -1,6 +1,9 @@
 package objc
 
-public trait <metaclass-for-A> : objc.<metaclass-for-P>, objc.<metaclass-for-Q> {
+public trait <metaclass-for-A> : objc.<metaclass-for-NSObject>, objc.<metaclass-for-P>, objc.<metaclass-for-Q> {
+}
+
+public trait <metaclass-for-NSObject> {
 }
 
 public trait <metaclass-for-P> {
@@ -9,24 +12,24 @@ public trait <metaclass-for-P> {
 public trait <metaclass-for-Q> {
 }
 
-public open class A : jet.objc.ObjCObject, objc.P, objc.Q {
+public open class A : objc.NSObject, objc.P, objc.Q {
     public open override /*1*/ /*fake_override*/ fun anotherMethod() : jet.Int
     public open override /*1*/ /*fake_override*/ fun protocolMethod() : jet.Unit
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    }
+}
+
+public open class NSObject : jet.objc.ObjCObject {
+    
+    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }
 
 public trait P {
     public open fun protocolMethod() : jet.Unit
-    
-    public class object <class-object-for-P> : objc.<metaclass-for-P> {
-    }
 }
 
 public trait Q {
     public open fun anotherMethod() : jet.Int
-    
-    public class object <class-object-for-Q> : objc.<metaclass-for-Q> {
-    }
 }

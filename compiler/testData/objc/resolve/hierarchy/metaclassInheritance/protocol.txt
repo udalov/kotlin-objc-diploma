@@ -10,16 +10,7 @@ public trait <metaclass-for-Derived> : objc.<metaclass-for-Base> {
 }
 
 public trait Base {
-    
-    public class object <class-object-for-Base> : objc.<metaclass-for-Base> {
-        public open override /*1*/ /*fake_override*/ fun baseMethod() : jet.Unit
-    }
 }
 
 public trait Derived : objc.Base {
-    
-    public class object <class-object-for-Derived> : objc.<metaclass-for-Derived> {
-        public open override /*1*/ /*fake_override*/ fun baseMethod() : jet.Unit
-        public open override /*1*/ /*fake_override*/ fun derivedMethod() : jet.Unit
-    }
 }

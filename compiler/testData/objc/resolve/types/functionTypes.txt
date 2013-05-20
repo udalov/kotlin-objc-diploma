@@ -1,9 +1,12 @@
 package objc
 
-public trait <metaclass-for-A> {
+public trait <metaclass-for-A> : objc.<metaclass-for-NSObject> {
 }
 
-public open class A : jet.objc.ObjCObject {
+public trait <metaclass-for-NSObject> {
+}
+
+public open class A : objc.NSObject {
     public open fun f01() : () -> jet.Unit
     public open fun f02() : () -> jet.Int
     public open fun f03() : () -> jet.objc.Pointer<out jet.Any?>
@@ -21,6 +24,12 @@ public open class A : jet.objc.ObjCObject {
     public open fun f15() : (jet.Any?, jet.Any?, jet.Any?) -> objc.A
     public open fun f16() : ((jet.Int, jet.objc.Pointer<jet.Char>) -> jet.Unit, () -> jet.objc.Pointer<out jet.Any?>) -> jet.Unit
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    }
+}
+
+public open class NSObject : jet.objc.ObjCObject {
+    
+    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

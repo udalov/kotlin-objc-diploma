@@ -1,6 +1,6 @@
 package objc
 
-public trait <metaclass-for-A> {
+public trait <metaclass-for-A> : objc.<metaclass-for-NSObject> {
     public open fun idWithInt(/*0*/ intArg : jet.Int, /*1*/ charArg : jet.Char) : jet.Any?
     public open fun intNoArgs() : jet.Int
     public open fun intWithInt(/*0*/ intArg : jet.Int) : jet.Int
@@ -9,14 +9,23 @@ public trait <metaclass-for-A> {
     public open fun voidWithInt(/*0*/ intArg : jet.Int) : jet.Unit
 }
 
-public open class A : jet.objc.ObjCObject {
+public trait <metaclass-for-NSObject> {
+}
+
+public open class A : objc.NSObject {
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
         public open override /*1*/ /*fake_override*/ fun idWithInt(/*0*/ intArg : jet.Int, /*1*/ charArg : jet.Char) : jet.Any?
         public open override /*1*/ /*fake_override*/ fun intNoArgs() : jet.Int
         public open override /*1*/ /*fake_override*/ fun intWithInt(/*0*/ intArg : jet.Int) : jet.Int
         public open override /*1*/ /*fake_override*/ fun voidNoArgs() : jet.Unit
         public open override /*1*/ /*fake_override*/ fun voidWithID(/*0*/ idArg : jet.Any?, /*1*/ charArg : jet.Char) : jet.Unit
         public open override /*1*/ /*fake_override*/ fun voidWithInt(/*0*/ intArg : jet.Int) : jet.Unit
+    }
+}
+
+public open class NSObject : jet.objc.ObjCObject {
+    
+    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

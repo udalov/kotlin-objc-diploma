@@ -1,4 +1,7 @@
-@interface A
+@interface NSObject
+@end
+
+@interface A : NSObject
 - (void) f_void;
 - (unsigned char) f_uchar;
 - (unsigned short) f_ushort;

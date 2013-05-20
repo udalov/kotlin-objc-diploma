@@ -12,21 +12,12 @@ public trait <metaclass-for-Q> {
 public trait Derived : objc.P, objc.Q {
     public open override /*1*/ /*fake_override*/ fun p() : jet.Unit
     public open override /*1*/ /*fake_override*/ fun q() : jet.Unit
-    
-    public class object <class-object-for-Derived> : objc.<metaclass-for-Derived> {
-    }
 }
 
 public trait P {
     public open fun p() : jet.Unit
-    
-    public class object <class-object-for-P> : objc.<metaclass-for-P> {
-    }
 }
 
 public trait Q {
     public open fun q() : jet.Unit
-    
-    public class object <class-object-for-Q> : objc.<metaclass-for-Q> {
-    }
 }

@@ -1,4 +1,7 @@
-@interface A
+@interface NSObject
+@end
+
+@interface A : NSObject
 
 - (void) voidNoArgs;
 - (void) voidWithInt: (int)intArg;

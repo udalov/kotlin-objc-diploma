@@ -1,4 +1,7 @@
-@interface A
+@interface NSObject
+@end
+
+@interface A : NSObject
 - (void *) pv1;
 - (const void *) pv2;
 - (void * const) pv3;

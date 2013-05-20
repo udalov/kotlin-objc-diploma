@@ -1,3 +1,6 @@
+@interface NSObject
+@end
+
 @class A;
 
 typedef void (*F01)();
@@ -33,7 +36,7 @@ typedef A * (*F15)(id, id, SEL);
 typedef void (*F16)(void (*)(int, const char *), void * (*)(), ...);
 
 
-@interface A
+@interface A : NSObject
 - (F01) f01;
 - (F02) f02;
 - (F03) f03;

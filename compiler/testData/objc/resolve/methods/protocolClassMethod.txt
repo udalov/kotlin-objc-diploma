@@ -5,8 +5,4 @@ public trait <metaclass-for-P> {
 }
 
 public trait P {
-    
-    public class object <class-object-for-P> : objc.<metaclass-for-P> {
-        public open override /*1*/ /*fake_override*/ fun foo(/*0*/ a : jet.Int) : jet.Unit
-    }
 }

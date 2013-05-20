@@ -1,9 +1,12 @@
 package objc
 
-public trait <metaclass-for-A> {
+public trait <metaclass-for-A> : objc.<metaclass-for-NSObject> {
 }
 
-public open class A : jet.objc.ObjCObject {
+public trait <metaclass-for-NSObject> {
+}
+
+public open class A : objc.NSObject {
     public open fun pa() : jet.objc.Pointer<objc.A>
     public open fun pc() : jet.objc.Pointer<jet.Char>
     public open fun pd() : jet.objc.Pointer<jet.Double>
@@ -19,6 +22,12 @@ public open class A : jet.objc.ObjCObject {
     public open fun pv3() : jet.objc.Pointer<out jet.Any?>
     public open fun pv4() : jet.objc.Pointer<out jet.Any?>
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    }
+}
+
+public open class NSObject : jet.objc.ObjCObject {
+    
+    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

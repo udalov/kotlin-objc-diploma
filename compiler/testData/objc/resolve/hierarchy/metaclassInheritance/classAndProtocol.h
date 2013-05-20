@@ -8,5 +8,9 @@
 
 
 @interface Derived : BaseClass<BaseProtocol>
-+ (void)derivedMethod;
++ (void)derivedClassMethod;
+@end
+
+@protocol DerivedProtocol <BaseProtocol>
++ (void)derivedProtocolMethod;
 @end

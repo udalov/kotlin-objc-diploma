@@ -1,15 +1,24 @@
 package objc
 
-public trait <metaclass-for-A> {
+public trait <metaclass-for-A> : objc.<metaclass-for-NSObject> {
 }
 
-public open class A : jet.objc.ObjCObject {
+public trait <metaclass-for-NSObject> {
+}
+
+public open class A : objc.NSObject {
     public open fun f_a() : objc.A
     public open fun f_int() : jet.Int
     public open fun f_pa() : jet.objc.Pointer<objc.A>
     public open fun f_pint() : jet.objc.Pointer<jet.Int>
     public open fun f_ppint() : jet.objc.Pointer<jet.objc.Pointer<jet.Int>>
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    }
+}
+
+public open class NSObject : jet.objc.ObjCObject {
+    
+    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

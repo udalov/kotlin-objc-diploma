@@ -1,7 +1,11 @@
+@interface NSObject
+@end
+
+
 @protocol P
 - (void)protocolMethod;
 @end
 
 
-@interface A<P>
+@interface A : NSObject<P>
 @end

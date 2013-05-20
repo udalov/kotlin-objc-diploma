@@ -11,18 +11,15 @@ public trait <metaclass-for-B> : objc.<metaclass-for-A>, objc.<metaclass-for-APr
 
 public open class A : jet.objc.ObjCObject {
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.A {
     }
 }
 
 public trait AProtocol {
-    
-    public class object <class-object-for-AProtocol> : objc.<metaclass-for-AProtocol> {
-    }
 }
 
 public open class B : objc.A, objc.AProtocol {
     
-    public class object <class-object-for-B> : objc.<metaclass-for-B> {
+    public class object <class-object-for-B> : objc.<metaclass-for-B>, objc.A {
     }
 }

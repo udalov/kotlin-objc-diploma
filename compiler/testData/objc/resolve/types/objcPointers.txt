@@ -1,22 +1,31 @@
 package objc
 
-public trait <metaclass-for-A> {
+public trait <metaclass-for-A> : objc.<metaclass-for-NSObject> {
 }
 
-public trait <metaclass-for-B> {
+public trait <metaclass-for-B> : objc.<metaclass-for-NSObject> {
 }
 
-public open class A : jet.objc.ObjCObject {
+public trait <metaclass-for-NSObject> {
+}
+
+public open class A : objc.NSObject {
     public open fun a() : objc.A
     public open fun aWithB(/*0*/ b : objc.B) : objc.A
     public open fun b() : objc.B
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A> {
+    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
     }
 }
 
-public open class B : jet.objc.ObjCObject {
+public open class B : objc.NSObject {
     
-    public class object <class-object-for-B> : objc.<metaclass-for-B> {
+    public class object <class-object-for-B> : objc.<metaclass-for-B>, objc.NSObject {
+    }
+}
+
+public open class NSObject : jet.objc.ObjCObject {
+    
+    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

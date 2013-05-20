@@ -29,7 +29,9 @@ import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.resolve.scopes.RedeclarationHandler;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScope;
 import org.jetbrains.jet.lang.resolve.scopes.WritableScopeImpl;
+import org.jetbrains.jet.lang.types.DeferredTypeBase;
 import org.jetbrains.jet.lang.types.JetType;
+import org.jetbrains.jet.util.lazy.RecursionIntolerantLazyValue;
 
 import java.util.*;
 
@@ -85,8 +87,6 @@ public class ObjCDescriptorResolver {
             ObjCClassDescriptor metaclass = resolveMetaclass(descriptor, protocol.getMethodList());
             classes.add(metaclass);
             scope.addClassifierAlias(metaclass.getName(), metaclass);
-
-            resolveClassObject(descriptor, metaclass);
         }
 
         for (ObjCCategory category : tu.getCategoryList()) {
@@ -97,8 +97,6 @@ public class ObjCDescriptorResolver {
             ObjCClassDescriptor metaclass = resolveMetaclass(descriptor, category.getMethodList());
             classes.add(metaclass);
             scope.addClassifierAlias(metaclass.getName(), metaclass);
-
-            resolveClassObject(descriptor, metaclass);
         }
 
         for (ObjCClassDescriptor descriptor : classes) {
@@ -213,12 +211,54 @@ public class ObjCDescriptorResolver {
 
     private static void resolveClassObject(@NotNull ObjCClassDescriptor descriptor, @NotNull ObjCClassDescriptor metaclass) {
         Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
-        Collection<JetType> supertypes = Collections.singletonList(metaclass.getDefaultType());
+        Collection<JetType> supertypes = new ArrayList<JetType>(2);
+        supertypes.add(metaclass.getDefaultType());
+        if (descriptor.getKind() == ClassKind.CLASS) {
+            supertypes.add(new DeferredHierarchyRootType(descriptor));
+        }
 
         ObjCClassDescriptor classObject = new ObjCClassDescriptor(descriptor, ClassKind.CLASS_OBJECT, Modality.FINAL, name, supertypes);
 
         ClassObjectStatus result = descriptor.getBuilder().setClassObjectDescriptor(classObject);
         assert result == ClassObjectStatus.OK : result;
+    }
+
+    private static class DeferredHierarchyRootType extends DeferredTypeBase {
+        public DeferredHierarchyRootType(@NotNull final ObjCClassDescriptor descriptor) {
+            super(new RecursionIntolerantLazyValue<JetType>() {
+                @Override
+                protected JetType compute() {
+                    return getHierarchyRoot(descriptor).getDefaultType();
+                }
+
+                @NotNull
+                private ObjCClassDescriptor getHierarchyRoot(@NotNull ObjCClassDescriptor descriptor) {
+                    // If there's ObjCObject in the immediate supertypes of this class, it's a hierarchy root
+                    Collection<JetType> supertypes = descriptor.getSupertypes();
+                    for (JetType supertype : supertypes) {
+                        if (supertype.getConstructor().getDeclarationDescriptor() == ObjCBuiltIns.getInstance().getObjCObjectClass()) {
+                            return descriptor;
+                        }
+                    }
+
+                    // Otherwise there's exactly one class (kind == CLASS) in its supertypes, for which we calculate the root recursively
+                    ObjCClassDescriptor superclass = null;
+                    for (JetType supertype : supertypes) {
+                        ClassifierDescriptor declaration = supertype.getConstructor().getDeclarationDescriptor();
+                        if (declaration instanceof ObjCClassDescriptor) {
+                            ObjCClassDescriptor objcDescriptor = (ObjCClassDescriptor) declaration;
+                            if (objcDescriptor.getKind() == ClassKind.CLASS) {
+                                assert superclass == null : "More than one superclass for Obj-C class: " + descriptor;
+                                superclass = objcDescriptor;
+                            }
+                        }
+                    }
+                    assert superclass != null : "No superclass for Obj-C class: " + descriptor;
+
+                    return getHierarchyRoot(superclass);
+                }
+            });
+        }
     }
 
     @NotNull
