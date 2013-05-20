@@ -3,7 +3,7 @@ package objc
 public trait <metaclass-for-A> {
 }
 
-public open class A {
+public open class A : jet.objc.ObjCObject {
     public open fun idWithInt(/*0*/ intArg : jet.Int, /*1*/ charArg : jet.Char) : jet.Any?
     public open fun intNoArgs() : jet.Int
     public open fun intWithInt(/*0*/ intArg : jet.Int) : jet.Int

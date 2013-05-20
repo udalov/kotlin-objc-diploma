@@ -43,9 +43,11 @@ public class ObjCBuiltIns {
     }
 
     private final ClassDescriptor pointerClass;
+    private final ClassDescriptor objcObjectClass;
 
     private ObjCBuiltIns(@NotNull DependencyClassByQualifiedNameResolver resolver) {
         pointerClass = resolver.resolveClass(new FqName("jet.objc.Pointer"));
+        objcObjectClass = resolver.resolveClass(new FqName("jet.objc.ObjCObject"));
     }
 
     private static class BuiltInType extends DeferredTypeBase {
@@ -78,5 +80,10 @@ public class ObjCBuiltIns {
 
     public boolean isPointerType(@NotNull JetType type) {
         return pointerClass == type.getConstructor().getDeclarationDescriptor();
+    }
+
+    @NotNull
+    public ClassDescriptor getObjCObjectClass() {
+        return objcObjectClass;
     }
 }

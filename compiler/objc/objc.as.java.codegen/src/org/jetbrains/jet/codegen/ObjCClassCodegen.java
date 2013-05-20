@@ -217,6 +217,13 @@ public class ObjCClassCodegen {
     }
 
     private void generateMethod(@NotNull final FunctionDescriptor method) {
+        if (!method.getKind().isReal() && getDeclaringClassOfMethod(method).getKind() != ClassKind.TRAIT) {
+            // Don't generate code for fake overrides, unless this method is declared in a trait.
+            // This is needed since we don't generate TImpl methods for metaclasses and categories, which are traits
+            // (this, in turn, is not needed since there's only one instance of both a metaclass and a category).
+            return;
+        }
+
         final JvmMethodSignature signature = typeMapper.mapSignature(method.getName(), method);
 
         newMethod(ACC_PUBLIC, signature.getName(), signature.getAsmMethod().getDescriptor(), new MethodCodegen() {
@@ -341,6 +348,13 @@ public class ObjCClassCodegen {
                 }
             }
         });
+    }
+
+    @NotNull
+    private static ClassDescriptor getDeclaringClassOfMethod(@NotNull FunctionDescriptor method) {
+        DeclarationDescriptor declaration = CodegenUtil.unwrapFakeOverride(method).getContainingDeclaration();
+        assert declaration instanceof ClassDescriptor : "Obj-C method isn't declared in a class: " + method;
+        return (ClassDescriptor) declaration;
     }
 
     @NotNull

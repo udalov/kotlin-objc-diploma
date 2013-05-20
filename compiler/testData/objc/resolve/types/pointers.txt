@@ -3,7 +3,7 @@ package objc
 public trait <metaclass-for-A> {
 }
 
-public open class A {
+public open class A : jet.objc.ObjCObject {
     public open fun pa() : jet.objc.Pointer<objc.A>
     public open fun pc() : jet.objc.Pointer<jet.Char>
     public open fun pd() : jet.objc.Pointer<jet.Double>

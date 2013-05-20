@@ -49,8 +49,9 @@ public class ObjCOverrideResolver {
 
         for (JetType supertype : descriptor.getSupertypes()) {
             ClassifierDescriptor classifier = supertype.getConstructor().getDeclarationDescriptor();
-            assert classifier instanceof ObjCClassDescriptor : "Supertype of Obj-C class not an Obj-C class: " + classifier;
-            generateOverrides((ObjCClassDescriptor) classifier);
+            if (classifier instanceof ObjCClassDescriptor) {
+                generateOverrides((ObjCClassDescriptor) classifier);
+            }
         }
 
         OverrideResolver.generateOverridesInAClass(

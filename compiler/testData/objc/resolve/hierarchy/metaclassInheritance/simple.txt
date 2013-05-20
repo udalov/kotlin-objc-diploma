@@ -7,7 +7,7 @@ public trait <metaclass-for-Derived> : objc.<metaclass-for-Base> {
     public open fun derivedMethod() : jet.Unit
 }
 
-public open class Base {
+public open class Base : jet.objc.ObjCObject {
     
     public class object <class-object-for-Base> : objc.<metaclass-for-Base> {
     }

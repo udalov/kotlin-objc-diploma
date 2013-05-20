@@ -11,7 +11,7 @@ public trait <metaclass-for-A> : objc.<metaclass-for-A+First>, objc.<metaclass-f
     public open override /*1*/ /*fake_override*/ fun bar() : jet.Unit
 }
 
-public open class A : objc.A+First, objc.A+Second {
+public open class A : jet.objc.ObjCObject, objc.A+First, objc.A+Second {
     public open override /*1*/ /*fake_override*/ fun foo() : jet.Unit
     
     public class object <class-object-for-A> : objc.<metaclass-for-A> {

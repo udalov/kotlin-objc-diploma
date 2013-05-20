@@ -9,7 +9,7 @@ public trait <metaclass-for-P> {
 public trait <metaclass-for-Q> {
 }
 
-public open class A : objc.P, objc.Q {
+public open class A : jet.objc.ObjCObject, objc.P, objc.Q {
     public open override /*1*/ /*fake_override*/ fun anotherMethod() : jet.Int
     public open override /*1*/ /*fake_override*/ fun protocolMethod() : jet.Unit
     

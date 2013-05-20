@@ -6,7 +6,7 @@ public trait <metaclass-for-A> {
 public trait <metaclass-for-B> {
 }
 
-public open class A {
+public open class A : jet.objc.ObjCObject {
     public open fun a() : objc.A
     public open fun aWithB(/*0*/ b : objc.B) : objc.A
     public open fun b() : objc.B
@@ -15,7 +15,7 @@ public open class A {
     }
 }
 
-public open class B {
+public open class B : jet.objc.ObjCObject {
     
     public class object <class-object-for-B> : objc.<metaclass-for-B> {
     }

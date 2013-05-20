@@ -3,7 +3,7 @@ package objc
 public trait <metaclass-for-A> {
 }
 
-public open class A {
+public open class A : jet.objc.ObjCObject {
     public open fun f01() : () -> jet.Unit
     public open fun f02() : () -> jet.Int
     public open fun f03() : () -> jet.objc.Pointer<out jet.Any?>

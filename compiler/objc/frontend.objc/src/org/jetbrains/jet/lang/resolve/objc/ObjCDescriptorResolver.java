@@ -155,6 +155,9 @@ public class ObjCDescriptorResolver {
             JetType supertype = typeResolver.createTypeForClass(baseName);
             supertypes.add(supertype);
         }
+        else {
+            supertypes.add(ObjCBuiltIns.getInstance().getObjCObjectClass().getDefaultType());
+        }
 
         for (String baseProtocolName : clazz.getProtocolList()) {
             Name baseName = nameForProtocol(baseProtocolName);
@@ -232,10 +235,11 @@ public class ObjCDescriptorResolver {
     private List<JetType> createDeferredSupertypesForMetaclass(@NotNull ObjCClassDescriptor descriptor) {
         List<JetType> supertypes = new ArrayList<JetType>(1);
         for (JetType supertype : descriptor.getLazySupertypes()) {
-            assert supertype instanceof ObjCDeferredType : "Unexpected Obj-C supertype: " + supertype.getClass().getName();
-            Name supertypeName = ((ObjCDeferredType) supertype).getClassName();
-            Name superMetaName = ObjCMetaclassDescriptor.getMetaclassName(supertypeName);
-            supertypes.add(typeResolver.createTypeForClass(superMetaName));
+            if (supertype instanceof ObjCDeferredType) {
+                Name supertypeName = ((ObjCDeferredType) supertype).getClassName();
+                Name superMetaName = ObjCMetaclassDescriptor.getMetaclassName(supertypeName);
+                supertypes.add(typeResolver.createTypeForClass(superMetaName));
+            }
         }
         return supertypes;
     }

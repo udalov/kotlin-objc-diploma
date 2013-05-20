@@ -9,7 +9,7 @@ public trait <metaclass-for-A+Cat> {
 public trait <metaclass-for-A> : objc.<metaclass-for-A+>, objc.<metaclass-for-A+Cat> {
 }
 
-public open class A : objc.A+, objc.A+Cat {
+public open class A : jet.objc.ObjCObject, objc.A+, objc.A+Cat {
     
     public class object <class-object-for-A> : objc.<metaclass-for-A> {
     }

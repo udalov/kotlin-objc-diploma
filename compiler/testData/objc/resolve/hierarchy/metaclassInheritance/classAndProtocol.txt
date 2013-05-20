@@ -14,7 +14,7 @@ public trait <metaclass-for-Derived> : objc.<metaclass-for-BaseClass>, objc.<met
     public open fun derivedMethod() : jet.Unit
 }
 
-public open class BaseClass {
+public open class BaseClass : jet.objc.ObjCObject {
     
     public class object <class-object-for-BaseClass> : objc.<metaclass-for-BaseClass> {
         public open override /*1*/ /*fake_override*/ fun baseClassMethod() : jet.Unit
