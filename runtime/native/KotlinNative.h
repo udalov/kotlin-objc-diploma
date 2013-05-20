@@ -58,7 +58,7 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass
 /*
  * Class:     jet_runtime_objc_Native
  * Method:    objc_msgSendPrimitive
- * Signature: (Ljet/runtime/objc/ID;Ljava/lang/String;[Ljet/objc/NativeValue;)J
+ * Signature: (Ljet/objc/ObjCObject;Ljava/lang/String;[Ljet/objc/NativeValue;)J
  */
 JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive
   (JNIEnv *, jclass, jobject, jstring, jobjectArray);
@@ -66,7 +66,7 @@ JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive
 /*
  * Class:     jet_runtime_objc_Native
  * Method:    objc_msgSendObjCObject
- * Signature: (Ljet/runtime/objc/ID;Ljava/lang/String;[Ljet/objc/NativeValue;)Ljet/objc/ObjCObject;
+ * Signature: (Ljet/objc/ObjCObject;Ljava/lang/String;[Ljet/objc/NativeValue;)Ljet/objc/ObjCObject;
  */
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject
   (JNIEnv *, jclass, jobject, jstring, jobjectArray);

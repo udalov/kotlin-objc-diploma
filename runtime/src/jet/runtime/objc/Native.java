@@ -40,9 +40,9 @@ public class Native {
 
     public static native ID objc_getClass(String name);
 
-    public static native long objc_msgSendPrimitive(ID receiver, String selectorName, NativeValue... args);
+    public static native long objc_msgSendPrimitive(ObjCObject receiver, String selectorName, NativeValue... args);
 
-    public static native ObjCObject objc_msgSendObjCObject(ID receiver, String selectorName, NativeValue... args);
+    public static native ObjCObject objc_msgSendObjCObject(ObjCObject receiver, String selectorName, NativeValue... args);
 
     public static native ID createNativeClosureForFunction(Object function, int arity);
 }

@@ -94,4 +94,20 @@ public class Pointer<T> implements NativeValue {
     public void release() {
         Native.free(peer);
     }
+
+
+    @Override
+    public String toString() {
+        return String.format("[Pointer %016x]", peer);
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (peer ^ (peer >>> 32));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Pointer && ((Pointer) o).peer == peer;
+    }
 }

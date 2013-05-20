@@ -16,32 +16,12 @@
 
 #define L2A(x) ((void *)(x))
 
-const char *const CLASS_ID = "jet/runtime/objc/ID";
-const char *const OBJC_OBJECT_CONSTRUCTOR = "(Ljet/runtime/objc/ID;)V";
-
 const std::string OBJC_PACKAGE_PREFIX = "objc/";
 
 // TODO: hide everything util under a namespace
 // TODO: process all possible JNI errors
 // TODO: delete local JNI references where there can be too many of them
 // TODO: fail gracefully if any class/method/field is not found
-
-jclass getIdClass(JNIEnv *env) {
-    return env->FindClass(CLASS_ID);
-}
-
-jobject createNativePointer(JNIEnv *env, void *pointer) {
-    jclass idClass = getIdClass(env);
-    jmethodID constructor = env->GetMethodID(idClass, "<init>", "(J)V");
-    return env->NewObject(idClass, constructor, pointer);
-}
-
-SEL lookupSelector(JNIEnv *env, jstring name) {
-    const char *chars = env->GetStringUTFChars(name, 0);
-    SEL selector = sel_registerName(chars);
-    env->ReleaseStringUTFChars(name, chars);
-    return selector;
-}
 
 
 // --------------------------------------------------------
@@ -106,6 +86,12 @@ JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_setWord(
 // Objective-C
 // --------------------------------------------------------
 
+jobject createNativePointer(JNIEnv *env, void *pointer) {
+    jclass idClass = env->FindClass( "jet/runtime/objc/ID");
+    jmethodID constructor = env->GetMethodID(idClass, "<init>", "(J)V");
+    return env->NewObject(idClass, constructor, pointer);
+}
+
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
         JNIEnv *env,
         jclass clazz,
@@ -166,10 +152,7 @@ std::vector<void *> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArra
     jfieldID peerField = env->GetFieldID(pointerClass, "peer", "J");
 
     jclass objcObjectClass = env->FindClass("jet/objc/ObjCObject");
-    jfieldID idField = env->GetFieldID(objcObjectClass, "id", "Ljet/runtime/objc/ID;");
-
-    jclass idClass = env->FindClass("jet/runtime/objc/ID");
-    jfieldID idValueField = env->GetFieldID(idClass, "value", "J");
+    jfieldID pointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
 
     jclass primitiveValueClass = env->FindClass("jet/objc/PrimitiveValue");
     jfieldID valueField = env->GetFieldID(primitiveValueClass, "value", "J");
@@ -186,8 +169,7 @@ std::vector<void *> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArra
             jlong peer = env->GetLongField(arg, peerField);
             args.push_back(L2A(peer));
         } else if (env->IsInstanceOf(arg, objcObjectClass)) {
-            jobject oid = env->GetObjectField(arg, idField);
-            jlong pointer = env->GetLongField(oid, idValueField);
+            jlong pointer = env->GetLongField(arg, pointerField);
             args.push_back(L2A(pointer));
         } else if (env->IsInstanceOf(arg, primitiveValueClass)) {
             jlong value = env->GetLongField(arg, valueField);
@@ -211,16 +193,23 @@ void drainAutoreleasePool(id pool) {
     objc_msgSend(pool, drain);
 }
 
+SEL lookupSelector(JNIEnv *env, jstring name) {
+    const char *chars = env->GetStringUTFChars(name, 0);
+    SEL selector = sel_registerName(chars);
+    env->ReleaseStringUTFChars(name, chars);
+    return selector;
+}
+
 id sendMessage(
         JNIEnv *env,
         jobject receiverJObject,
         jstring selectorName,
         jobjectArray argArray
 ) {
-    jclass idClass = getIdClass(env);
-    jmethodID getValue = env->GetMethodID(idClass, "getValue", "()J");
+    jclass objcObjectClass = env->FindClass("jet/objc/ObjCObject");
+    jfieldID pointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
 
-    id receiver = (id) env->CallLongMethod(receiverJObject, getValue);
+    id receiver = (id) env->GetLongField(receiverJObject, pointerField);
     SEL selector = lookupSelector(env, selectorName);
     std::vector<void *> args = extractArgumentsFromJArray(env, argArray);
 
@@ -295,12 +284,9 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
     static SEL retain = sel_registerName("retain");
     objc_msgSend(result, retain);
 
-    // Here we create an instance of this jclass, invoking a constructor which
-    // takes a single ID parameter
-    jmethodID constructor = env->GetMethodID(jvmClass, "<init>", OBJC_OBJECT_CONSTRUCTOR);
+    jmethodID constructor = env->GetMethodID(jvmClass, "<init>", "(J)V");
 
-    jobject idInstance = createNativePointer(env, result);
-    return env->NewObject(jvmClass, constructor, idInstance);
+    return env->NewObject(jvmClass, constructor, result);
 }
 
 // --------------------------------------------------------

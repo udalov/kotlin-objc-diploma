@@ -16,30 +16,27 @@
 
 package jet.objc;
 
-import jet.runtime.objc.ID;
-
 @SuppressWarnings("UnusedDeclaration")
 public abstract class ObjCObject implements NativeValue {
-    public final ID id;
+    // This is long for efficiency, but probably needs to be Pointer<?>
+    public final long pointer;
 
-    protected ObjCObject(ID id) {
-        this.id = id;
+    protected ObjCObject(long pointer) {
+        this.pointer = pointer;
     }
 
     @Override
     public String toString() {
-        return "[ObjCObject " + getClass().getName() + " " + id.toString() + "]";
+        return String.format("[ObjCObject %s %016x]", getClass().getName(), pointer);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return (int) (pointer ^ (pointer >>> 32));
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ObjCObject)) return false;
-        ObjCObject obj = (ObjCObject) o;
-        return id == null ? obj.id == null : id.equals(obj.id);
+        return o instanceof ObjCObject && ((ObjCObject) o).pointer == pointer;
     }
 }

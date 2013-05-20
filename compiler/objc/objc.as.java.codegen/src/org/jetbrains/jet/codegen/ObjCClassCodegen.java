@@ -192,7 +192,7 @@ public class ObjCClassCodegen {
     }
 
     private void generateConstructor() {
-        final String objcObjectConstructor = getMethodDescriptor(VOID_TYPE, ID_TYPE);
+        final String objcObjectConstructor = getMethodDescriptor(VOID_TYPE, LONG_TYPE);
         if (descriptor.getKind() == ClassKind.CLASS_OBJECT) {
             newMethod(ACC_PUBLIC, "<init>", getMethodDescriptor(VOID_TYPE), new MethodCodegen() {
                 @Override
@@ -200,6 +200,7 @@ public class ObjCClassCodegen {
                     v.load(0, asmType);
                     v.visitLdcInsn(descriptor.getContainingDeclaration().getName().getName());
                     v.invokestatic(JET_RUNTIME_OBJC, "getClass", getMethodDescriptor(ID_TYPE, JL_STRING_TYPE));
+                    v.getfield(ID_TYPE.getInternalName(), "value", LONG_TYPE.getDescriptor());
                     v.invokespecial(superClassAsmType.getInternalName(), "<init>", objcObjectConstructor);
                     v.areturn(VOID_TYPE);
                 }
@@ -210,7 +211,7 @@ public class ObjCClassCodegen {
                 @Override
                 public void generate(@NotNull InstructionAdapter v) {
                     v.load(0, asmType);
-                    v.load(1, ID_TYPE);
+                    v.load(1, LONG_TYPE);
                     v.invokespecial(superClassAsmType.getInternalName(), "<init>", objcObjectConstructor);
                     v.areturn(VOID_TYPE);
                 }
@@ -225,7 +226,6 @@ public class ObjCClassCodegen {
             @Override
             public void generate(@NotNull InstructionAdapter v) {
                 v.load(0, asmType);
-                v.getfield(OBJC_OBJECT_TYPE.getInternalName(), "id", ID_TYPE.getDescriptor());
 
                 v.visitLdcInsn(getObjCMethodName(method));
 
@@ -278,7 +278,7 @@ public class ObjCClassCodegen {
                 }
 
                 v.invokestatic(JET_RUNTIME_OBJC, "sendMessage" + sendMessageNameSuffix,
-                               getMethodDescriptor(sendMessageReturnType, ID_TYPE, JL_STRING_TYPE, NATIVE_VALUE_ARRAY_TYPE));
+                               getMethodDescriptor(sendMessageReturnType, OBJC_OBJECT_TYPE, JL_STRING_TYPE, NATIVE_VALUE_ARRAY_TYPE));
                 StackValue.coerce(sendMessageReturnType, returnType, v);
 
                 v.areturn(returnType);
