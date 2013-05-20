@@ -10,7 +10,6 @@ pushd $FFI_SRC
 
 curl ftp://sourceware.org/pub/libffi/libffi-3.0.13.tar.gz | tar xz --strip=1
 
-# TODO: figure out correct flags to stop ld warnings
 ARCH="-arch i386 -arch x86_64"
 CC=cc CFLAGS="-O2 $ARCH" LDFLAGS="$ARCH" ./configure --enable-debug --disable-dependency-tracking --enable-static --disable-shared --with-pic=yes
 make
