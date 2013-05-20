@@ -16,7 +16,6 @@
 
 package jet.objc;
 
-import jet.runtime.objc.ID;
 import jet.runtime.objc.Native;
 
 import java.util.HashSet;
@@ -34,7 +33,7 @@ public class NativeHelpers {
         }
     }
 
-    public static ID getClass(String name) {
+    public static long getClass(String name) {
         return Native.objc_getClass(name);
     }
 

@@ -17,7 +17,6 @@
 package org.jetbrains.jet.codegen;
 
 import jet.objc.*;
-import jet.runtime.objc.ID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.asm4.ClassWriter;
 import org.jetbrains.asm4.MethodVisitor;
@@ -51,7 +50,6 @@ public class ObjCClassCodegen {
     public static final Type JL_OBJECT_TYPE = Type.getType(Object.class);
     public static final Type JL_STRING_TYPE = Type.getType(String.class);
 
-    public static final Type ID_TYPE = Type.getType(ID.class);
     public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
     public static final Type POINTER_TYPE = Type.getType(Pointer.class);
     public static final Type NATIVE_VALUE_TYPE = Type.getType(NativeValue.class);
@@ -199,8 +197,7 @@ public class ObjCClassCodegen {
                 public void generate(@NotNull InstructionAdapter v) {
                     v.load(0, asmType);
                     v.visitLdcInsn(descriptor.getContainingDeclaration().getName().getName());
-                    v.invokestatic(JET_RUNTIME_OBJC, "getClass", getMethodDescriptor(ID_TYPE, JL_STRING_TYPE));
-                    v.getfield(ID_TYPE.getInternalName(), "value", LONG_TYPE.getDescriptor());
+                    v.invokestatic(JET_RUNTIME_OBJC, "getClass", getMethodDescriptor(LONG_TYPE, JL_STRING_TYPE));
                     v.invokespecial(superClassAsmType.getInternalName(), "<init>", objcObjectConstructor);
                     v.areturn(VOID_TYPE);
                 }

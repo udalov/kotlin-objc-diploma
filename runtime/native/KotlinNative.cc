@@ -15,6 +15,7 @@
 #include <vector>
 
 #define L2A(x) ((void *)(x))
+#define A2L(x) ((jlong)(x))
 
 const std::string OBJC_PACKAGE_PREFIX = "objc/";
 
@@ -30,7 +31,7 @@ const std::string OBJC_PACKAGE_PREFIX = "objc/";
 
 JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_dlopen(
         JNIEnv *env,
-        jclass clazz,
+        jclass,
         jstring path
 ) {
     const char *chars = env->GetStringUTFChars(path, 0);
@@ -86,21 +87,15 @@ JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_setWord(
 // Objective-C
 // --------------------------------------------------------
 
-jobject createNativePointer(JNIEnv *env, void *pointer) {
-    jclass idClass = env->FindClass( "jet/runtime/objc/ID");
-    jmethodID constructor = env->GetMethodID(idClass, "<init>", "(J)V");
-    return env->NewObject(idClass, constructor, pointer);
-}
-
-JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
+JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
         JNIEnv *env,
-        jclass clazz,
+        jclass,
         jstring name
 ) {
     const char *chars = env->GetStringUTFChars(name, 0);
     id objcClass = objc_getClass(chars);
     env->ReleaseStringUTFChars(name, chars);
-    return createNativePointer(env, objcClass);
+    return A2L(objcClass);
 }
 
 
@@ -243,13 +238,22 @@ id sendMessage(
 
 JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive(
         JNIEnv *env,
-        jclass clazz,
+        jclass,
         jobject receiver,
         jstring selectorName,
         jobjectArray argArray
 ) {
     id result = sendMessage(env, receiver, selectorName, argArray);
-    return (jlong) result;
+    return A2L(result);
+}
+
+jobject createMirrorObjectOfClass(JNIEnv *env, id object, jclass jvmClass) {
+    // TODO: release in finalize
+    static SEL retain = sel_registerName("retain");
+    objc_msgSend(object, retain);
+
+    jmethodID constructor = env->GetMethodID(jvmClass, "<init>", "(J)V");
+    return env->NewObject(jvmClass, constructor, object);
 }
 
 JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
@@ -264,7 +268,7 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
     Class clazz = object_getClass(result);
 
     jclass jvmClass = NULL;
-    while (clazz != Nil) {
+    while (clazz) {
         // TODO: free?
         const char *className = class_getName(clazz);
         std::string fqClassName = OBJC_PACKAGE_PREFIX + className;
@@ -280,13 +284,7 @@ JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
         exit(42);
     }
 
-    // TODO: release in finalize
-    static SEL retain = sel_registerName("retain");
-    objc_msgSend(result, retain);
-
-    jmethodID constructor = env->GetMethodID(jvmClass, "<init>", "(J)V");
-
-    return env->NewObject(jvmClass, constructor, result);
+    return createMirrorObjectOfClass(env, result, jvmClass);
 }
 
 // --------------------------------------------------------
