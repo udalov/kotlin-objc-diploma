@@ -29,7 +29,7 @@ const std::string OBJC_PACKAGE_PREFIX = "objc/";
 // Dynamic libraries
 // --------------------------------------------------------
 
-JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_dlopen(
+JNIEXPORT void JNICALL Java_jet_objc_Native_dlopen(
         JNIEnv *env,
         jclass,
         jstring path
@@ -48,7 +48,7 @@ JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_dlopen(
 // Pointers
 // --------------------------------------------------------
 
-JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_malloc(
+JNIEXPORT jlong JNICALL Java_jet_objc_Native_malloc(
         JNIEnv *env,
         jclass,
         jlong bytes
@@ -57,7 +57,7 @@ JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_malloc(
     return *(jlong *)&memory;
 }
 
-JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_free(
+JNIEXPORT void JNICALL Java_jet_objc_Native_free(
         JNIEnv *env,
         jclass,
         jlong pointer
@@ -65,7 +65,7 @@ JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_free(
     free(*(void **)&pointer);
 }
 
-JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_getWord(
+JNIEXPORT jlong JNICALL Java_jet_objc_Native_getWord(
         JNIEnv *env,
         jclass,
         jlong pointer
@@ -73,7 +73,7 @@ JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_getWord(
     return *(jlong *)pointer;
 }
 
-JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_setWord(
+JNIEXPORT void JNICALL Java_jet_objc_Native_setWord(
         JNIEnv *env,
         jclass,
         jlong pointer,
@@ -87,7 +87,7 @@ JNIEXPORT void JNICALL Java_jet_runtime_objc_Native_setWord(
 // Objective-C
 // --------------------------------------------------------
 
-JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1getClass(
+JNIEXPORT jlong JNICALL Java_jet_objc_Native_objc_1getClass(
         JNIEnv *env,
         jclass,
         jstring name
@@ -204,7 +204,7 @@ jobject createMirrorObjectOfClass(JNIEnv *env, id object, jclass jvmClass) {
     return env->NewObject(jvmClass, constructor, object);
 }
 
-JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSend(
+JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend(
         JNIEnv *env,
         jclass,
         jobject receiverJObject,

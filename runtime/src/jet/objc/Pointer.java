@@ -16,7 +16,6 @@
 
 package jet.objc;
 
-import jet.runtime.objc.Native;
 import jet.runtime.typeinfo.KotlinSignature;
 
 @SuppressWarnings("UnusedDeclaration")

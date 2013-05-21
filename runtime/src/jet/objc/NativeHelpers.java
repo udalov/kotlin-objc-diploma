@@ -16,8 +16,6 @@
 
 package jet.objc;
 
-import jet.runtime.objc.Native;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,60 +29,5 @@ public class NativeHelpers {
         if (LOADED_LIBRARIES.add(fileName)) {
             Native.dlopen(fileName);
         }
-    }
-
-    public static long getClass(String name) {
-        return Native.objc_getClass(name);
-    }
-
-    public static void sendMessageVoid(ObjCObject receiver, String messageName, NativeValue... args) {
-        Native.objc_msgSend(receiver, messageName, args);
-    }
-
-    public static int sendMessageInt(ObjCObject receiver, String messageName, NativeValue... args) {
-        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
-        return value.getInt();
-    }
-
-    public static long sendMessageLong(ObjCObject receiver, String messageName, NativeValue... args) {
-        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
-        return value.getLong();
-    }
-
-    public static short sendMessageShort(ObjCObject receiver, String messageName, NativeValue... args) {
-        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
-        return value.getShort();
-    }
-
-    public static char sendMessageChar(ObjCObject receiver, String messageName, NativeValue... args) {
-        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
-        return value.getChar();
-    }
-
-    public static boolean sendMessageBoolean(ObjCObject receiver, String messageName, NativeValue... args) {
-        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
-        return value.getBoolean();
-    }
-
-    public static double sendMessageDouble(ObjCObject receiver, String messageName, NativeValue... args) {
-        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
-        return value.getDouble();
-    }
-
-    public static float sendMessageFloat(ObjCObject receiver, String messageName, NativeValue... args) {
-        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
-        return value.getFloat();
-    }
-
-    public static ObjCObject sendMessageObjCObject(ObjCObject receiver, String messageName, NativeValue... args) {
-        return (ObjCObject) Native.objc_msgSend(receiver, messageName, args);
-    }
-
-    public static ObjCSelector sendMessageObjCSelector(ObjCObject receiver, String messageName, NativeValue... args) {
-        return (ObjCSelector) Native.objc_msgSend(receiver, messageName, args);
-    }
-
-    public static Pointer<?> sendMessagePointer(ObjCObject receiver, String messageName, NativeValue... args) {
-        return (Pointer) Native.objc_msgSend(receiver, messageName, args);
     }
 }

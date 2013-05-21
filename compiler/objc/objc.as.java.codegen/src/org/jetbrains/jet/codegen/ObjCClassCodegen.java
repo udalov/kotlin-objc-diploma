@@ -44,18 +44,19 @@ import static org.jetbrains.asm4.Type.*;
 import static org.jetbrains.jet.codegen.AsmUtil.genInitSingletonField;
 
 public class ObjCClassCodegen {
+    public static final String NATIVE = Type.getType(Native.class).getInternalName();
     public static final String NATIVE_HELPERS = Type.getType(NativeHelpers.class).getInternalName();
 
     public static final Type JL_OBJECT_TYPE = Type.getType(Object.class);
     public static final Type JL_STRING_TYPE = Type.getType(String.class);
 
     public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
-    public static final Type OBJC_SELECTOR_TYPE = Type.getType(ObjCSelector.class);
-    public static final Type POINTER_TYPE = Type.getType(Pointer.class);
     public static final Type NATIVE_VALUE_TYPE = Type.getType(NativeValue.class);
-    public static final Type NATIVE_VALUE_ARRAY_TYPE = Type.getType(NativeValue[].class);
     public static final Type CALLBACK_FUNCTION_TYPE = Type.getType(CallbackFunction.class);
     public static final Type PRIMITIVE_VALUE_TYPE = Type.getType(PrimitiveValue.class);
+
+    public static final String OBJC_SEND_MESSAGE_DESCRIPTOR =
+            getMethodDescriptor(NATIVE_VALUE_TYPE, OBJC_OBJECT_TYPE, JL_STRING_TYPE, Type.getType(NativeValue[].class));
 
     private final JetTypeMapper typeMapper;
     private final ClassDescriptor descriptor;
@@ -197,7 +198,7 @@ public class ObjCClassCodegen {
                 public void generate(@NotNull InstructionAdapter v) {
                     v.load(0, asmType);
                     v.visitLdcInsn(descriptor.getContainingDeclaration().getName().getName());
-                    v.invokestatic(NATIVE_HELPERS, "getClass", getMethodDescriptor(LONG_TYPE, JL_STRING_TYPE));
+                    v.invokestatic(NATIVE, "objc_getClass", getMethodDescriptor(LONG_TYPE, JL_STRING_TYPE));
                     v.invokespecial(superClassAsmType.getInternalName(), "<init>", objcObjectConstructor);
                     v.areturn(VOID_TYPE);
                 }
@@ -235,59 +236,20 @@ public class ObjCClassCodegen {
 
                 putArgumentsAsNativeValueArray(v);
 
-                String sendMessageNameSuffix;
-                Type sendMessageReturnType;
+                v.invokestatic(NATIVE, "objc_msgSend", OBJC_SEND_MESSAGE_DESCRIPTOR);
 
                 Type returnType = signature.getAsmMethod().getReturnType();
-                if (returnType.getSort() == Type.INT) {
-                    sendMessageNameSuffix = "Int";
-                    sendMessageReturnType = INT_TYPE;
-                }
-                else if (returnType.getSort() == Type.LONG) {
-                    sendMessageNameSuffix = "Long";
-                    sendMessageReturnType = LONG_TYPE;
-                }
-                else if (returnType.getSort() == Type.SHORT) {
-                    sendMessageNameSuffix = "Short";
-                    sendMessageReturnType = SHORT_TYPE;
-                }
-                else if (returnType.getSort() == Type.CHAR) {
-                    sendMessageNameSuffix = "Char";
-                    sendMessageReturnType = CHAR_TYPE;
-                }
-                else if (returnType.getSort() == Type.BOOLEAN) {
-                    sendMessageNameSuffix = "Boolean";
-                    sendMessageReturnType = BOOLEAN_TYPE;
-                }
-                else if (returnType.getSort() == Type.DOUBLE) {
-                    sendMessageNameSuffix = "Double";
-                    sendMessageReturnType = DOUBLE_TYPE;
-                }
-                else if (returnType.getSort() == Type.FLOAT) {
-                    sendMessageNameSuffix = "Float";
-                    sendMessageReturnType = FLOAT_TYPE;
-                }
-                else if (returnType.equals(POINTER_TYPE)) {
-                    sendMessageNameSuffix = "Pointer";
-                    sendMessageReturnType = POINTER_TYPE;
-                }
-                else if (returnType.equals(OBJC_SELECTOR_TYPE)) {
-                    sendMessageNameSuffix = "ObjCSelector";
-                    sendMessageReturnType = OBJC_SELECTOR_TYPE;
-                }
-                else if (returnType.getSort() == Type.OBJECT) {
-                    sendMessageNameSuffix = "ObjCObject";
-                    sendMessageReturnType = OBJC_OBJECT_TYPE;
+                if (returnType.getSort() != OBJECT && returnType.getSort() != ARRAY && returnType.getSort() != VOID) {
+                    StackValue.coerce(NATIVE_VALUE_TYPE, PRIMITIVE_VALUE_TYPE, v);
+
+                    String primitiveType = returnType.getClassName();
+                    String uppercasedType = Character.toUpperCase(primitiveType.charAt(0)) + primitiveType.substring(1);
+
+                    v.invokevirtual(PRIMITIVE_VALUE_TYPE.getInternalName(), "get" + uppercasedType, getMethodDescriptor(returnType));
                 }
                 else {
-                    // TODO
-                    sendMessageNameSuffix = "Void";
-                    sendMessageReturnType = VOID_TYPE;
+                    StackValue.coerce(NATIVE_VALUE_TYPE, returnType, v);
                 }
-
-                v.invokestatic(NATIVE_HELPERS, "sendMessage" + sendMessageNameSuffix,
-                               getMethodDescriptor(sendMessageReturnType, OBJC_OBJECT_TYPE, JL_STRING_TYPE, NATIVE_VALUE_ARRAY_TYPE));
-                StackValue.coerce(sendMessageReturnType, returnType, v);
 
                 v.areturn(returnType);
             }

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package jet.runtime.objc;
+package jet.objc;
 
-import jet.objc.NativeValue;
-import jet.objc.ObjCObject;
-
+@SuppressWarnings("UnusedDeclaration")
 public class Native {
     private Native() {}
 
