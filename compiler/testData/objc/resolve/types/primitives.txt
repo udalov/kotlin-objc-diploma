@@ -7,13 +7,13 @@ public trait <metaclass-for-NSObject> {
 }
 
 public open class A : objc.NSObject {
-    public open fun f_Class() : jet.Any?
-    public open fun f_SEL() : jet.Any?
-    public open fun f_bool() : jet.Any?
+    public open fun f_Class() : jet.objc.ObjCClass
+    public open fun f_SEL() : jet.objc.ObjCSelector
+    public open fun f_bool() : jet.Boolean
     public open fun f_char() : jet.Char
     public open fun f_double() : jet.Double
     public open fun f_float() : jet.Float
-    public open fun f_id() : jet.Any?
+    public open fun f_id() : jet.objc.ObjCObject
     public open fun f_int() : jet.Int
     public open fun f_long() : jet.Long
     public open fun f_longdouble() : jet.Any?
@@ -25,14 +25,14 @@ public open class A : objc.NSObject {
     public open fun f_ulonglong() : jet.Long
     public open fun f_ushort() : jet.Short
     public open fun f_void() : jet.Unit
-    public open fun f_wchar_t() : jet.Any?
+    public open fun f_wchar_t() : jet.Int
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    public class object <class-object-for-A> : jet.objc.ObjCClass, objc.<metaclass-for-A>, objc.NSObject {
     }
 }
 
 public open class NSObject : jet.objc.ObjCObject {
     
-    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
+    public class object <class-object-for-NSObject> : jet.objc.ObjCClass, objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

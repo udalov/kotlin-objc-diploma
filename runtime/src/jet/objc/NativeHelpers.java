@@ -38,49 +38,53 @@ public class NativeHelpers {
     }
 
     public static void sendMessageVoid(ObjCObject receiver, String messageName, NativeValue... args) {
-        Native.objc_msgSendPrimitive(receiver, messageName, args);
+        Native.objc_msgSend(receiver, messageName, args);
     }
 
     public static int sendMessageInt(ObjCObject receiver, String messageName, NativeValue... args) {
-        return (int) Native.objc_msgSendPrimitive(receiver, messageName, args);
+        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
+        return value.getInt();
     }
 
     public static long sendMessageLong(ObjCObject receiver, String messageName, NativeValue... args) {
-        return Native.objc_msgSendPrimitive(receiver, messageName, args);
+        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
+        return value.getLong();
     }
 
     public static short sendMessageShort(ObjCObject receiver, String messageName, NativeValue... args) {
-        return (short) Native.objc_msgSendPrimitive(receiver, messageName, args);
+        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
+        return value.getShort();
     }
 
     public static char sendMessageChar(ObjCObject receiver, String messageName, NativeValue... args) {
-        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
-        // Native char is 8-bit, and the rest of l may contain garbage
-        return (char) (l & 0xff);
+        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
+        return value.getChar();
     }
 
     public static boolean sendMessageBoolean(ObjCObject receiver, String messageName, NativeValue... args) {
-        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
-        // Native boolean is 8-bit, and the rest of l may contain garbage
-        return (l & 0xff) != 0;
+        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
+        return value.getBoolean();
     }
 
     public static double sendMessageDouble(ObjCObject receiver, String messageName, NativeValue... args) {
-        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
-        return Double.longBitsToDouble(l);
+        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
+        return value.getDouble();
     }
 
     public static float sendMessageFloat(ObjCObject receiver, String messageName, NativeValue... args) {
-        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
-        return Float.intBitsToFloat((int) l);
+        PrimitiveValue value = (PrimitiveValue) Native.objc_msgSend(receiver, messageName, args);
+        return value.getFloat();
     }
 
     public static ObjCObject sendMessageObjCObject(ObjCObject receiver, String messageName, NativeValue... args) {
-        return Native.objc_msgSendObjCObject(receiver, messageName, args);
+        return (ObjCObject) Native.objc_msgSend(receiver, messageName, args);
+    }
+
+    public static ObjCSelector sendMessageObjCSelector(ObjCObject receiver, String messageName, NativeValue... args) {
+        return (ObjCSelector) Native.objc_msgSend(receiver, messageName, args);
     }
 
     public static Pointer<?> sendMessagePointer(ObjCObject receiver, String messageName, NativeValue... args) {
-        long l = Native.objc_msgSendPrimitive(receiver, messageName, args);
-        return new Pointer<Object>(l);
+        return (Pointer) Native.objc_msgSend(receiver, messageName, args);
     }
 }

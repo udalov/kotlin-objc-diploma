@@ -140,6 +140,18 @@ public class ObjCTypeResolver {
                 return ObjCBuiltIns.getInstance().getOpaquePointerType();
             }
 
+            if (advance("OI")) {
+                return ObjCBuiltIns.getInstance().getObjCObjectClass().getDefaultType();
+            }
+
+            if (advance("OC")) {
+                return ObjCBuiltIns.getInstance().getObjCClassClass().getDefaultType();
+            }
+
+            if (advance("OS")) {
+                return ObjCBuiltIns.getInstance().getObjCSelectorClass().getDefaultType();
+            }
+
             if (advance("*")) {
                 JetType pointee = parse();
                 expect(";");
@@ -148,10 +160,6 @@ public class ObjCTypeResolver {
 
             if (at("X(")) {
                 at = type.indexOf(')', at) + 1;
-            }
-            else if (at("O")) {
-                // TODO: support Objective-C ID, SEL, Class
-                at += 2;
             }
             else {
                 throw new UnsupportedOperationException("Unsupported type (at=" + at + "): " + type);

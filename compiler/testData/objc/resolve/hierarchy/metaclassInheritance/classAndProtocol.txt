@@ -21,7 +21,7 @@ public trait <metaclass-for-DerivedProtocol> : objc.<metaclass-for-BaseProtocol>
 
 public open class BaseClass : jet.objc.ObjCObject {
     
-    public class object <class-object-for-BaseClass> : objc.<metaclass-for-BaseClass>, objc.BaseClass {
+    public class object <class-object-for-BaseClass> : jet.objc.ObjCClass, objc.<metaclass-for-BaseClass>, objc.BaseClass {
         public open override /*1*/ /*fake_override*/ fun baseClassMethod() : jet.Unit
     }
 }
@@ -31,7 +31,7 @@ public trait BaseProtocol {
 
 public open class Derived : objc.BaseClass, objc.BaseProtocol {
     
-    public class object <class-object-for-Derived> : objc.<metaclass-for-Derived>, objc.BaseClass {
+    public class object <class-object-for-Derived> : jet.objc.ObjCClass, objc.<metaclass-for-Derived>, objc.BaseClass {
         public open override /*1*/ /*fake_override*/ fun baseClassMethod() : jet.Unit
         public open override /*1*/ /*fake_override*/ fun baseProtocolMethod() : jet.Unit
         public open override /*1*/ /*fake_override*/ fun derivedClassMethod() : jet.Unit

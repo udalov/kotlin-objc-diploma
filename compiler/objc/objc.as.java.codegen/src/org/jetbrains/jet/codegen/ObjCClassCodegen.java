@@ -27,7 +27,6 @@ import org.jetbrains.jet.codegen.state.JetTypeMapper;
 import org.jetbrains.jet.codegen.state.JetTypeMapperMode;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.resolve.java.JvmAbi;
-import org.jetbrains.jet.lang.resolve.objc.ObjCBuiltIns;
 import org.jetbrains.jet.lang.resolve.objc.ObjCMethodDescriptor;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
@@ -45,12 +44,13 @@ import static org.jetbrains.asm4.Type.*;
 import static org.jetbrains.jet.codegen.AsmUtil.genInitSingletonField;
 
 public class ObjCClassCodegen {
-    public static final String JET_RUNTIME_OBJC = Type.getType(NativeHelpers.class).getInternalName();
+    public static final String NATIVE_HELPERS = Type.getType(NativeHelpers.class).getInternalName();
 
     public static final Type JL_OBJECT_TYPE = Type.getType(Object.class);
     public static final Type JL_STRING_TYPE = Type.getType(String.class);
 
     public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
+    public static final Type OBJC_SELECTOR_TYPE = Type.getType(ObjCSelector.class);
     public static final Type POINTER_TYPE = Type.getType(Pointer.class);
     public static final Type NATIVE_VALUE_TYPE = Type.getType(NativeValue.class);
     public static final Type NATIVE_VALUE_ARRAY_TYPE = Type.getType(NativeValue[].class);
@@ -183,7 +183,7 @@ public class ObjCClassCodegen {
                     genInitSingletonField(asmType, JvmAbi.CLASS_OBJECT_FIELD, classObjectAsmType, v);
                 }
                 v.visitLdcInsn(dylib.toString());
-                v.invokestatic(JET_RUNTIME_OBJC, "loadLibrary", getMethodDescriptor(VOID_TYPE, JL_STRING_TYPE));
+                v.invokestatic(NATIVE_HELPERS, "loadLibrary", getMethodDescriptor(VOID_TYPE, JL_STRING_TYPE));
                 v.areturn(VOID_TYPE);
             }
         });
@@ -197,7 +197,7 @@ public class ObjCClassCodegen {
                 public void generate(@NotNull InstructionAdapter v) {
                     v.load(0, asmType);
                     v.visitLdcInsn(descriptor.getContainingDeclaration().getName().getName());
-                    v.invokestatic(JET_RUNTIME_OBJC, "getClass", getMethodDescriptor(LONG_TYPE, JL_STRING_TYPE));
+                    v.invokestatic(NATIVE_HELPERS, "getClass", getMethodDescriptor(LONG_TYPE, JL_STRING_TYPE));
                     v.invokespecial(superClassAsmType.getInternalName(), "<init>", objcObjectConstructor);
                     v.areturn(VOID_TYPE);
                 }
@@ -271,6 +271,10 @@ public class ObjCClassCodegen {
                     sendMessageNameSuffix = "Pointer";
                     sendMessageReturnType = POINTER_TYPE;
                 }
+                else if (returnType.equals(OBJC_SELECTOR_TYPE)) {
+                    sendMessageNameSuffix = "ObjCSelector";
+                    sendMessageReturnType = OBJC_SELECTOR_TYPE;
+                }
                 else if (returnType.getSort() == Type.OBJECT) {
                     sendMessageNameSuffix = "ObjCObject";
                     sendMessageReturnType = OBJC_OBJECT_TYPE;
@@ -281,7 +285,7 @@ public class ObjCClassCodegen {
                     sendMessageReturnType = VOID_TYPE;
                 }
 
-                v.invokestatic(JET_RUNTIME_OBJC, "sendMessage" + sendMessageNameSuffix,
+                v.invokestatic(NATIVE_HELPERS, "sendMessage" + sendMessageNameSuffix,
                                getMethodDescriptor(sendMessageReturnType, OBJC_OBJECT_TYPE, JL_STRING_TYPE, NATIVE_VALUE_ARRAY_TYPE));
                 StackValue.coerce(sendMessageReturnType, returnType, v);
 
@@ -318,11 +322,8 @@ public class ObjCClassCodegen {
                         v.invokespecial(CALLBACK_FUNCTION_TYPE.getInternalName(), "<init>",
                                         getMethodDescriptor(VOID_TYPE, JL_OBJECT_TYPE, INT_TYPE));
                     }
-                    else if (ObjCBuiltIns.getInstance().isPointerType(type)) {
-                        local.put(POINTER_TYPE, v);
-                    }
                     else if (asmType.getSort() == Type.OBJECT) {
-                        local.put(OBJC_OBJECT_TYPE, v);
+                        local.put(asmType, v);
                     }
                     else {
                         v.anew(PRIMITIVE_VALUE_TYPE);

@@ -14,18 +14,18 @@ public open class A : objc.NSObject {
     public open fun aWithB(/*0*/ b : objc.B) : objc.A
     public open fun b() : objc.B
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    public class object <class-object-for-A> : jet.objc.ObjCClass, objc.<metaclass-for-A>, objc.NSObject {
     }
 }
 
 public open class B : objc.NSObject {
     
-    public class object <class-object-for-B> : objc.<metaclass-for-B>, objc.NSObject {
+    public class object <class-object-for-B> : jet.objc.ObjCClass, objc.<metaclass-for-B>, objc.NSObject {
     }
 }
 
 public open class NSObject : jet.objc.ObjCObject {
     
-    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
+    public class object <class-object-for-NSObject> : jet.objc.ObjCClass, objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

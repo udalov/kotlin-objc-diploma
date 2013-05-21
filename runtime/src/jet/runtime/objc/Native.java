@@ -40,7 +40,5 @@ public class Native {
 
     public static native long objc_getClass(String name);
 
-    public static native long objc_msgSendPrimitive(ObjCObject receiver, String selectorName, NativeValue... args);
-
-    public static native ObjCObject objc_msgSendObjCObject(ObjCObject receiver, String selectorName, NativeValue... args);
+    public static native NativeValue objc_msgSend(ObjCObject receiver, String selectorName, NativeValue... args);
 }

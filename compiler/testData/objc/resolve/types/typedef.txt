@@ -13,12 +13,12 @@ public open class A : objc.NSObject {
     public open fun f_pint() : jet.objc.Pointer<jet.Int>
     public open fun f_ppint() : jet.objc.Pointer<jet.objc.Pointer<jet.Int>>
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    public class object <class-object-for-A> : jet.objc.ObjCClass, objc.<metaclass-for-A>, objc.NSObject {
     }
 }
 
 public open class NSObject : jet.objc.ObjCObject {
     
-    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
+    public class object <class-object-for-NSObject> : jet.objc.ObjCClass, objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

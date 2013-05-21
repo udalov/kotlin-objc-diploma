@@ -211,7 +211,8 @@ public class ObjCDescriptorResolver {
 
     private static void resolveClassObject(@NotNull ObjCClassDescriptor descriptor, @NotNull ObjCClassDescriptor metaclass) {
         Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
-        Collection<JetType> supertypes = new ArrayList<JetType>(2);
+        Collection<JetType> supertypes = new ArrayList<JetType>(3);
+        supertypes.add(ObjCBuiltIns.getInstance().getObjCClassClass().getDefaultType());
         supertypes.add(metaclass.getDefaultType());
         if (descriptor.getKind() == ClassKind.CLASS) {
             supertypes.add(new DeferredHierarchyRootType(descriptor));

@@ -195,8 +195,18 @@ SEL lookupSelector(JNIEnv *env, jstring name) {
     return selector;
 }
 
-id sendMessage(
+jobject createMirrorObjectOfClass(JNIEnv *env, id object, jclass jvmClass) {
+    // TODO: release in finalize
+    static SEL retain = sel_registerName("retain");
+    objc_msgSend(object, retain);
+
+    jmethodID constructor = env->GetMethodID(jvmClass, "<init>", "(J)V");
+    return env->NewObject(jvmClass, constructor, object);
+}
+
+JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSend(
         JNIEnv *env,
+        jclass,
         jobject receiverJObject,
         jstring selectorName,
         jobjectArray argArray
@@ -233,37 +243,39 @@ id sendMessage(
 
     drainAutoreleasePool(pool);
 
-    return result;
-}
 
-JNIEXPORT jlong JNICALL Java_jet_runtime_objc_Native_objc_1msgSendPrimitive(
-        JNIEnv *env,
-        jclass,
-        jobject receiver,
-        jstring selectorName,
-        jobjectArray argArray
-) {
-    id result = sendMessage(env, receiver, selectorName, argArray);
-    return A2L(result);
-}
+    // TODO: this is temporary, do not calculate the signature twice
+    Method method = class_getInstanceMethod(object_getClass(receiver), selector);
+    static char returnType[100];
+    method_getReturnType(method, returnType, 100);
 
-jobject createMirrorObjectOfClass(JNIEnv *env, id object, jclass jvmClass) {
-    // TODO: release in finalize
-    static SEL retain = sel_registerName("retain");
-    objc_msgSend(object, retain);
+    char *type = returnType;
+    while (strchr("rnNoORV", *type)) type++;
 
-    jmethodID constructor = env->GetMethodID(jvmClass, "<init>", "(J)V");
-    return env->NewObject(jvmClass, constructor, object);
-}
+    if (strchr("cislqCISLQfd", *type)) {
+        jclass primitiveValueClass = env->FindClass("jet/objc/PrimitiveValue");
+        jmethodID constructor = env->GetMethodID(primitiveValueClass, "<init>", "(J)V");
+        return env->NewObject(primitiveValueClass, constructor, result);
+    } else if (*type == 'v') {
+        return NULL;
+    } else if (*type == ':') {
+        jclass objcSelectorClass = env->FindClass("jet/objc/ObjCSelector");
+        jmethodID constructor = env->GetMethodID(objcSelectorClass, "<init>", "(J)V");
+        return env->NewObject(objcSelectorClass, constructor, result);
+    } else if (*type == '#') {
+        // TODO: what if there's no such class object?
+        std::string className = OBJC_PACKAGE_PREFIX + object_getClassName(result);
+        std::string classObjectDescriptor = "L" + className + "$object;";
+        jclass clazz = env->FindClass(className.c_str());
+        jfieldID classObjectField = env->GetStaticFieldID(clazz, "object$", classObjectDescriptor.c_str());
+        return env->GetStaticObjectField(clazz, classObjectField);
+    } else if (*type == '*' || *type == '^') {
+        jclass pointerClass = env->FindClass("jet/objc/Pointer");
+        jmethodID constructor = env->GetMethodID(pointerClass, "<init>", "(J)V");
+        return env->NewObject(pointerClass, constructor, result);
+    }
 
-JNIEXPORT jobject JNICALL Java_jet_runtime_objc_Native_objc_1msgSendObjCObject(
-        JNIEnv *env,
-        jclass,
-        jobject receiver,
-        jstring selectorName,
-        jobjectArray argArray
-) {
-    id result = sendMessage(env, receiver, selectorName, argArray);
+
     // TODO: don't call getClassName if result==nil
     Class clazz = object_getClass(result);
 

@@ -9,13 +9,13 @@ public trait <metaclass-for-Derived> : objc.<metaclass-for-Base> {
 
 public open class Base : jet.objc.ObjCObject {
     
-    public class object <class-object-for-Base> : objc.<metaclass-for-Base>, objc.Base {
+    public class object <class-object-for-Base> : jet.objc.ObjCClass, objc.<metaclass-for-Base>, objc.Base {
     }
 }
 
 public open class Derived : objc.Base {
     
-    public class object <class-object-for-Derived> : objc.<metaclass-for-Derived>, objc.Base {
+    public class object <class-object-for-Derived> : jet.objc.ObjCClass, objc.<metaclass-for-Derived>, objc.Base {
         public open override /*1*/ /*fake_override*/ fun derivedMethod() : jet.Unit
     }
 }

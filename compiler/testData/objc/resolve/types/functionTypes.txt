@@ -21,15 +21,15 @@ public open class A : objc.NSObject {
     public open fun f12() : (jet.Int) -> jet.Unit
     public open fun f13() : (() -> jet.Unit) -> jet.Unit
     public open fun f14() : ((jet.Int) -> jet.Unit) -> jet.Unit
-    public open fun f15() : (jet.Any?, jet.Any?, jet.Any?) -> objc.A
+    public open fun f15() : (jet.objc.ObjCObject, jet.objc.ObjCObject, jet.objc.ObjCSelector) -> objc.A
     public open fun f16() : ((jet.Int, jet.objc.Pointer<jet.Char>) -> jet.Unit, () -> jet.objc.Pointer<out jet.Any?>) -> jet.Unit
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    public class object <class-object-for-A> : jet.objc.ObjCClass, objc.<metaclass-for-A>, objc.NSObject {
     }
 }
 
 public open class NSObject : jet.objc.ObjCObject {
     
-    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
+    public class object <class-object-for-NSObject> : jet.objc.ObjCClass, objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

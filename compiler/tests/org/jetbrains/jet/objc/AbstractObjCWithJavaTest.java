@@ -65,6 +65,7 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
     protected void tearDown() throws Exception {
         tmpDir = null;
         environment = null;
+        ObjCInteropParameters.clear();
 
         super.tearDown();
     }

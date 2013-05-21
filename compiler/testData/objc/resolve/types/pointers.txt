@@ -22,12 +22,12 @@ public open class A : objc.NSObject {
     public open fun pv3() : jet.objc.Pointer<out jet.Any?>
     public open fun pv4() : jet.objc.Pointer<out jet.Any?>
     
-    public class object <class-object-for-A> : objc.<metaclass-for-A>, objc.NSObject {
+    public class object <class-object-for-A> : jet.objc.ObjCClass, objc.<metaclass-for-A>, objc.NSObject {
     }
 }
 
 public open class NSObject : jet.objc.ObjCObject {
     
-    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
+    public class object <class-object-for-NSObject> : jet.objc.ObjCClass, objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

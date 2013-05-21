@@ -17,38 +17,8 @@
 package jet.objc;
 
 @SuppressWarnings("UnusedDeclaration")
-public final class PrimitiveValue implements NativeValue {
-    private final long value;
-
-    public PrimitiveValue(long value) {
-        this.value = value;
-    }
-
-    public int getInt() {
-        return (int) value;
-    }
-
-    public long getLong() {
-        return value;
-    }
-
-    public short getShort() {
-        return (short) value;
-    }
-
-    public char getChar() {
-        return (char) (value & 0xff);
-    }
-
-    public boolean getBoolean() {
-        return (value & 0xff) != 0;
-    }
-
-    public double getDouble() {
-        return Double.longBitsToDouble(value);
-    }
-
-    public float getFloat() {
-        return Float.intBitsToFloat((int) value);
+public final class ObjCSelector extends Pointer<Object> {
+    /* package */ ObjCSelector(long peer) {
+        super(peer);
     }
 }

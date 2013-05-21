@@ -1,3 +1,6 @@
+#import <objc/objc.h>
+#import <stddef.h>
+
 @interface NSObject
 @end
 

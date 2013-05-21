@@ -12,7 +12,7 @@ public trait <metaclass-for-NSObject> {
 public open class Base : objc.NSObject {
     public open fun someBaseMethod() : jet.Unit
     
-    public class object <class-object-for-Base> : objc.<metaclass-for-Base>, objc.NSObject {
+    public class object <class-object-for-Base> : jet.objc.ObjCClass, objc.<metaclass-for-Base>, objc.NSObject {
     }
 }
 
@@ -20,12 +20,12 @@ public open class Derived : objc.Base {
     public open override /*1*/ /*fake_override*/ fun someBaseMethod() : jet.Unit
     public open fun someDerivedMethod() : jet.Unit
     
-    public class object <class-object-for-Derived> : objc.<metaclass-for-Derived>, objc.NSObject {
+    public class object <class-object-for-Derived> : jet.objc.ObjCClass, objc.<metaclass-for-Derived>, objc.NSObject {
     }
 }
 
 public open class NSObject : jet.objc.ObjCObject {
     
-    public class object <class-object-for-NSObject> : objc.<metaclass-for-NSObject>, objc.NSObject {
+    public class object <class-object-for-NSObject> : jet.objc.ObjCClass, objc.<metaclass-for-NSObject>, objc.NSObject {
     }
 }

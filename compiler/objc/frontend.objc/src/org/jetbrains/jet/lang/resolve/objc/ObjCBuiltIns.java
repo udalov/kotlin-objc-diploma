@@ -44,10 +44,21 @@ public class ObjCBuiltIns {
 
     private final ClassDescriptor pointerClass;
     private final ClassDescriptor objcObjectClass;
+    private final ClassDescriptor objcClassClass;
+    private final ClassDescriptor objcSelectorClass;
 
     private ObjCBuiltIns(@NotNull DependencyClassByQualifiedNameResolver resolver) {
-        pointerClass = resolver.resolveClass(new FqName("jet.objc.Pointer"));
-        objcObjectClass = resolver.resolveClass(new FqName("jet.objc.ObjCObject"));
+        pointerClass = resolveClass(resolver, "Pointer");
+        objcObjectClass = resolveClass(resolver, "ObjCObject");
+        objcClassClass = resolveClass(resolver, "ObjCClass");
+        objcSelectorClass = resolveClass(resolver, "ObjCSelector");
+    }
+
+    @NotNull
+    private static ClassDescriptor resolveClass(@NotNull DependencyClassByQualifiedNameResolver resolver, @NotNull String className) {
+        ClassDescriptor descriptor = resolver.resolveClass(new FqName("jet.objc." + className));
+        assert descriptor != null : "Obj-C built-in class not found: " + className;
+        return descriptor;
     }
 
     private static class BuiltInType extends DeferredTypeBase {
@@ -78,12 +89,18 @@ public class ObjCBuiltIns {
         return new BuiltInType(pointerClass, Collections.singletonList(projection));
     }
 
-    public boolean isPointerType(@NotNull JetType type) {
-        return pointerClass == type.getConstructor().getDeclarationDescriptor();
-    }
-
     @NotNull
     public ClassDescriptor getObjCObjectClass() {
         return objcObjectClass;
+    }
+
+    @NotNull
+    public ClassDescriptor getObjCClassClass() {
+        return objcClassClass;
+    }
+
+    @NotNull
+    public ClassDescriptor getObjCSelectorClass() {
+        return objcSelectorClass;
     }
 }

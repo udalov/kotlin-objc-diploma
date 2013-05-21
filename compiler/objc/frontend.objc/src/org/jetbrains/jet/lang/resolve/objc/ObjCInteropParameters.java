@@ -37,4 +37,8 @@ public class ObjCInteropParameters {
     public static void saveHeaders(@NotNull Project project, @NotNull File file) {
         HEADERS.put(project, file);
     }
+
+    public static void clear() {
+        HEADERS.clear();
+    }
 }
