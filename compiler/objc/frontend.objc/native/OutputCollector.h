@@ -10,7 +10,8 @@ class OutputCollector {
     public:
         TranslationUnit& result() { return m_result; }
 
-        void writeToFile(const std::string& outputFile);
+        // Transfers ownership of the returned string to the caller
+        std::string *serialize();
 
         void saveClassByUSR(const std::string& usr, ObjCClass *clazz);
         void saveProtocolByUSR(const std::string& usr, ObjCProtocol *protocol);

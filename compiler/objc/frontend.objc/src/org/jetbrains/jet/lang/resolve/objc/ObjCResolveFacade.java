@@ -46,14 +46,13 @@ public class ObjCResolveFacade {
         System.loadLibrary("KotlinNativeIndexer");
     }
 
-    private native void buildObjCIndex(@NotNull String header, @NotNull String outputFileName);
+    private native byte[] buildObjCIndex(@NotNull String header);
 
     @NotNull
     private TranslationUnit indexObjCHeaders(@NotNull File header) {
         try {
-            File tmpFile = File.createTempFile(System.currentTimeMillis() + "", "kotlin-objc");
-            buildObjCIndex(header.getAbsolutePath(), tmpFile.getAbsolutePath());
-            return TranslationUnit.parseFrom(new FileInputStream(tmpFile));
+            byte[] bytes = buildObjCIndex(header.getAbsolutePath());
+            return TranslationUnit.parseFrom(bytes);
         }
         catch (IOException e) {
             throw ExceptionUtils.rethrow(e);

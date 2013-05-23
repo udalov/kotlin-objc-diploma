@@ -1,9 +1,10 @@
 #include <fts.h>
 
-#include <fstream>
 #include <exception>
+#include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "asserts.h"
 #include "Indexer.h"
@@ -49,20 +50,20 @@ void renderResult(const std::string& filename, const TestResult& result) {
     printf("  %s  %s\n", s.c_str(), filename.c_str());
 }
 
+extern std::string *doIndex(const std::vector<std::string>& headers);
+
 void doTest(const std::string& filename) {
     if (!endsWith(filename, ".h")) return;
     auto expectedFile = filename.substr(0, filename.length() - 1) + "out";
 
-    const char *const headers[] = {filename.c_str()};
-    const char *tmpFile = "/tmp/KotlinNativeIndexTest.out";
+    std::vector<std::string> headers(1, filename);
 
     try {
-        buildNativeIndex(headers, 1, tmpFile);
-
         TranslationUnit tu;
-        std::ifstream actualStream(tmpFile);
-        tu.ParseFromIstream(&actualStream);
+        std::string *message = doIndex(headers);
+        tu.ParseFromString(*message);
         auto actual = tu.DebugString();
+        delete message;
 
         std::ifstream expectedStream(expectedFile.c_str());
         if (!expectedStream) {

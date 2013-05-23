@@ -4,9 +4,10 @@
 #include "asserts.h"
 #include "OutputCollector.h"
 
-void OutputCollector::writeToFile(const std::string& outputFile) {
-    std::ofstream output(outputFile.c_str());
-    m_result.SerializeToOstream(&output);
+std::string *OutputCollector::serialize() {
+    std::string *result = new std::string;
+    m_result.SerializeToString(result);
+    return result;
 }
 
 namespace {

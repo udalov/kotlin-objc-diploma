@@ -15,6 +15,10 @@
 #  4. make test
 #     Compile (linking to the .dylib) and run tests
 #
+#  5. make javah
+#     Launch javah on the compiled ObjCResolveFacade class (found in out/)
+#     to produce a C header Indexer.h
+#
 # ----------------------------------------------------------------------------
 
 
@@ -29,7 +33,7 @@ JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/Current
 JAVA_INCLUDE=$(JAVA_HOME)/Headers
 
 CPP=c++
-CC_FLAGS=-std=c++0x -I$(JAVA_INCLUDE) -Iinclude -stdlib=libstdc++
+CC_FLAGS=-O2 -Wall -std=c++0x -I$(JAVA_INCLUDE) -Iinclude -stdlib=libstdc++
 LD_FLAGS=-lclang -lprotobuf
 
 SRC_FILES=$(wildcard *.cc)
@@ -45,8 +49,7 @@ TEST_EXE=$(OUT)/tests
 #  Targets
 # ----------------------------------------------------------------------------
 
-# Resolve 'proto' to the target name, not to the directory
-.PHONY: proto
+.PHONY: all proto mkdir dylib javah clean test
 
 
 all: proto mkdir dylib
@@ -59,6 +62,9 @@ mkdir:
 
 dylib: $(OBJ_FILES)
 	$(CPP) $(LD_FLAGS) -dynamiclib -o $(DYLIB) $^
+
+javah:
+	@javah -classpath ../../../../out/production/frontend.objc -o Indexer.h org.jetbrains.jet.lang.resolve.objc.ObjCResolveFacade
 
 $(OUT)/%.o: %.cc
 	$(CPP) $(CC_FLAGS) -c $^ -o $@

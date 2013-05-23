@@ -331,7 +331,7 @@ void runPostIndexTasks(OutputCollector *data) {
 }
 
 
-void doIndex(const std::vector<std::string>& headers, const std::string& outputFile) {
+std::string *doIndex(const std::vector<std::string>& headers) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     CXIndex index = clang_createIndex(false, false);
@@ -354,27 +354,24 @@ void doIndex(const std::vector<std::string>& headers, const std::string& outputF
     clang_IndexAction_dispose(action);
     clang_disposeIndex(index);
 
-    data.writeToFile(outputFile);
+    return data.serialize();
 }
 
-void buildNativeIndex(const char *const *headers, int numHeaders, const char *outputFile) {
-    std::vector<std::string> headersVector;
-    headersVector.reserve(static_cast<size_t>(numHeaders));
-    for (int i = 0; i < numHeaders; i++) {
-        headersVector.push_back(headers[i]);
-    }
-    doIndex(headersVector, outputFile);
-}
-
-JNIEXPORT void JNICALL Java_org_jetbrains_jet_lang_resolve_objc_ObjCResolveFacade_buildObjCIndex
-        (JNIEnv *env, jobject resolver, jstring headerString, jstring outputFileNameString) {
-    const char *header = env->GetStringUTFChars(headerString, NULL);
-    const char *const headers[] = { header };
-
-    const char *outputFile = env->GetStringUTFChars(outputFileNameString, NULL);
-
-    buildNativeIndex(headers, 1, outputFile);
-
+JNIEXPORT jbyteArray JNICALL Java_org_jetbrains_jet_lang_resolve_objc_ObjCResolveFacade_buildObjCIndex
+        (JNIEnv *env, jobject, jstring headerString) {
+    auto header = env->GetStringUTFChars(headerString, nullptr);
+    std::vector<std::string> headers(1, header);
     env->ReleaseStringUTFChars(headerString, header);
-    env->ReleaseStringUTFChars(outputFileNameString, outputFile);
+
+    auto string = doIndex(headers);
+
+    auto len = string->length();
+    auto result = env->NewByteArray(len);
+    env->SetByteArrayRegion(result, 0, len,
+            static_cast<const jbyte *>(static_cast<const void *>(string->c_str()))
+    );
+
+    delete string;
+    
+    return result;
 }
