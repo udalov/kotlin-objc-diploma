@@ -7,4 +7,4 @@ javah -classpath ../../out/production/runtime -o KotlinNative.h jet.objc.Native
 JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/Current
 JAVA_INCLUDE=$JAVA_HOME/Headers
 
-c++ -Wl,-no_compact_unwind -I$JAVA_INCLUDE -Iffi -Lffi -lffi -lobjc -dynamiclib KotlinNative.cc -o libKotlinNative.dylib
+c++ -O2 -Wall -Wl,-no_compact_unwind -I$JAVA_INCLUDE -Iffi -Lffi -lffi -lobjc -dynamiclib KotlinNative.cc -o libKotlinNative.dylib

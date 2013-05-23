@@ -49,7 +49,7 @@ JNIEXPORT void JNICALL Java_jet_objc_Native_dlopen(
 // --------------------------------------------------------
 
 JNIEXPORT jlong JNICALL Java_jet_objc_Native_malloc(
-        JNIEnv *env,
+        JNIEnv *,
         jclass,
         jlong bytes
 ) {
@@ -58,7 +58,7 @@ JNIEXPORT jlong JNICALL Java_jet_objc_Native_malloc(
 }
 
 JNIEXPORT void JNICALL Java_jet_objc_Native_free(
-        JNIEnv *env,
+        JNIEnv *,
         jclass,
         jlong pointer
 ) {
@@ -66,7 +66,7 @@ JNIEXPORT void JNICALL Java_jet_objc_Native_free(
 }
 
 JNIEXPORT jlong JNICALL Java_jet_objc_Native_getWord(
-        JNIEnv *env,
+        JNIEnv *,
         jclass,
         jlong pointer
 ) {
@@ -74,7 +74,7 @@ JNIEXPORT jlong JNICALL Java_jet_objc_Native_getWord(
 }
 
 JNIEXPORT void JNICALL Java_jet_objc_Native_setWord(
-        JNIEnv *env,
+        JNIEnv *,
         jclass,
         jlong pointer,
         jlong value
@@ -98,38 +98,6 @@ JNIEXPORT jlong JNICALL Java_jet_objc_Native_objc_1getClass(
     return A2L(objcClass);
 }
 
-
-id constructNSInvocation(id receiver, SEL selector, const std::vector<void *>& args) {
-    static SEL methodSignatureForSelector = sel_registerName("methodSignatureForSelector:");
-    static id invocationClass = objc_getClass("NSInvocation");
-    static SEL invocationWithMethodSignature = sel_registerName("invocationWithMethodSignature:");
-    static SEL setTarget = sel_registerName("setTarget:");
-    static SEL setSelector = sel_registerName("setSelector:");
-
-    id signature = objc_msgSend(receiver, methodSignatureForSelector, selector);
-    id invocation = objc_msgSend(invocationClass, invocationWithMethodSignature, signature);
-    objc_msgSend(invocation, setTarget, receiver);
-    objc_msgSend(invocation, setSelector, selector);
-    
-    for (size_t i = 0, n = args.size(); i < n; i++) {
-        static SEL setArgument = sel_registerName("setArgument:atIndex:");
-        // From NSInvocation Class Reference:
-        // "Indices 0 and 1 indicate the hidden arguments self and _cmd, respectively"
-        objc_msgSend(invocation, setArgument, &args[i], i + 2);
-    }
-
-    return invocation;
-}
-
-bool selectorReturnsVoid(id invocation) {
-    static SEL methodSignature = sel_registerName("methodSignature");
-    static SEL methodReturnType = sel_registerName("methodReturnType");
-
-    id signature = objc_msgSend(invocation, methodSignature);
-    // TODO: free?
-    const char *returnType = (const char *) objc_msgSend(signature, methodReturnType);
-    return !strcmp(returnType, "v");
-}
 
 void *createNativeClosureForFunction(JNIEnv *env, jobject function, jint arity);
 
@@ -175,6 +143,8 @@ std::vector<void *> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArra
     return args;
 }
 
+// TODO: figure out if an autorelease pool is needed and how to use it properly
+/*
 id createAutoreleasePool() {
     static id autoreleasePoolClass = objc_getClass("NSAutoreleasePool");
     static SEL alloc = sel_registerName("alloc");
@@ -187,8 +157,9 @@ void drainAutoreleasePool(id pool) {
     static SEL drain = sel_registerName("drain");
     objc_msgSend(pool, drain);
 }
+*/
 
-SEL lookupSelector(JNIEnv *env, jstring name) {
+SEL selectorFromJString(JNIEnv *env, jstring name) {
     const char *chars = env->GetStringUTFChars(name, 0);
     SEL selector = sel_registerName(chars);
     env->ReleaseStringUTFChars(name, chars);
@@ -204,6 +175,199 @@ jobject createMirrorObjectOfClass(JNIEnv *env, id object, jclass jvmClass) {
     return env->NewObject(jvmClass, constructor, object);
 }
 
+// These qualifiers (Objective-C Runtime Type Encodings, Table 6-2) are discarded when decoding types:
+// r const, n in, N inout, o out, O bycopy, R byref, V oneway
+const std::string IGNORED_TYPE_ENCODINGS = "rnNoORV";
+
+ffi_type *ffiTypeFromEncoding(char *encoding) {
+    while (IGNORED_TYPE_ENCODINGS.find(*encoding) != std::string::npos) {
+        encoding++;
+    }
+    switch (*encoding) {
+        case _C_CHR: return &ffi_type_schar;
+        case _C_INT: return &ffi_type_sint;
+        case _C_SHT: return &ffi_type_sshort;
+        case _C_LNG: return &ffi_type_slong;
+        case _C_LNG_LNG: return &ffi_type_sint64;
+        case _C_UCHR: return &ffi_type_uchar;
+        case _C_UINT: return &ffi_type_uint;
+        case _C_USHT: return &ffi_type_ushort;
+        case _C_ULNG: return &ffi_type_ulong;
+        case _C_ULNG_LNG: return &ffi_type_uint64;
+        case _C_FLT: return &ffi_type_float;
+        case _C_DBL: return &ffi_type_double;
+        case _C_VOID: return &ffi_type_void;
+        // TODO: structs, arrays, other types
+        default: return &ffi_type_pointer;
+    }
+}
+
+enum TypeKind {
+    TYPE_VOID,
+    TYPE_PRIMITIVE,
+    TYPE_POINTER,
+    TYPE_SELECTOR,
+    TYPE_CLASS,
+    TYPE_OBJECT,
+};
+
+TypeKind typeKindFromEncoding(char *encoding) {
+    while (IGNORED_TYPE_ENCODINGS.find(*encoding) != std::string::npos) {
+        encoding++;
+    }
+    char c = *encoding;
+    
+    if (c == 'v') return TYPE_VOID;
+    if (c == ':') return TYPE_SELECTOR;
+    if (c == '#') return TYPE_CLASS;
+    if (c == '*' || c == '^') return TYPE_POINTER;
+
+    if (ffiTypeFromEncoding(encoding) == &ffi_type_pointer) return TYPE_OBJECT;
+
+    return TYPE_PRIMITIVE;
+}
+
+class MsgSendInvocation {
+    const id receiver;
+    const SEL selector;
+    const std::vector<void *>& args;
+    
+    Method method;
+
+    char *returnTypeEncoding;
+
+    public:
+
+    MsgSendInvocation(id receiver, SEL selector, const std::vector<void *>& args):
+        receiver(receiver),
+        selector(selector),
+        args(args)
+    {
+        Class receiverClass = object_getClass(receiver);
+        method = class_getInstanceMethod(receiverClass, selector);
+        returnTypeEncoding = 0;
+    }
+
+    ~MsgSendInvocation() {
+        if (returnTypeEncoding) {
+            free(returnTypeEncoding);
+        }
+    }
+
+    TypeKind returnTypeKind() const {
+        return typeKindFromEncoding(returnTypeEncoding);
+    }
+
+    id invoke() {
+        unsigned numArguments = method_getNumberOfArguments(method);
+
+        std::vector<ffi_type *> argTypes;
+        std::vector<void *> argValues;
+        calculateArgumentTypesAndValues(numArguments, argTypes, argValues);
+
+        returnTypeEncoding = method_copyReturnType(method);
+        ffi_type *methodReturnType = ffiTypeFromEncoding(returnTypeEncoding);
+        void (*fun)();
+        ffi_type *returnType;
+        if (methodReturnType == &ffi_type_double || methodReturnType == &ffi_type_float) {
+            // From Objective-C Runtime Reference:
+            // "On the i386 platform you must use objc_msgSend_fpret for functions returning non-integral type"
+            fun = (void (*)()) objc_msgSend_fpret;
+            returnType = &ffi_type_double;
+        } else {
+            fun = (void (*)()) objc_msgSend;
+            returnType = &ffi_type_pointer;
+        }
+
+        ffi_cif cif;
+        ffi_status status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, numArguments, returnType, &argTypes[0]);
+        if (status != FFI_OK) {
+            // TODO: throw a JVM exception
+            fprintf(stderr, "ffi_prep_cif failed: %d\n", status);
+            exit(42);
+        }
+
+        id result;
+        ffi_call(&cif, fun, &result, &argValues[0]);
+
+        return result;
+    }
+
+    private:
+
+    void calculateArgumentTypesAndValues(unsigned size, std::vector<ffi_type *>& types, std::vector<void *>& values) {
+        types.reserve(size);
+        values.reserve(size);
+
+        types.push_back(&ffi_type_pointer);
+        values.push_back((void *) &receiver);
+
+        types.push_back(&ffi_type_pointer);
+        values.push_back((void *) &selector);
+
+        for (unsigned i = 2; i < size; i++) {
+            char *argTypeEncoding = method_copyArgumentType(method, i);
+            ffi_type *type = ffiTypeFromEncoding(argTypeEncoding);
+
+            types.push_back(type);
+            values.push_back((void *) &args[i-2]);
+
+            free(argTypeEncoding);
+        }
+    }
+};
+
+jobject coerceNativeToJVM(JNIEnv *env, id result, TypeKind kind) {
+    if (kind == TYPE_VOID) {
+        return NULL;
+    } else if (kind == TYPE_PRIMITIVE) {
+        jclass primitiveValueClass = env->FindClass("jet/objc/PrimitiveValue");
+        jmethodID constructor = env->GetMethodID(primitiveValueClass, "<init>", "(J)V");
+        return env->NewObject(primitiveValueClass, constructor, result);
+    } else if (kind == TYPE_SELECTOR) {
+        jclass objcSelectorClass = env->FindClass("jet/objc/ObjCSelector");
+        jmethodID constructor = env->GetMethodID(objcSelectorClass, "<init>", "(J)V");
+        return env->NewObject(objcSelectorClass, constructor, result);
+    } else if (kind == TYPE_CLASS) {
+        // TODO: what if there's no such class object?
+        std::string className = OBJC_PACKAGE_PREFIX + object_getClassName(result);
+        std::string classObjectDescriptor = "L" + className + "$object;";
+        jclass clazz = env->FindClass(className.c_str());
+        jfieldID classObjectField = env->GetStaticFieldID(clazz, "object$", classObjectDescriptor.c_str());
+        return env->GetStaticObjectField(clazz, classObjectField);
+    } else if (kind == TYPE_POINTER) {
+        jclass pointerClass = env->FindClass("jet/objc/Pointer");
+        jmethodID constructor = env->GetMethodID(pointerClass, "<init>", "(J)V");
+        return env->NewObject(pointerClass, constructor, result);
+    } else if (kind == TYPE_OBJECT) {
+        // TODO: don't call getClassName if result==nil
+        Class clazz = object_getClass(result);
+
+        jclass jvmClass = NULL;
+        while (clazz) {
+            // TODO: free?
+            const char *className = class_getName(clazz);
+            std::string fqClassName = OBJC_PACKAGE_PREFIX + className;
+            if ((jvmClass = env->FindClass(fqClassName.c_str()))) break;
+            env->ExceptionClear();
+
+            clazz = class_getSuperclass(clazz);
+        }
+
+        if (!jvmClass) {
+            fprintf(stderr, "Class not found for object of class: %s\n", object_getClassName(result));
+            // TODO: return new NotFoundObjCClass(className, result) or something
+            exit(42);
+        }
+
+        return createMirrorObjectOfClass(env, result, jvmClass);
+    } else {
+        // TODO: throw a JVM exception
+        fprintf(stderr, "Unsupported type kind: %d\n", kind);
+        exit(42);
+    }
+}
+
 JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend(
         JNIEnv *env,
         jclass,
@@ -213,90 +377,17 @@ JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend(
 ) {
     jclass objcObjectClass = env->FindClass("jet/objc/ObjCObject");
     jfieldID pointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
-
     id receiver = (id) env->GetLongField(receiverJObject, pointerField);
-    SEL selector = lookupSelector(env, selectorName);
+
+    SEL selector = selectorFromJString(env, selectorName);
+
     std::vector<void *> args = extractArgumentsFromJArray(env, argArray);
 
-    // At this point, all we have to do is to call objc_msgSend(receiver,
-    // selector, args) and get the result. Unfortunately, there's no portable
-    // way of passing arguments to objc_msgSend, so we use NSInvocation to
-    // put arguments on stack and get the result. Since it's Objective-C
-    // runtime now, we also need to create NSAutoreleasePool to prevent the
-    // runtime from spawning error messages about memory leaks
+    MsgSendInvocation invocation(receiver, selector, args);
+    id result = invocation.invoke();
+    TypeKind returnType = invocation.returnTypeKind();
 
-    // TODO: use libffi here instead, it's faster and less cumbersome
-
-    id pool = createAutoreleasePool();
-
-    id invocation = constructNSInvocation(receiver, selector, args);
-    static SEL invoke = sel_registerName("invoke");
-    objc_msgSend(invocation, invoke);
-
-    id buffer[1];
-    if (!selectorReturnsVoid(invocation)) {
-        // It's illegal to call '-getReturnValue:' for void methods
-        static SEL getReturnValue = sel_registerName("getReturnValue:");
-        objc_msgSend(invocation, getReturnValue, buffer);
-    }
-    id result = buffer[0];
-
-    drainAutoreleasePool(pool);
-
-
-    // TODO: this is temporary, do not calculate the signature twice
-    Method method = class_getInstanceMethod(object_getClass(receiver), selector);
-    static char returnType[100];
-    method_getReturnType(method, returnType, 100);
-
-    char *type = returnType;
-    while (strchr("rnNoORV", *type)) type++;
-
-    if (strchr("cislqCISLQfd", *type)) {
-        jclass primitiveValueClass = env->FindClass("jet/objc/PrimitiveValue");
-        jmethodID constructor = env->GetMethodID(primitiveValueClass, "<init>", "(J)V");
-        return env->NewObject(primitiveValueClass, constructor, result);
-    } else if (*type == 'v') {
-        return NULL;
-    } else if (*type == ':') {
-        jclass objcSelectorClass = env->FindClass("jet/objc/ObjCSelector");
-        jmethodID constructor = env->GetMethodID(objcSelectorClass, "<init>", "(J)V");
-        return env->NewObject(objcSelectorClass, constructor, result);
-    } else if (*type == '#') {
-        // TODO: what if there's no such class object?
-        std::string className = OBJC_PACKAGE_PREFIX + object_getClassName(result);
-        std::string classObjectDescriptor = "L" + className + "$object;";
-        jclass clazz = env->FindClass(className.c_str());
-        jfieldID classObjectField = env->GetStaticFieldID(clazz, "object$", classObjectDescriptor.c_str());
-        return env->GetStaticObjectField(clazz, classObjectField);
-    } else if (*type == '*' || *type == '^') {
-        jclass pointerClass = env->FindClass("jet/objc/Pointer");
-        jmethodID constructor = env->GetMethodID(pointerClass, "<init>", "(J)V");
-        return env->NewObject(pointerClass, constructor, result);
-    }
-
-
-    // TODO: don't call getClassName if result==nil
-    Class clazz = object_getClass(result);
-
-    jclass jvmClass = NULL;
-    while (clazz) {
-        // TODO: free?
-        const char *className = class_getName(clazz);
-        std::string fqClassName = OBJC_PACKAGE_PREFIX + className;
-        if ((jvmClass = env->FindClass(fqClassName.c_str()))) break;
-        env->ExceptionClear();
-
-        clazz = class_getSuperclass(clazz);
-    }
-
-    if (!jvmClass) {
-        fprintf(stderr, "Class not found for object of class: %s\n", object_getClassName(result));
-        // TODO: return new NotFoundObjCClass(className, result) or something
-        exit(42);
-    }
-
-    return createMirrorObjectOfClass(env, result, jvmClass);
+    return coerceNativeToJVM(env, result, returnType);
 }
 
 // --------------------------------------------------------
@@ -331,7 +422,7 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     jclass function0 = env->FindClass("jet/Function0");
     jmethodID invoke = env->GetMethodID(function0, "invoke", "()Ljava/lang/Object;");
 
-    jobject result = env->CallObjectMethod(data->function, invoke);
+    env->CallObjectMethod(data->function, invoke);
 
     // TODO: cast result to id properly and save to *ret
     *(int *)ret = 0;

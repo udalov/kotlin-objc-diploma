@@ -11,7 +11,6 @@
     else if (fortyTwo != 42) printf("Fail 42: %d", fortyTwo);
     else if (capitalZ != 'Z') printf("Fail Z: %c", capitalZ);
     else if (minusOne != -1) printf("Fail -1: %d", minusOne);
-
-    printf("OK");
+    else printf("OK");
 }
 @end
