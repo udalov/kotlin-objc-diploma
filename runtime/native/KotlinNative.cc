@@ -24,6 +24,104 @@ const std::string OBJC_PACKAGE_PREFIX = "objc/";
 // TODO: delete local JNI references where there can be too many of them
 // TODO: fail gracefully if any class/method/field is not found
 
+// --------------------------------------------------------
+// Classes, methods, fields cache
+// --------------------------------------------------------
+
+class JVMDeclarationsCache {
+    JNIEnv *const env;
+
+    public:
+
+    jclass callbackFunctionClass;
+    jclass objcObjectClass;
+    jclass objcSelectorClass;
+    jclass pointerClass;
+    jclass primitiveValueClass;
+
+    jfieldID callbackFunctionFunctionField;
+    jfieldID callbackFunctionArityField;
+    jfieldID objcObjectPointerField;
+    jfieldID pointerPeerField;
+    jfieldID primitiveValueValueField;
+
+    jmethodID objcSelectorConstructor;
+    jmethodID pointerConstructor;
+    jmethodID primitiveValueConstructor;
+
+    JVMDeclarationsCache(JNIEnv *env): env(env) {
+        callbackFunctionClass = findClass("jet/objc/CallbackFunction");
+        objcObjectClass = findClass("jet/objc/ObjCObject");
+        objcSelectorClass = findClass("jet/objc/ObjCSelector");
+        pointerClass = findClass("jet/objc/Pointer");
+        primitiveValueClass = findClass("jet/objc/PrimitiveValue");
+
+        callbackFunctionFunctionField = env->GetFieldID(callbackFunctionClass, "function", "Ljava/lang/Object;");
+        callbackFunctionArityField = env->GetFieldID(callbackFunctionClass, "arity", "I");
+        objcObjectPointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
+        pointerPeerField = env->GetFieldID(pointerClass, "peer", "J");
+        primitiveValueValueField = env->GetFieldID(primitiveValueClass, "value", "J");
+
+        objcSelectorConstructor = env->GetMethodID(objcSelectorClass, "<init>", "(J)V");
+        pointerConstructor = env->GetMethodID(pointerClass, "<init>", "(J)V");
+        primitiveValueConstructor = env->GetMethodID(primitiveValueClass, "<init>", "(J)V");
+    }
+
+    ~JVMDeclarationsCache() {
+        // TODO: delete global references
+    }
+
+    private:
+
+    jclass findClass(const char *name) {
+        jclass localRef = env->FindClass(name);
+        // TODO: figure out why JNA uses weak global references for this
+        jclass globalRef = (jclass) env->NewGlobalRef(localRef);
+        env->DeleteLocalRef(localRef);
+        return globalRef;
+    }
+};
+
+JVMDeclarationsCache *cache;
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
+    // TODO: extract repeating code
+    JNIEnv *env;
+    int attached = vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK;
+    if (!attached) {
+        if (vm->AttachCurrentThread((void **) &env, 0) != JNI_OK) {
+            fprintf(stderr, "Error attaching native thread to VM on load\n");
+            return 0;
+        }
+    }
+
+    cache = new JVMDeclarationsCache(env);
+
+    if (!attached) {
+        vm->DetachCurrentThread();
+    }
+
+    return JNI_VERSION_1_6;
+}
+
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *) {
+    JNIEnv *env;
+    int attached = vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK;
+    if (!attached) {
+        if (vm->AttachCurrentThread((void **) &env, 0) != JNI_OK) {
+            fprintf(stderr, "Error attaching native thread to VM on unload\n");
+            return;
+        }
+    }
+
+    delete cache;
+
+    if (!attached) {
+        vm->DetachCurrentThread();
+    }
+}
+
+
 
 // --------------------------------------------------------
 // Dynamic libraries
@@ -106,36 +204,22 @@ std::vector<void *> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArra
     std::vector<void *> args;
     if (!length) return args;
 
-    // TODO: cache everything somehow
-    jclass callbackFunctionClass = env->FindClass("jet/objc/CallbackFunction");
-    jfieldID functionField = env->GetFieldID(callbackFunctionClass, "function", "Ljava/lang/Object;");
-    jfieldID arityField = env->GetFieldID(callbackFunctionClass, "arity", "I");
-
-    jclass pointerClass = env->FindClass("jet/objc/Pointer");
-    jfieldID peerField = env->GetFieldID(pointerClass, "peer", "J");
-
-    jclass objcObjectClass = env->FindClass("jet/objc/ObjCObject");
-    jfieldID pointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
-
-    jclass primitiveValueClass = env->FindClass("jet/objc/PrimitiveValue");
-    jfieldID valueField = env->GetFieldID(primitiveValueClass, "value", "J");
-
     args.reserve(length);
     for (jsize i = 0; i < length; i++) {
         jobject arg = env->GetObjectArrayElement(argArray, i);
-        if (env->IsInstanceOf(arg, callbackFunctionClass)) {
-            jobject function = env->GetObjectField(arg, functionField);
-            jint arity = env->GetIntField(arg, arityField);
+        if (env->IsInstanceOf(arg, cache->callbackFunctionClass)) {
+            jobject function = env->GetObjectField(arg, cache->callbackFunctionFunctionField);
+            jint arity = env->GetIntField(arg, cache->callbackFunctionArityField);
             void *closure = createNativeClosureForFunction(env, function, arity);
             args.push_back(closure);
-        } else if (env->IsInstanceOf(arg, pointerClass)) {
-            jlong peer = env->GetLongField(arg, peerField);
+        } else if (env->IsInstanceOf(arg, cache->pointerClass)) {
+            jlong peer = env->GetLongField(arg, cache->pointerPeerField);
             args.push_back(L2A(peer));
-        } else if (env->IsInstanceOf(arg, objcObjectClass)) {
-            jlong pointer = env->GetLongField(arg, pointerField);
+        } else if (env->IsInstanceOf(arg, cache->objcObjectClass)) {
+            jlong pointer = env->GetLongField(arg, cache->objcObjectPointerField);
             args.push_back(L2A(pointer));
-        } else if (env->IsInstanceOf(arg, primitiveValueClass)) {
-            jlong value = env->GetLongField(arg, valueField);
+        } else if (env->IsInstanceOf(arg, cache->primitiveValueClass)) {
+            jlong value = env->GetLongField(arg, cache->primitiveValueValueField);
             args.push_back(L2A(value));
         }
     }
@@ -321,13 +405,9 @@ jobject coerceNativeToJVM(JNIEnv *env, id result, TypeKind kind) {
     if (kind == TYPE_VOID) {
         return NULL;
     } else if (kind == TYPE_PRIMITIVE) {
-        jclass primitiveValueClass = env->FindClass("jet/objc/PrimitiveValue");
-        jmethodID constructor = env->GetMethodID(primitiveValueClass, "<init>", "(J)V");
-        return env->NewObject(primitiveValueClass, constructor, result);
+        return env->NewObject(cache->primitiveValueClass, cache->primitiveValueConstructor, result);
     } else if (kind == TYPE_SELECTOR) {
-        jclass objcSelectorClass = env->FindClass("jet/objc/ObjCSelector");
-        jmethodID constructor = env->GetMethodID(objcSelectorClass, "<init>", "(J)V");
-        return env->NewObject(objcSelectorClass, constructor, result);
+        return env->NewObject(cache->objcSelectorClass, cache->objcSelectorConstructor, result);
     } else if (kind == TYPE_CLASS) {
         // TODO: what if there's no such class object?
         std::string className = OBJC_PACKAGE_PREFIX + object_getClassName(result);
@@ -336,9 +416,7 @@ jobject coerceNativeToJVM(JNIEnv *env, id result, TypeKind kind) {
         jfieldID classObjectField = env->GetStaticFieldID(clazz, "object$", classObjectDescriptor.c_str());
         return env->GetStaticObjectField(clazz, classObjectField);
     } else if (kind == TYPE_POINTER) {
-        jclass pointerClass = env->FindClass("jet/objc/Pointer");
-        jmethodID constructor = env->GetMethodID(pointerClass, "<init>", "(J)V");
-        return env->NewObject(pointerClass, constructor, result);
+        return env->NewObject(cache->pointerClass, cache->pointerConstructor, result);
     } else if (kind == TYPE_OBJECT) {
         // TODO: don't call getClassName if result==nil
         Class clazz = object_getClass(result);
@@ -375,9 +453,7 @@ JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend(
         jstring selectorName,
         jobjectArray argArray
 ) {
-    jclass objcObjectClass = env->FindClass("jet/objc/ObjCObject");
-    jfieldID pointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
-    id receiver = (id) env->GetLongField(receiverJObject, pointerField);
+    id receiver = (id) env->GetLongField(receiverJObject, cache->objcObjectPointerField);
 
     SEL selector = selectorFromJString(env, selectorName);
 
@@ -408,7 +484,7 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     JavaVM *vm = data->vm;
     JNIEnv *env;
 
-    int attached = vm->GetEnv((void **) &env, JNI_VERSION_1_6);
+    int attached = vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK;
     if (!attached) {
         // TODO: test native threads
         if (vm->AttachCurrentThread((void **) &env, 0) != JNI_OK) {
@@ -422,7 +498,8 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     jclass function0 = env->FindClass("jet/Function0");
     jmethodID invoke = env->GetMethodID(function0, "invoke", "()Ljava/lang/Object;");
 
-    env->CallObjectMethod(data->function, invoke);
+    jobject result = env->CallObjectMethod(data->function, invoke);
+    result = env->PopLocalFrame(result);
 
     // TODO: cast result to id properly and save to *ret
     *(int *)ret = 0;
