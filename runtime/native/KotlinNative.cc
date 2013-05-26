@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cstdio>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -62,13 +63,17 @@ class JVMDeclarationsCache {
     jclass primitiveValueClass;
 
     jfieldID callbackFunctionFunctionField;
-    jfieldID callbackFunctionSignatureField;
     jfieldID objcObjectPointerField;
     jfieldID pointerPeerField;
     jfieldID primitiveValueValueField;
 
     jmethodID objectGetClassMethod;
     jmethodID classGetNameMethod;
+    jmethodID classGetDeclaredMethodsMethod;
+    jmethodID methodIsBridgeMethod;
+    jmethodID methodGetReturnTypeMethod;
+    jfieldID methodNameField;
+
     jfieldID integerValueField;
     jfieldID longValueField;
     jfieldID shortValueField;
@@ -89,13 +94,13 @@ class JVMDeclarationsCache {
         primitiveValueClass = findClass("jet/objc/PrimitiveValue");
 
         callbackFunctionFunctionField = env->GetFieldID(callbackFunctionClass, "function", "Ljava/lang/Object;");
-        callbackFunctionSignatureField = env->GetFieldID(callbackFunctionClass, "signature", "Ljava/lang/String;");
         objcObjectPointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
         pointerPeerField = env->GetFieldID(pointerClass, "peer", "J");
         primitiveValueValueField = env->GetFieldID(primitiveValueClass, "value", "J");
 
         jclass objectClass = findClass("java/lang/Object");
         jclass classClass = findClass("java/lang/Class");
+        jclass methodClass = findClass("java/lang/reflect/Method");
         jclass integerClass = findClass("java/lang/Integer");
         jclass longClass = findClass("java/lang/Long");
         jclass shortClass = findClass("java/lang/Short");
@@ -105,6 +110,11 @@ class JVMDeclarationsCache {
         jclass booleanClass = findClass("java/lang/Boolean");
         objectGetClassMethod = env->GetMethodID(objectClass, "getClass", "()Ljava/lang/Class;");
         classGetNameMethod = env->GetMethodID(classClass, "getName", "()Ljava/lang/String;");
+        classGetDeclaredMethodsMethod = env->GetMethodID(classClass, "getDeclaredMethods", "()[Ljava/lang/reflect/Method;");
+        methodIsBridgeMethod = env->GetMethodID(methodClass, "isBridge", "()Z");
+        methodGetReturnTypeMethod = env->GetMethodID(methodClass, "getReturnType", "()Ljava/lang/Class;");
+        methodNameField = env->GetFieldID(methodClass, "name", "Ljava/lang/String;");
+
         integerValueField = env->GetFieldID(integerClass, "value", "I");
         longValueField = env->GetFieldID(longClass, "value", "J");
         shortValueField = env->GetFieldID(shortClass, "value", "S");
@@ -172,7 +182,11 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *) {
     }
 }
 
-
+std::string getClassGetName(JNIEnv *env, jobject object) {
+    jobject classObject = env->CallObjectMethod(object, cache->objectGetClassMethod);
+    AutoJString className(env, (jstring) env->CallObjectMethod(classObject, cache->classGetNameMethod));
+    return className.str();
+}
 
 // --------------------------------------------------------
 // Dynamic libraries
@@ -246,13 +260,28 @@ JNIEXPORT jlong JNICALL Java_jet_objc_Native_objc_1getClass(
 }
 
 
-void *createNativeClosureForFunction(JNIEnv *env, jobject function, jstring signature);
+void *createNativeClosureForFunction(JNIEnv *env, jobject function);
+
+bool isKotlinFunction(JNIEnv *env, jobject object) {
+    // Check if object implements any FunctionN interface
+    // TODO: check for some special annotation or a common superclass of FunctionN instead
+    for (unsigned i = 0; i < 23; i++) {
+        std::ostringstream className;
+        className << "jet/Function" << i;
+        std::string nameStr = className.str();
+        jclass clazz = env->FindClass(nameStr.c_str());
+        if (env->IsInstanceOf(object, clazz)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 void *coerceJVMNativeValueToNative(JNIEnv *env, jobject object) {
     if (env->IsInstanceOf(object, cache->callbackFunctionClass)) {
         jobject function = env->GetObjectField(object, cache->callbackFunctionFunctionField);
-        jstring signature = (jstring) env->GetObjectField(object, cache->callbackFunctionSignatureField);
-        return createNativeClosureForFunction(env, function, signature);
+        assert(isKotlinFunction(env, function));
+        return createNativeClosureForFunction(env, function);
     } else if (env->IsInstanceOf(object, cache->pointerClass)) {
         return L2A(env->GetLongField(object, cache->pointerPeerField));
     } else if (env->IsInstanceOf(object, cache->objcObjectClass)) {
@@ -260,8 +289,9 @@ void *coerceJVMNativeValueToNative(JNIEnv *env, jobject object) {
     } else if (env->IsInstanceOf(object, cache->primitiveValueClass)) {
         return L2A(env->GetLongField(object, cache->primitiveValueValueField));
     } else {
-        fprintf(stderr, "Unsupported JVM object type\n");
-        return 0;
+        std::string name = getClassGetName(env, object);
+        fprintf(stderr, "Unsupported JVM object type: %s\n", name.c_str());
+        return NULL;
     }
 }
 
@@ -526,9 +556,8 @@ struct ClosureData {
 
 void coerceJVMObjectToNative(JNIEnv *env, jobject object, void *ret) {
     // TODO: get the correct type from the function signature instead
-    jobject classObject = env->CallObjectMethod(object, cache->objectGetClassMethod);
-    AutoJString nameStr(env, (jstring) env->CallObjectMethod(classObject, cache->classGetNameMethod));
-    const char *name = nameStr.str();
+    std::string nameStr = getClassGetName(env, object);
+    const char *name = nameStr.c_str();
     if (!strcmp(name, "jet.Unit")) {
         *(void **) ret = NULL;
     } else if (!strcmp(name, "java.lang.Integer")) {
@@ -579,20 +608,37 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     // TODO: deallocate closure, ClosureData, 'function' global reference, etc.
 }
 
-ffi_type *ffiTypeFromJavaDescriptor(const char *descriptor) {
-    switch (*descriptor) {
-        case 'C': case 'Z': return &ffi_type_schar;
-        case 'I': return &ffi_type_sint;
-        case 'S': return &ffi_type_sshort;
-        case 'J': return &ffi_type_slong;
-        case 'F': return &ffi_type_float;
-        case 'D': return &ffi_type_double;
-        case 'V': return &ffi_type_void;
-        default: return &ffi_type_pointer;
-    }
+ffi_type *ffiTypeFromJavaClass(JNIEnv *env, jobject classObject) {
+    std::string name = getClassGetName(env, classObject);
+    if (name == "char" || name == "boolean") return &ffi_type_schar;
+    else if (name == "int") return &ffi_type_sint;
+    else if (name == "short") return &ffi_type_sshort;
+    else if (name == "long") return &ffi_type_slong;
+    else if (name == "float") return &ffi_type_float;
+    else if (name == "double") return &ffi_type_double;
+    else if (name == "void") return &ffi_type_void;
+    else return &ffi_type_pointer;
 }
 
-void *createNativeClosureForFunction(JNIEnv *env, jobject function, jstring signature) {
+jobject reflectMethodFromKotlinFunction(JNIEnv *env, jobject function) {
+    jobject classObject = env->CallObjectMethod(function, cache->objectGetClassMethod);
+    jobjectArray methods = (jobjectArray) env->CallObjectMethod(classObject, cache->classGetDeclaredMethodsMethod);
+    for (jsize i = 0, size = env->GetArrayLength(methods); i < size; i++) {
+        jobject method = env->GetObjectArrayElement(methods, i);
+        AutoJString name(env, (jstring) env->GetObjectField(method, cache->methodNameField));
+        if (!strcmp(name.str(), "invoke")) {
+            bool isBridge = env->CallBooleanMethod(method, cache->methodIsBridgeMethod);
+            if (!isBridge) return method;
+        }
+    }
+
+    // TODO: do something meaningful
+    std::string className = getClassGetName(env, function);
+    fprintf(stderr, "No non-bridge invoke() method in a function literal class: %s\n", className.c_str());
+    return NULL;
+}
+
+void *createNativeClosureForFunction(JNIEnv *env, jobject function) {
     ClosureData *data = new ClosureData;
 
     if (jint vm = env->GetJavaVM(&data->vm)) {
@@ -603,12 +649,11 @@ void *createNativeClosureForFunction(JNIEnv *env, jobject function, jstring sign
     data->function = env->NewGlobalRef(function);
     env->DeleteLocalRef(function);
 
-    // TODO: get ffi types of all arguments
-    AutoJString descStr(env, signature);
-    const char *desc = descStr.str();
-    while (desc[1]) desc++; // go until the last character
-    ffi_type *returnType = ffiTypeFromJavaDescriptor(desc);
+    jobject method = reflectMethodFromKotlinFunction(env, function);
+    jobject returnTypeClassObject = env->CallObjectMethod(method, cache->methodGetReturnTypeMethod);
+    ffi_type *returnType = ffiTypeFromJavaClass(env, returnTypeClassObject);
 
+    // TODO: get ffi types of all arguments
     ffi_type *args[1];
     if (ffi_prep_cif(&data->cif, FFI_DEFAULT_ABI, 0, returnType, args) != FFI_OK) {
         fprintf(stderr, "Error preparing CIF\n");

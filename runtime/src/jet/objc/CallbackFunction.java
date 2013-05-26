@@ -19,10 +19,8 @@ package jet.objc;
 @SuppressWarnings("UnusedDeclaration")
 public final class CallbackFunction implements NativeValue {
     public final Object function;
-    public final String signature;
 
-    public CallbackFunction(Object function, String signature) {
+    public CallbackFunction(Object function) {
         this.function = function;
-        this.signature = signature;
     }
 }
