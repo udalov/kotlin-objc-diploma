@@ -96,6 +96,7 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
     }
     
     @TestMetadata("compiler/testData/objc/java/callbacks")
+    @InnerTestClasses({Callbacks.ReturnType.class})
     public static class Callbacks extends AbstractObjCWithJavaTest {
         public void testAllFilesPresentInCallbacks() throws Exception {
             JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/objc/java/callbacks"), Pattern.compile("^(.+)\\.kt$"), true);
@@ -111,6 +112,50 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
             doTest("compiler/testData/objc/java/callbacks/simpleWithClosure.kt");
         }
         
+        @TestMetadata("compiler/testData/objc/java/callbacks/returnType")
+        public static class ReturnType extends AbstractObjCWithJavaTest {
+            public void testAllFilesPresentInReturnType() throws Exception {
+                JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/objc/java/callbacks/returnType"), Pattern.compile("^(.+)\\.kt$"), true);
+            }
+            
+            @TestMetadata("bool.kt")
+            public void testBool() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/bool.kt");
+            }
+            
+            @TestMetadata("char.kt")
+            public void testChar() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/char.kt");
+            }
+            
+            @TestMetadata("float.kt")
+            public void testFloat() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/float.kt");
+            }
+            
+            @TestMetadata("int.kt")
+            public void testInt() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/int.kt");
+            }
+            
+            @TestMetadata("long.kt")
+            public void testLong() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/long.kt");
+            }
+            
+            @TestMetadata("short.kt")
+            public void testShort() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/short.kt");
+            }
+            
+        }
+        
+        public static Test innerSuite() {
+            TestSuite suite = new TestSuite("Callbacks");
+            suite.addTestSuite(Callbacks.class);
+            suite.addTestSuite(ReturnType.class);
+            return suite;
+        }
     }
     
     @TestMetadata("compiler/testData/objc/java/categories")
@@ -239,7 +284,7 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
         TestSuite suite = new TestSuite("ObjCWithJavaTestGenerated");
         suite.addTestSuite(ObjCWithJavaTestGenerated.class);
         suite.addTestSuite(Arguments.class);
-        suite.addTestSuite(Callbacks.class);
+        suite.addTest(Callbacks.innerSuite());
         suite.addTestSuite(Categories.class);
         suite.addTestSuite(OtherTypes.class);
         suite.addTestSuite(Pointers.class);

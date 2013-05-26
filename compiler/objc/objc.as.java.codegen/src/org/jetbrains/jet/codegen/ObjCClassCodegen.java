@@ -27,6 +27,7 @@ import org.jetbrains.jet.codegen.state.JetTypeMapper;
 import org.jetbrains.jet.codegen.state.JetTypeMapperMode;
 import org.jetbrains.jet.lang.descriptors.*;
 import org.jetbrains.jet.lang.resolve.java.JvmAbi;
+import org.jetbrains.jet.lang.resolve.name.Name;
 import org.jetbrains.jet.lang.resolve.objc.ObjCMethodDescriptor;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
@@ -273,16 +274,17 @@ public class ObjCClassCodegen {
                     localIndex += asmType.getSize();
 
                     if (KotlinBuiltIns.getInstance().isFunctionType(type)) {
-                        List<TypeProjection> projections = type.getArguments();
-                        // -1 for return type
-                        int arity = projections.size() - 1;
+                        Collection<FunctionDescriptor> invokeFunctions = type.getMemberScope().getFunctions(Name.identifier("invoke"));
+                        assert invokeFunctions.size() == 1 : "Not one invoke function in Function class: " + invokeFunctions;
+                        FunctionDescriptor invokeFunction = invokeFunctions.iterator().next();
+                        String signature = typeMapper.mapSignature(invokeFunction).getAsmMethod().getDescriptor();
 
                         v.anew(CALLBACK_FUNCTION_TYPE);
                         v.dup();
                         local.put(JL_OBJECT_TYPE, v);
-                        v.iconst(arity);
+                        v.visitLdcInsn(signature);
                         v.invokespecial(CALLBACK_FUNCTION_TYPE.getInternalName(), "<init>",
-                                        getMethodDescriptor(VOID_TYPE, JL_OBJECT_TYPE, INT_TYPE));
+                                        getMethodDescriptor(VOID_TYPE, JL_OBJECT_TYPE, JL_STRING_TYPE));
                     }
                     else if (asmType.getSort() == Type.OBJECT) {
                         local.put(asmType, v);

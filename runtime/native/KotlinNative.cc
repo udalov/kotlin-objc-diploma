@@ -24,6 +24,28 @@ const std::string OBJC_PACKAGE_PREFIX = "objc/";
 // TODO: delete local JNI references where there can be too many of them
 // TODO: fail gracefully if any class/method/field is not found
 
+class AutoJString {
+    JNIEnv *const env;
+    const jstring jstr;
+    const char *const chars;
+
+    public:
+
+    AutoJString(JNIEnv *env, jstring jstr):
+        env(env),
+        jstr(jstr),
+        chars(env->GetStringUTFChars(jstr, 0))
+    { }
+
+    ~AutoJString() {
+        env->ReleaseStringUTFChars(jstr, chars);
+    }
+
+    const char *const str() const {
+        return chars;
+    }
+};
+
 // --------------------------------------------------------
 // Classes, methods, fields cache
 // --------------------------------------------------------
@@ -40,10 +62,20 @@ class JVMDeclarationsCache {
     jclass primitiveValueClass;
 
     jfieldID callbackFunctionFunctionField;
-    jfieldID callbackFunctionArityField;
+    jfieldID callbackFunctionSignatureField;
     jfieldID objcObjectPointerField;
     jfieldID pointerPeerField;
     jfieldID primitiveValueValueField;
+
+    jmethodID objectGetClassMethod;
+    jmethodID classGetNameMethod;
+    jfieldID integerValueField;
+    jfieldID longValueField;
+    jfieldID shortValueField;
+    jfieldID floatValueField;
+    jfieldID doubleValueField;
+    jfieldID characterValueField;
+    jfieldID booleanValueField;
 
     jmethodID objcSelectorConstructor;
     jmethodID pointerConstructor;
@@ -57,10 +89,29 @@ class JVMDeclarationsCache {
         primitiveValueClass = findClass("jet/objc/PrimitiveValue");
 
         callbackFunctionFunctionField = env->GetFieldID(callbackFunctionClass, "function", "Ljava/lang/Object;");
-        callbackFunctionArityField = env->GetFieldID(callbackFunctionClass, "arity", "I");
+        callbackFunctionSignatureField = env->GetFieldID(callbackFunctionClass, "signature", "Ljava/lang/String;");
         objcObjectPointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
         pointerPeerField = env->GetFieldID(pointerClass, "peer", "J");
         primitiveValueValueField = env->GetFieldID(primitiveValueClass, "value", "J");
+
+        jclass objectClass = findClass("java/lang/Object");
+        jclass classClass = findClass("java/lang/Class");
+        jclass integerClass = findClass("java/lang/Integer");
+        jclass longClass = findClass("java/lang/Long");
+        jclass shortClass = findClass("java/lang/Short");
+        jclass floatClass = findClass("java/lang/Float");
+        jclass doubleClass = findClass("java/lang/Double");
+        jclass characterClass = findClass("java/lang/Character");
+        jclass booleanClass = findClass("java/lang/Boolean");
+        objectGetClassMethod = env->GetMethodID(objectClass, "getClass", "()Ljava/lang/Class;");
+        classGetNameMethod = env->GetMethodID(classClass, "getName", "()Ljava/lang/String;");
+        integerValueField = env->GetFieldID(integerClass, "value", "I");
+        longValueField = env->GetFieldID(longClass, "value", "J");
+        shortValueField = env->GetFieldID(shortClass, "value", "S");
+        floatValueField = env->GetFieldID(floatClass, "value", "F");
+        doubleValueField = env->GetFieldID(doubleClass, "value", "D");
+        characterValueField = env->GetFieldID(characterClass, "value", "C");
+        booleanValueField = env->GetFieldID(booleanClass, "value", "Z");
 
         objcSelectorConstructor = env->GetMethodID(objcSelectorClass, "<init>", "(J)V");
         pointerConstructor = env->GetMethodID(pointerClass, "<init>", "(J)V");
@@ -132,13 +183,12 @@ JNIEXPORT void JNICALL Java_jet_objc_Native_dlopen(
         jclass,
         jstring path
 ) {
-    const char *chars = env->GetStringUTFChars(path, 0);
-    if (!dlopen(chars, RTLD_GLOBAL)) {
+    AutoJString pathStr(env, path);
+    if (!dlopen(pathStr.str(), RTLD_GLOBAL)) {
         // TODO: report an error properly
-        fprintf(stderr, "Library not found: %s\n", chars);
+        fprintf(stderr, "Library not found: %s\n", pathStr.str());
         exit(42);
     }
-    env->ReleaseStringUTFChars(path, chars);
 }
 
 
@@ -190,38 +240,39 @@ JNIEXPORT jlong JNICALL Java_jet_objc_Native_objc_1getClass(
         jclass,
         jstring name
 ) {
-    const char *chars = env->GetStringUTFChars(name, 0);
-    id objcClass = objc_getClass(chars);
-    env->ReleaseStringUTFChars(name, chars);
+    AutoJString nameStr(env, name);
+    id objcClass = objc_getClass(nameStr.str());
     return A2L(objcClass);
 }
 
 
-void *createNativeClosureForFunction(JNIEnv *env, jobject function, jint arity);
+void *createNativeClosureForFunction(JNIEnv *env, jobject function, jstring signature);
+
+void *coerceJVMNativeValueToNative(JNIEnv *env, jobject object) {
+    if (env->IsInstanceOf(object, cache->callbackFunctionClass)) {
+        jobject function = env->GetObjectField(object, cache->callbackFunctionFunctionField);
+        jstring signature = (jstring) env->GetObjectField(object, cache->callbackFunctionSignatureField);
+        return createNativeClosureForFunction(env, function, signature);
+    } else if (env->IsInstanceOf(object, cache->pointerClass)) {
+        return L2A(env->GetLongField(object, cache->pointerPeerField));
+    } else if (env->IsInstanceOf(object, cache->objcObjectClass)) {
+        return L2A(env->GetLongField(object, cache->objcObjectPointerField));
+    } else if (env->IsInstanceOf(object, cache->primitiveValueClass)) {
+        return L2A(env->GetLongField(object, cache->primitiveValueValueField));
+    } else {
+        fprintf(stderr, "Unsupported JVM object type\n");
+        return 0;
+    }
+}
 
 std::vector<void *> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArray) {
     jsize length = env->GetArrayLength(argArray);
     std::vector<void *> args;
-    if (!length) return args;
-
     args.reserve(length);
+
     for (jsize i = 0; i < length; i++) {
         jobject arg = env->GetObjectArrayElement(argArray, i);
-        if (env->IsInstanceOf(arg, cache->callbackFunctionClass)) {
-            jobject function = env->GetObjectField(arg, cache->callbackFunctionFunctionField);
-            jint arity = env->GetIntField(arg, cache->callbackFunctionArityField);
-            void *closure = createNativeClosureForFunction(env, function, arity);
-            args.push_back(closure);
-        } else if (env->IsInstanceOf(arg, cache->pointerClass)) {
-            jlong peer = env->GetLongField(arg, cache->pointerPeerField);
-            args.push_back(L2A(peer));
-        } else if (env->IsInstanceOf(arg, cache->objcObjectClass)) {
-            jlong pointer = env->GetLongField(arg, cache->objcObjectPointerField);
-            args.push_back(L2A(pointer));
-        } else if (env->IsInstanceOf(arg, cache->primitiveValueClass)) {
-            jlong value = env->GetLongField(arg, cache->primitiveValueValueField);
-            args.push_back(L2A(value));
-        }
+        args.push_back(coerceJVMNativeValueToNative(env, arg));
     }
 
     return args;
@@ -242,13 +293,6 @@ void drainAutoreleasePool(id pool) {
     objc_msgSend(pool, drain);
 }
 */
-
-SEL selectorFromJString(JNIEnv *env, jstring name) {
-    const char *chars = env->GetStringUTFChars(name, 0);
-    SEL selector = sel_registerName(chars);
-    env->ReleaseStringUTFChars(name, chars);
-    return selector;
-}
 
 jobject createMirrorObjectOfClass(JNIEnv *env, id object, jclass jvmClass) {
     // TODO: release in finalize
@@ -455,7 +499,8 @@ JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend(
 ) {
     id receiver = (id) env->GetLongField(receiverJObject, cache->objcObjectPointerField);
 
-    SEL selector = selectorFromJString(env, selectorName);
+    AutoJString selectorNameStr(env, selectorName);
+    SEL selector = sel_registerName(selectorNameStr.str());
 
     std::vector<void *> args = extractArgumentsFromJArray(env, argArray);
 
@@ -476,8 +521,35 @@ struct ClosureData {
     void *fun;
     JavaVM *vm;
     jobject function;
-    int arity;
+    jmethodID invokeMethodID;
 };
+
+void coerceJVMObjectToNative(JNIEnv *env, jobject object, void *ret) {
+    // TODO: get the correct type from the function signature instead
+    jobject classObject = env->CallObjectMethod(object, cache->objectGetClassMethod);
+    AutoJString nameStr(env, (jstring) env->CallObjectMethod(classObject, cache->classGetNameMethod));
+    const char *name = nameStr.str();
+    if (!strcmp(name, "jet.Unit")) {
+        *(void **) ret = NULL;
+    } else if (!strcmp(name, "java.lang.Integer")) {
+        *(int *) ret = env->GetIntField(object, cache->integerValueField);
+    } else if (!strcmp(name, "java.lang.Long")) {
+        *(long *) ret = env->GetLongField(object, cache->longValueField);
+    } else if (!strcmp(name, "java.lang.Short")) {
+        *(short *) ret = env->GetShortField(object, cache->shortValueField);
+    } else if (!strcmp(name, "java.lang.Float")) {
+        *(float *) ret = env->GetFloatField(object, cache->floatValueField);
+    } else if (!strcmp(name, "java.lang.Double")) {
+        // TODO: this doesn't work as a closure return type, fix it and write a test
+        *(double *) ret = env->GetDoubleField(object, cache->doubleValueField);
+    } else if (!strcmp(name, "java.lang.Character")) {
+        *(char *) ret = env->GetCharField(object, cache->characterValueField);
+    } else if (!strcmp(name, "java.lang.Boolean")) {
+        *(BOOL *) ret = env->GetBooleanField(object, cache->booleanValueField);
+    } else {
+        *(void **) ret = coerceJVMNativeValueToNative(env, object);
+    }
+}
 
 void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     ClosureData *data = (ClosureData *) userData;
@@ -495,14 +567,10 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
 
     env->PushLocalFrame(16);
 
-    jclass function0 = env->FindClass("jet/Function0");
-    jmethodID invoke = env->GetMethodID(function0, "invoke", "()Ljava/lang/Object;");
-
-    jobject result = env->CallObjectMethod(data->function, invoke);
+    jobject result = env->CallObjectMethod(data->function, data->invokeMethodID);
     result = env->PopLocalFrame(result);
 
-    // TODO: cast result to id properly and save to *ret
-    *(int *)ret = 0;
+    coerceJVMObjectToNative(env, result, ret);
 
     if (!attached) {
         vm->DetachCurrentThread();
@@ -511,10 +579,20 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     // TODO: deallocate closure, ClosureData, 'function' global reference, etc.
 }
 
-void *createNativeClosureForFunction(JNIEnv *env, jobject function, jint arity) {
-    // TODO: arity > 0
-    assert(arity == 0 || "Callbacks with parameters aren't supported yet");
+ffi_type *ffiTypeFromJavaDescriptor(const char *descriptor) {
+    switch (*descriptor) {
+        case 'C': case 'Z': return &ffi_type_schar;
+        case 'I': return &ffi_type_sint;
+        case 'S': return &ffi_type_sshort;
+        case 'J': return &ffi_type_slong;
+        case 'F': return &ffi_type_float;
+        case 'D': return &ffi_type_double;
+        case 'V': return &ffi_type_void;
+        default: return &ffi_type_pointer;
+    }
+}
 
+void *createNativeClosureForFunction(JNIEnv *env, jobject function, jstring signature) {
     ClosureData *data = new ClosureData;
 
     if (jint vm = env->GetJavaVM(&data->vm)) {
@@ -525,10 +603,14 @@ void *createNativeClosureForFunction(JNIEnv *env, jobject function, jint arity) 
     data->function = env->NewGlobalRef(function);
     env->DeleteLocalRef(function);
 
-    data->arity = arity;
+    // TODO: get ffi types of all arguments
+    AutoJString descStr(env, signature);
+    const char *desc = descStr.str();
+    while (desc[1]) desc++; // go until the last character
+    ffi_type *returnType = ffiTypeFromJavaDescriptor(desc);
 
     ffi_type *args[1];
-    if (ffi_prep_cif(&data->cif, FFI_DEFAULT_ABI, 0, &ffi_type_void, args) != FFI_OK) {
+    if (ffi_prep_cif(&data->cif, FFI_DEFAULT_ABI, 0, returnType, args) != FFI_OK) {
         fprintf(stderr, "Error preparing CIF\n");
         return 0;
     }
@@ -543,6 +625,9 @@ void *createNativeClosureForFunction(JNIEnv *env, jobject function, jint arity) 
         fprintf(stderr, "Error preparing closure\n");
         return 0;
     }
+
+    jclass function0 = env->FindClass("jet/Function0");
+    data->invokeMethodID = env->GetMethodID(function0, "invoke", "()Ljava/lang/Object;");
 
     return data->fun;
 }
