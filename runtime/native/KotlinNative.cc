@@ -73,8 +73,10 @@ class JVMDeclarationsCache {
     jmethodID objectToStringMethod;
     jmethodID classGetNameMethod;
     jmethodID classGetDeclaredMethodsMethod;
+    jmethodID classIsAssignableFromMethod;
     jmethodID methodIsBridgeMethod;
     jmethodID methodGetReturnTypeMethod;
+    jmethodID methodGetParameterTypesMethod;
     jfieldID methodNameField;
 
     jfieldID integerValueField;
@@ -119,8 +121,10 @@ class JVMDeclarationsCache {
         objectToStringMethod = env->GetMethodID(objectClass, "toString", "()Ljava/lang/String;");
         classGetNameMethod = env->GetMethodID(classClass, "getName", "()Ljava/lang/String;");
         classGetDeclaredMethodsMethod = env->GetMethodID(classClass, "getDeclaredMethods", "()[Ljava/lang/reflect/Method;");
+        classIsAssignableFromMethod = env->GetMethodID(classClass, "isAssignableFrom", "(Ljava/lang/Class;)Z");
         methodIsBridgeMethod = env->GetMethodID(methodClass, "isBridge", "()Z");
         methodGetReturnTypeMethod = env->GetMethodID(methodClass, "getReturnType", "()Ljava/lang/Class;");
+        methodGetParameterTypesMethod = env->GetMethodID(methodClass, "getParameterTypes", "()[Ljava/lang/Class;");
         methodNameField = env->GetFieldID(methodClass, "name", "Ljava/lang/String;");
 
         integerValueField = env->GetFieldID(integerClass, "value", "I");
@@ -328,9 +332,8 @@ void coerceJVMToNative(JNIEnv *env, jobject object, void *ret) {
     }
 }
 
-std::vector<void *> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArray) {
+void coerceArrayOfJVMToNative(JNIEnv *env, jobjectArray argArray, std::vector<void *>& args) {
     jsize length = env->GetArrayLength(argArray);
-    std::vector<void *> args;
     args.reserve(length);
 
     for (jsize i = 0; i < length; i++) {
@@ -339,8 +342,6 @@ std::vector<void *> extractArgumentsFromJArray(JNIEnv *env, jobjectArray argArra
         coerceJVMToNative(env, argObj, &arg);
         args.push_back(arg);
     }
-
-    return args;
 }
 
 // TODO: figure out if an autorelease pool is needed and how to use it properly
@@ -481,6 +482,7 @@ class MsgSendInvocation {
         }
 
         ffi_cif cif;
+        // argTypes[0] won't fail, since there's at least two arguments (id receiver, SEL selector)
         ffi_status status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, numArguments, returnType, &argTypes[0]);
         if (status != FFI_OK) {
             // TODO: throw a JVM exception
@@ -588,7 +590,8 @@ JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend(
     AutoJString selectorNameStr(env, selectorName);
     SEL selector = sel_registerName(selectorNameStr.str());
 
-    std::vector<void *> args = extractArgumentsFromJArray(env, argArray);
+    std::vector<void *> args;
+    coerceArrayOfJVMToNative(env, argArray, args);
 
     MsgSendInvocation invocation(receiver, selector, args);
     void *result = invocation.invoke();
@@ -608,7 +611,42 @@ struct ClosureData {
     JavaVM *vm;
     jobject function;
     jmethodID invokeMethodID;
+    std::vector<TypeKind> argTypes;
+    std::vector<ffi_type *> ffiArgTypes;
 };
+
+TypeKind typeKindFromJavaClass(JNIEnv *env, jobject classObject) {
+    // TYPE_CLASS is never returned by this method, since every Objective-C class is also an object
+    AutoJString nameStr(env, (jstring) env->CallObjectMethod(classObject, cache->objectToStringMethod));
+    std::string name = nameStr.str();
+    if (name == "char") return TYPE_CHAR;
+    else if (name == "boolean") return TYPE_BOOLEAN;
+    else if (name == "int") return TYPE_INT;
+    else if (name == "short") return TYPE_SHORT;
+    else if (name == "long") return TYPE_LONG;
+    else if (name == "float") return TYPE_FLOAT;
+    else if (name == "double") return TYPE_DOUBLE;
+    else if (name == "void") return TYPE_VOID;
+    else if (name == "class jet.objc.ObjCSelector") return TYPE_SELECTOR;
+    else if (name == "class jet.objc.Pointer") return TYPE_POINTER;
+    // else if (name.find("interface jet.Function") == 0) return ???
+    else {
+        // TODO: Uncomment and fix the test when a callback returns another callback: for some reason it happens to work
+        // assert(env->CallBooleanMethod(cache->objcObjectClass, cache->classIsAssignableFromMethod, classObject));
+        return TYPE_OBJECT;
+    }
+}
+
+void coerceArrayOfNativeToJVM(JNIEnv *env, void *args[], const std::vector<TypeKind>& argTypes, std::vector<jvalue>& jvmArgs) {
+    int size = argTypes.size();
+    jvmArgs.reserve(size);
+
+    for (int i = 0; i < size; i++) {
+        jvalue value;
+        value.l = coerceNativeToJVM(env, *(void **) args[i], argTypes[i]);
+        jvmArgs.push_back(value);
+    }
+}
 
 void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     ClosureData *data = (ClosureData *) userData;
@@ -626,7 +664,11 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
 
     env->PushLocalFrame(16);
 
-    jobject result = env->CallObjectMethod(data->function, data->invokeMethodID);
+    std::vector<jvalue> jvmArgs;
+    coerceArrayOfNativeToJVM(env, args, data->argTypes, jvmArgs);
+    jvalue *jvmArgsPtr = jvmArgs.empty() ? NULL : &jvmArgs[0];
+
+    jobject result = env->CallObjectMethodA(data->function, data->invokeMethodID, jvmArgsPtr);
     result = env->PopLocalFrame(result);
 
     coerceJVMToNative(env, result, ret);
@@ -638,17 +680,17 @@ void closureHandler(ffi_cif *cif, void *ret, void *args[], void *userData) {
     // TODO: deallocate closure, ClosureData, 'function' global reference, etc.
 }
 
-ffi_type *ffiTypeFromJavaClass(JNIEnv *env, jobject classObject) {
-    AutoJString nameStr(env, (jstring) env->CallObjectMethod(classObject, cache->objectToStringMethod));
-    std::string name = nameStr.str();
-    if (name == "char" || name == "boolean") return &ffi_type_schar;
-    else if (name == "int") return &ffi_type_sint;
-    else if (name == "short") return &ffi_type_sshort;
-    else if (name == "long") return &ffi_type_slong;
-    else if (name == "float") return &ffi_type_float;
-    else if (name == "double") return &ffi_type_double;
-    else if (name == "void") return &ffi_type_void;
-    else return &ffi_type_pointer;
+ffi_type *ffiTypeFromTypeKind(TypeKind kind) {
+    switch (kind) {
+        case TYPE_VOID: return &ffi_type_void;
+        case TYPE_INT: return &ffi_type_sint;
+        case TYPE_LONG: return &ffi_type_slong;
+        case TYPE_SHORT: return &ffi_type_sshort;
+        case TYPE_FLOAT: return &ffi_type_float;
+        case TYPE_DOUBLE: return &ffi_type_double;
+        case TYPE_CHAR: case TYPE_BOOLEAN: return &ffi_type_schar;
+        default: return &ffi_type_pointer;
+    }
 }
 
 jobject reflectMethodFromKotlinFunction(JNIEnv *env, jobject function, bool bridge) {
@@ -665,8 +707,23 @@ jobject reflectMethodFromKotlinFunction(JNIEnv *env, jobject function, bool brid
 
     // TODO: do something meaningful
     std::string className = getClassGetName(env, function);
-    fprintf(stderr, "No non-bridge invoke() method in a function literal class: %s\n", className.c_str());
+    fprintf(stderr, "No %s invoke() method in a function literal class: %s\n", bridge ? "bridge" : "non-bridge", className.c_str());
     return NULL;
+}
+
+void calculateClosureArgumentTypes(JNIEnv *env, jobject method, std::vector<TypeKind>& argTypes, std::vector<ffi_type *>& ffiArgTypes) {
+    jobjectArray parameterTypes = (jobjectArray) env->CallObjectMethod(method, cache->methodGetParameterTypesMethod);
+    jsize size = env->GetArrayLength(parameterTypes);
+    argTypes.reserve(size);
+    ffiArgTypes.reserve(size);
+
+    for (jsize i = 0; i < size; i++) {
+        jobject classObject = env->GetObjectArrayElement(parameterTypes, i);
+        TypeKind kind = typeKindFromJavaClass(env, classObject);
+        argTypes.push_back(kind);
+        ffi_type *paramType = ffiTypeFromTypeKind(kind);
+        ffiArgTypes.push_back(paramType);
+    }
 }
 
 void *createNativeClosureForFunction(JNIEnv *env, jobject function) {
@@ -682,11 +739,13 @@ void *createNativeClosureForFunction(JNIEnv *env, jobject function) {
 
     jobject method = reflectMethodFromKotlinFunction(env, data->function, false);
     jobject returnTypeClassObject = env->CallObjectMethod(method, cache->methodGetReturnTypeMethod);
-    ffi_type *returnType = ffiTypeFromJavaClass(env, returnTypeClassObject);
+    TypeKind returnTypeKind = typeKindFromJavaClass(env, returnTypeClassObject);
+    ffi_type *returnType = ffiTypeFromTypeKind(returnTypeKind);
 
-    // TODO: get ffi types of all arguments
-    ffi_type *args[1];
-    if (ffi_prep_cif(&data->cif, FFI_DEFAULT_ABI, 0, returnType, args) != FFI_OK) {
+    calculateClosureArgumentTypes(env, method, data->argTypes, data->ffiArgTypes);
+
+    ffi_type **argTypes = data->ffiArgTypes.empty() ? NULL : &data->ffiArgTypes[0];
+    if (ffi_prep_cif(&data->cif, FFI_DEFAULT_ABI, data->ffiArgTypes.size(), returnType, argTypes) != FFI_OK) {
         fprintf(stderr, "Error preparing CIF\n");
         return 0;
     }
