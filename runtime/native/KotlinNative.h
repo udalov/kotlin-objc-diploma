@@ -58,7 +58,7 @@ JNIEXPORT jlong JNICALL Java_jet_objc_Native_objc_1getClass
 /*
  * Class:     jet_objc_Native
  * Method:    objc_msgSend
- * Signature: (Ljet/objc/ObjCObject;Ljava/lang/String;[Ljet/objc/NativeValue;)Ljet/objc/NativeValue;
+ * Signature: (Ljet/objc/ObjCObject;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend
   (JNIEnv *, jclass, jobject, jstring, jobjectArray);

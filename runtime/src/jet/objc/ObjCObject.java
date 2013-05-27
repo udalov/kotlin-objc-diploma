@@ -17,7 +17,7 @@
 package jet.objc;
 
 @SuppressWarnings("UnusedDeclaration")
-public abstract class ObjCObject implements NativeValue {
+public abstract class ObjCObject {
     // This is long for efficiency, but probably needs to be Pointer<?>
     private final long pointer;
 

@@ -16,7 +16,9 @@
 
 package org.jetbrains.jet.codegen;
 
-import jet.objc.*;
+import jet.objc.Native;
+import jet.objc.NativeHelpers;
+import jet.objc.ObjCObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.asm4.ClassWriter;
 import org.jetbrains.asm4.MethodVisitor;
@@ -31,7 +33,6 @@ import org.jetbrains.jet.lang.resolve.objc.ObjCMethodDescriptor;
 import org.jetbrains.jet.lang.resolve.scopes.JetScope;
 import org.jetbrains.jet.lang.types.JetType;
 import org.jetbrains.jet.lang.types.TypeProjection;
-import org.jetbrains.jet.lang.types.lang.KotlinBuiltIns;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,12 +52,9 @@ public class ObjCClassCodegen {
     public static final Type JL_STRING_TYPE = Type.getType(String.class);
 
     public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
-    public static final Type NATIVE_VALUE_TYPE = Type.getType(NativeValue.class);
-    public static final Type CALLBACK_FUNCTION_TYPE = Type.getType(CallbackFunction.class);
-    public static final Type PRIMITIVE_VALUE_TYPE = Type.getType(PrimitiveValue.class);
 
     public static final String OBJC_SEND_MESSAGE_DESCRIPTOR =
-            getMethodDescriptor(NATIVE_VALUE_TYPE, OBJC_OBJECT_TYPE, JL_STRING_TYPE, Type.getType(NativeValue[].class));
+            getMethodDescriptor(JL_OBJECT_TYPE, OBJC_OBJECT_TYPE, JL_STRING_TYPE, Type.getType(Object[].class));
 
     private final JetTypeMapper typeMapper;
     private final ClassDescriptor descriptor;
@@ -239,16 +237,14 @@ public class ObjCClassCodegen {
                 v.invokestatic(NATIVE, "objc_msgSend", OBJC_SEND_MESSAGE_DESCRIPTOR);
 
                 Type returnType = signature.getAsmMethod().getReturnType();
-                if (returnType.getSort() != OBJECT && returnType.getSort() != ARRAY && returnType.getSort() != VOID) {
-                    StackValue.coerce(NATIVE_VALUE_TYPE, PRIMITIVE_VALUE_TYPE, v);
-
-                    String primitiveType = returnType.getClassName();
-                    String uppercasedType = Character.toUpperCase(primitiveType.charAt(0)) + primitiveType.substring(1);
-
-                    v.invokevirtual(PRIMITIVE_VALUE_TYPE.getInternalName(), "get" + uppercasedType, getMethodDescriptor(returnType));
+                if (returnType.getSort() == Type.BOOLEAN) {
+                    // BOOL is returned from native as an instance of Character class,
+                    // since BOOL is encoded as 'signed char' in Objective-C
+                    StackValue.coerce(JL_OBJECT_TYPE, CHAR_TYPE, v);
+                    StackValue.coerce(CHAR_TYPE, BOOLEAN_TYPE, v);
                 }
                 else {
-                    StackValue.coerce(NATIVE_VALUE_TYPE, returnType, v);
+                    StackValue.coerce(JL_OBJECT_TYPE, returnType, v);
                 }
 
                 v.areturn(returnType);
@@ -258,50 +254,18 @@ public class ObjCClassCodegen {
                 List<ValueParameterDescriptor> parameters = method.getValueParameters();
 
                 v.iconst(parameters.size());
-                v.newarray(NATIVE_VALUE_TYPE);
+                v.newarray(JL_OBJECT_TYPE);
 
                 int localIndex = 1;
                 for (ValueParameterDescriptor parameter : parameters) {
-                    JetType type = parameter.getType();
-                    Type asmType = typeMapper.mapType(type);
-                    int i = parameter.getIndex();
-
                     v.dup();
-                    v.iconst(i);
+                    v.iconst(parameter.getIndex());
 
-                    StackValue local = StackValue.local(localIndex, asmType);
+                    Type asmType = typeMapper.mapType(parameter.getType());
+                    StackValue.local(localIndex, asmType).put(JL_OBJECT_TYPE, v);
                     localIndex += asmType.getSize();
 
-                    if (KotlinBuiltIns.getInstance().isFunctionType(type)) {
-                        v.anew(CALLBACK_FUNCTION_TYPE);
-                        v.dup();
-                        local.put(JL_OBJECT_TYPE, v);
-                        v.invokespecial(CALLBACK_FUNCTION_TYPE.getInternalName(), "<init>", getMethodDescriptor(VOID_TYPE, JL_OBJECT_TYPE));
-                    }
-                    else if (asmType.getSort() == Type.OBJECT) {
-                        local.put(asmType, v);
-                    }
-                    else {
-                        v.anew(PRIMITIVE_VALUE_TYPE);
-                        v.dup();
-                        if (asmType.getSort() == Type.DOUBLE) {
-                            local.put(DOUBLE_TYPE, v);
-                            // TODO: or doubleToLongBits?
-                            v.invokestatic("java/lang/Double", "doubleToRawLongBits", "(D)J");
-                        }
-                        else if (asmType.getSort() == Type.FLOAT) {
-                            local.put(FLOAT_TYPE, v);
-                            // TODO: or floatToIntBits?
-                            v.invokestatic("java/lang/Float", "floatToRawIntBits", "(F)I");
-                            StackValue.coerce(INT_TYPE, LONG_TYPE, v);
-                        }
-                        else {
-                            local.put(LONG_TYPE, v);
-                        }
-                        v.invokespecial(PRIMITIVE_VALUE_TYPE.getInternalName(), "<init>", getMethodDescriptor(VOID_TYPE, LONG_TYPE));
-                    }
-
-                    v.astore(NATIVE_VALUE_TYPE);
+                    v.astore(JL_OBJECT_TYPE);
                 }
             }
         });

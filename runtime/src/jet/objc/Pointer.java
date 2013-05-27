@@ -19,7 +19,7 @@ package jet.objc;
 import jet.runtime.typeinfo.KotlinSignature;
 
 @SuppressWarnings("UnusedDeclaration")
-public class Pointer<T> implements NativeValue {
+public class Pointer<T> {
     public static final int CHAR_SIZE = 1;
 
     public final long peer;

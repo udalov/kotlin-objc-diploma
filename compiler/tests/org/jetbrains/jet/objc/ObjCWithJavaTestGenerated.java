@@ -123,9 +123,19 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
                 doTest("compiler/testData/objc/java/callbacks/returnType/bool.kt");
             }
             
+            @TestMetadata("callbackFunction.kt")
+            public void testCallbackFunction() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/callbackFunction.kt");
+            }
+            
             @TestMetadata("char.kt")
             public void testChar() throws Exception {
                 doTest("compiler/testData/objc/java/callbacks/returnType/char.kt");
+            }
+            
+            @TestMetadata("double.kt")
+            public void testDouble() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/double.kt");
             }
             
             @TestMetadata("float.kt")
@@ -141,6 +151,11 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
             @TestMetadata("long.kt")
             public void testLong() throws Exception {
                 doTest("compiler/testData/objc/java/callbacks/returnType/long.kt");
+            }
+            
+            @TestMetadata("objcObject.kt")
+            public void testObjcObject() throws Exception {
+                doTest("compiler/testData/objc/java/callbacks/returnType/objcObject.kt");
             }
             
             @TestMetadata("short.kt")

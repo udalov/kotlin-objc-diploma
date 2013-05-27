@@ -17,5 +17,5 @@
 package jet.objc;
 
 @SuppressWarnings("UnusedDeclaration")
-public interface ObjCClass extends NativeValue {
+public interface ObjCClass {
 }
