@@ -20,22 +20,21 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ObjCInteropParameters {
     private ObjCInteropParameters() {}
 
-    private final static Map<Project, File> HEADERS = new HashMap<Project, File>();
+    private final static Map<Project, String> HEADERS = new HashMap<Project, String>();
 
     @Nullable
-    public static File getHeaders(@NotNull Project project) {
+    public static String getArgs(@NotNull Project project) {
         return HEADERS.get(project);
     }
 
-    public static void saveHeaders(@NotNull Project project, @NotNull File file) {
-        HEADERS.put(project, file);
+    public static void setArgs(@NotNull Project project, @NotNull String args) {
+        HEADERS.put(project, args);
     }
 
     public static void clear() {

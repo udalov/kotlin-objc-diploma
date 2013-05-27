@@ -1,6 +1,7 @@
 #include <fstream>
 #include <map>
 #include <vector>
+#include <sstream>
 #include <string>
 
 #include "clang-c/Index.h"
@@ -331,7 +332,7 @@ void runPostIndexTasks(OutputCollector *data) {
 }
 
 
-std::string *doIndex(const std::vector<std::string>& headers) {
+std::string *doIndex(const std::vector<std::string>& args) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     CXIndex index = clang_createIndex(false, false);
@@ -342,12 +343,12 @@ std::string *doIndex(const std::vector<std::string>& headers) {
 
     OutputCollector data;
 
-    std::vector<const char *> args;
-    std::transform(headers.begin(), headers.end(), std::back_inserter(args), std::mem_fun_ref(&std::string::c_str));
-    args.push_back("-ObjC");
+    std::vector<const char *> cxArgs;
+    std::transform(args.begin(), args.end(), std::back_inserter(cxArgs), std::mem_fun_ref(&std::string::c_str));
+    cxArgs.push_back("-ObjC");
 
     clang_indexSourceFile(action, &data, &callbacks, sizeof(callbacks), 0, 0,
-            &args[0], static_cast<int>(args.size()), 0, 0, 0, 0);
+            &cxArgs[0], static_cast<int>(cxArgs.size()), 0, 0, 0, 0);
 
     runPostIndexTasks(&data);
 
@@ -357,13 +358,22 @@ std::string *doIndex(const std::vector<std::string>& headers) {
     return data.serialize();
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_jetbrains_jet_lang_resolve_objc_ObjCResolveFacade_buildObjCIndex
-        (JNIEnv *env, jobject, jstring headerString) {
-    auto header = env->GetStringUTFChars(headerString, nullptr);
-    std::vector<std::string> headers(1, header);
-    env->ReleaseStringUTFChars(headerString, header);
+void split(const std::string& s, char delimiter, std::vector<std::string>& result) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delimiter)) {
+        result.push_back(item);
+    }
+}
 
-    auto string = doIndex(headers);
+JNIEXPORT jbyteArray JNICALL Java_org_jetbrains_jet_lang_resolve_objc_ObjCResolveFacade_buildObjCIndex
+        (JNIEnv *env, jobject, jstring argsString) {
+    auto argsChars = env->GetStringUTFChars(argsString, nullptr);
+    std::vector<std::string> args;
+    split(argsChars, ' ', args);
+    env->ReleaseStringUTFChars(argsString, argsChars);
+
+    auto string = doIndex(args);
 
     auto len = string->length();
     auto result = env->NewByteArray(len);

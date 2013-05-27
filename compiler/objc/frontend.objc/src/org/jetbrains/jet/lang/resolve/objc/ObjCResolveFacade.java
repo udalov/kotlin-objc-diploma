@@ -22,8 +22,6 @@ import org.jetbrains.jet.lang.descriptors.NamespaceDescriptor;
 import org.jetbrains.jet.utils.ExceptionUtils;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import static org.jetbrains.jet.lang.resolve.objc.ObjCIndex.TranslationUnit;
@@ -46,12 +44,12 @@ public class ObjCResolveFacade {
         System.loadLibrary("KotlinNativeIndexer");
     }
 
-    private native byte[] buildObjCIndex(@NotNull String header);
+    private native byte[] buildObjCIndex(@NotNull String args);
 
     @NotNull
-    private TranslationUnit indexObjCHeaders(@NotNull File header) {
+    private TranslationUnit indexObjCHeaders(@NotNull String args) {
         try {
-            byte[] bytes = buildObjCIndex(header.getAbsolutePath());
+            byte[] bytes = buildObjCIndex(args);
             return TranslationUnit.parseFrom(bytes);
         }
         catch (IOException e) {
@@ -66,11 +64,11 @@ public class ObjCResolveFacade {
         }
 
         assert project != null : "Project should be initialized in " + getClass().getName();
-        File header = ObjCInteropParameters.getHeaders(project);
-        assert header != null : "Header parameter should be saved into " + ObjCInteropParameters.class.getName();
+        String args = ObjCInteropParameters.getArgs(project);
+        assert args != null : "Header parameter should be saved into " + ObjCInteropParameters.class.getName();
         assert rootNamespace != null : "Root namespace should be set before Obj-C resolve";
 
-        TranslationUnit translationUnit = indexObjCHeaders(header);
+        TranslationUnit translationUnit = indexObjCHeaders(args);
 
         ObjCDescriptorResolver resolver = new ObjCDescriptorResolver(rootNamespace);
         resolvedNamespace = resolver.resolveTranslationUnit(translationUnit);

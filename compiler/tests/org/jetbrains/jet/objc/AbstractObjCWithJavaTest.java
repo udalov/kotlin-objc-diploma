@@ -76,13 +76,19 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
         String header = fileNameCommon + ".h";
         String implementation = fileNameCommon + ".m";
 
-        ObjCInteropParameters.saveHeaders(environment.getProject(), new File(header));
+        File dylib = new File(tmpDir, "libKotlinObjCTest.dylib");
+        compileObjectiveC(implementation, dylib);
+
+        String actual = runTestGetOutput(kotlinSource, header, dylib);
+        assertEquals("OK", actual);
+    }
+
+    @NotNull
+    protected String runTestGetOutput(@NotNull String kotlinSource, @NotNull String clangArgs, @NotNull File dylib) {
+        ObjCInteropParameters.setArgs(environment.getProject(), clangArgs);
 
         List<JetFile> files = Collections.singletonList(createJetFile(kotlinSource));
         AnalyzeExhaust analyzeExhaust = analyze(files);
-
-        File dylib = new File(tmpDir, "libKotlinObjCTest.dylib");
-        compileObjectiveC(implementation, dylib);
 
         NamespaceDescriptor descriptor = extractObjCNamespaceFromAnalyzeExhaust(analyzeExhaust);
 
@@ -91,8 +97,7 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
 
         generate(files, analyzeExhaust, codegen.getBindingContext());
 
-        String actual = runCompiledKotlinClass();
-        assertEquals("OK", actual);
+        return runCompiledKotlinClass();
     }
 
     @NotNull

@@ -36,7 +36,6 @@ import java.util.Collections;
 import static org.jetbrains.jet.objc.ObjCTestUtil.createEnvironment;
 import static org.jetbrains.jet.objc.ObjCTestUtil.extractObjCNamespaceFromAnalyzeExhaust;
 import static org.jetbrains.jet.test.util.NamespaceComparator.DONT_INCLUDE_METHODS_OF_OBJECT;
-import static org.jetbrains.jet.test.util.NamespaceComparator.RECURSIVE;
 import static org.jetbrains.jet.test.util.NamespaceComparator.compareNamespaceWithFile;
 
 public abstract class AbstractObjCDescriptorResolverTest extends TestCaseWithTmpdir {
@@ -45,7 +44,7 @@ public abstract class AbstractObjCDescriptorResolverTest extends TestCaseWithTmp
         File expected = new File(header.substring(0, header.length() - ".h".length()) + ".txt");
 
         JetCoreEnvironment environment = createEnvironment(getTestRootDisposable(), ConfigurationKind.ALL);
-        ObjCInteropParameters.saveHeaders(environment.getProject(), new File(header));
+        ObjCInteropParameters.setArgs(environment.getProject(), header);
 
         AnalyzeExhaust analyzeExhaust = AnalyzerFacadeForObjC.INSTANCE.analyzeFiles(
                 environment.getProject(),
