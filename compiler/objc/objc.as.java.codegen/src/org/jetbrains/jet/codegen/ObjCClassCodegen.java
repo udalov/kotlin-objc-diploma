@@ -223,6 +223,13 @@ public class ObjCClassCodegen {
             return;
         }
 
+        if ("finalize".equals(method.getName().getName()) && method.getValueParameters().isEmpty()) {
+            // Generating -[NSObject finalize] will mess with the semantics of the method with the same name in JVM.
+            // In particular, when a JVM object is GC'd and finalize is called, it'll call Objective-C's finalize,
+            // which is a bad thing to do and will break on Objective-C libraries compiled without GC support (-fno-objc-gc)
+            return;
+        }
+
         final JvmMethodSignature signature = typeMapper.mapSignature(method.getName(), method);
 
         newMethod(ACC_PUBLIC, signature.getName(), signature.getAsmMethod().getDescriptor(), new MethodCodegen() {

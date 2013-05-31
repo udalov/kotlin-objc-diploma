@@ -37,6 +37,11 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
         JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), "org.jetbrains.jet.generators.tests.GenerateTests", new File("compiler/testData/objc/java"), Pattern.compile("^(.+)\\.kt$"), true);
     }
     
+    @TestMetadata("noFinalizeInJava.kt")
+    public void testNoFinalizeInJava() throws Exception {
+        doTest("compiler/testData/objc/java/noFinalizeInJava.kt");
+    }
+    
     @TestMetadata("simpleClassObject.kt")
     public void testSimpleClassObject() throws Exception {
         doTest("compiler/testData/objc/java/simpleClassObject.kt");
