@@ -163,6 +163,20 @@ class JVMDeclarationsCache {
 };
 
 JVMDeclarationsCache *cache;
+id autoReleasePool;
+
+id createAutoreleasePool() {
+    static id autoreleasePoolClass = objc_getClass("NSAutoreleasePool");
+    static SEL alloc = sel_registerName("alloc");
+    id pool = objc_msgSend(autoreleasePoolClass, alloc);
+    static SEL init = sel_registerName("init");
+    return objc_msgSend(pool, init);
+}
+
+void drainAutoreleasePool(id pool) {
+    static SEL drain = sel_registerName("drain");
+    objc_msgSend(pool, drain);
+}
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     // TODO: extract repeating code
@@ -176,6 +190,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     }
 
     cache = new JVMDeclarationsCache(env);
+
+    autoReleasePool = createAutoreleasePool();
 
     if (!attached) {
         vm->DetachCurrentThread();
@@ -193,6 +209,8 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *) {
             return;
         }
     }
+
+    drainAutoreleasePool(autoReleasePool);
 
     delete cache;
 
@@ -344,26 +362,12 @@ void coerceArrayOfJVMToNative(JNIEnv *env, jobjectArray argArray, std::vector<vo
     }
 }
 
-// TODO: figure out if an autorelease pool is needed and how to use it properly
-/*
-id createAutoreleasePool() {
-    static id autoreleasePoolClass = objc_getClass("NSAutoreleasePool");
-    static SEL alloc = sel_registerName("alloc");
-    static SEL init = sel_registerName("init");
-    id pool = objc_msgSend(autoreleasePoolClass, alloc);
-    return objc_msgSend(pool, init);
-}
-
-void drainAutoreleasePool(id pool) {
-    static SEL drain = sel_registerName("drain");
-    objc_msgSend(pool, drain);
-}
-*/
-
 jobject createMirrorObjectOfClass(JNIEnv *env, id object, jclass jvmClass) {
-    // TODO: release in finalize
+    /*
+    // TODO: retain the object here, release in finalize()
     static SEL retain = sel_registerName("retain");
     objc_msgSend(object, retain);
+    */
 
     jmethodID constructor = env->GetMethodID(jvmClass, "<init>", "(J)V");
     return env->NewObject(jvmClass, constructor, object);
