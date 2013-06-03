@@ -56,6 +56,7 @@ class JVMDeclarationsCache {
     jclass objcObjectClass;
     jclass objcSelectorClass;
     jclass pointerClass;
+    jclass nilClass;
 
     jclass integerClass;
     jclass longClass;
@@ -68,6 +69,7 @@ class JVMDeclarationsCache {
 
     jfieldID objcObjectPointerField;
     jfieldID pointerPeerField;
+    jfieldID nilInstanceField;
 
     jmethodID objectGetClassMethod;
     jmethodID objectToStringMethod;
@@ -101,9 +103,11 @@ class JVMDeclarationsCache {
         objcObjectClass = findClass("jet/objc/ObjCObject");
         objcSelectorClass = findClass("jet/objc/ObjCSelector");
         pointerClass = findClass("jet/objc/Pointer");
+        nilClass = findClass("jet/objc/Nil");
 
         objcObjectPointerField = env->GetFieldID(objcObjectClass, "pointer", "J");
         pointerPeerField = env->GetFieldID(pointerClass, "peer", "J");
+        nilInstanceField = env->GetStaticFieldID(nilClass, "INSTANCE", "Ljet/objc/Nil;");
 
         integerClass = findClass("java/lang/Integer");
         longClass = findClass("java/lang/Long");
@@ -530,6 +534,10 @@ jobject coerceNativeToJVM(JNIEnv *env, void *value, const Type& type) {
     } else if (kind == TYPE_SELECTOR) {
         return env->NewObject(cache->objcSelectorClass, cache->objcSelectorConstructor, value);
     } else if (kind == TYPE_CLASS) {
+        if (!value) {
+            return env->GetStaticObjectField(cache->nilClass, cache->nilInstanceField);
+        }
+
         // TODO: what if there's no such class object?
         std::string className = OBJC_PACKAGE_PREFIX + object_getClassName((id) value);
         std::string classObjectDescriptor = "L" + className + "$object;";
@@ -539,8 +547,16 @@ jobject coerceNativeToJVM(JNIEnv *env, void *value, const Type& type) {
     } else if (kind == TYPE_POINTER) {
         return env->NewObject(cache->pointerClass, cache->pointerConstructor, value);
     } else if (kind == TYPE_ID || kind == TYPE_OBJECT) {
+        if (!value) {
+            if (kind == TYPE_ID) {
+                return env->GetStaticObjectField(cache->nilClass, cache->nilInstanceField);
+            } else {
+                jclass jvmClass = env->FindClass(type.className.c_str());
+                return createMirrorObjectOfClass(env, nil, jvmClass);
+            }
+        }
+
         id object = (id) value;
-        // TODO: don't call getClassName if value==nil
         Class clazz = object_getClass(object);
 
         jclass jvmClass = NULL;

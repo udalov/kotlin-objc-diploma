@@ -16,7 +16,10 @@
 
 package jet.objc;
 
-@SuppressWarnings("UnusedDeclaration")
-public interface ObjCClass {
-    ObjCClass NIL = Nil.INSTANCE;
+/* package */ final class Nil extends ObjCObject implements ObjCClass {
+    public static final Nil INSTANCE = new Nil();
+
+    private Nil() {
+        super(0);
+    }
 }

@@ -20,6 +20,8 @@ import jet.runtime.typeinfo.KotlinSignature;
 
 @SuppressWarnings("UnusedDeclaration")
 public class Pointer<T> {
+    public static final Pointer<Object> NULL = new Pointer<Object>(0);
+
     public static final int CHAR_SIZE = 1;
 
     public final long peer;

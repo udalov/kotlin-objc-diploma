@@ -18,6 +18,8 @@ package jet.objc;
 
 @SuppressWarnings("UnusedDeclaration")
 public abstract class ObjCObject {
+    public static final ObjCObject NIL = Nil.INSTANCE;
+
     // This is long for efficiency, but probably needs to be Pointer<?>
     private final long pointer;
 

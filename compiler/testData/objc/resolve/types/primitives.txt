@@ -16,7 +16,7 @@ public open class A : objc.NSObject {
     public open fun f_id() : jet.objc.ObjCObject
     public open fun f_int() : jet.Int
     public open fun f_long() : jet.Long
-    public open fun f_longdouble() : jet.Any?
+    public open fun f_longdouble() : jet.Any
     public open fun f_longlong() : jet.Long
     public open fun f_short() : jet.Short
     public open fun f_uchar() : jet.Char

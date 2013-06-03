@@ -165,7 +165,7 @@ public class ObjCTypeResolver {
                 throw new UnsupportedOperationException("Unsupported type (at=" + at + "): " + type);
             }
 
-            return KotlinBuiltIns.getInstance().getNullableAnyType();
+            return KotlinBuiltIns.getInstance().getAnyType();
         }
     }
 
