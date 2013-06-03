@@ -54,7 +54,7 @@ public class ObjCClassCodegen {
     public static final Type OBJC_OBJECT_TYPE = Type.getType(ObjCObject.class);
 
     public static final String OBJC_SEND_MESSAGE_DESCRIPTOR =
-            getMethodDescriptor(JL_OBJECT_TYPE, OBJC_OBJECT_TYPE, JL_STRING_TYPE, Type.getType(Object[].class));
+            getMethodDescriptor(JL_OBJECT_TYPE, JL_STRING_TYPE, OBJC_OBJECT_TYPE, JL_STRING_TYPE, Type.getType(Object[].class));
 
     private final JetTypeMapper typeMapper;
     private final ClassDescriptor descriptor;
@@ -235,6 +235,9 @@ public class ObjCClassCodegen {
         newMethod(ACC_PUBLIC, signature.getName(), signature.getAsmMethod().getDescriptor(), new MethodCodegen() {
             @Override
             public void generate(@NotNull InstructionAdapter v) {
+                Type returnType = signature.getAsmMethod().getReturnType();
+                v.visitLdcInsn(getTypeReflectString(returnType));
+
                 v.load(0, asmType);
 
                 v.visitLdcInsn(getObjCMethodName(method));
@@ -243,16 +246,7 @@ public class ObjCClassCodegen {
 
                 v.invokestatic(NATIVE, "objc_msgSend", OBJC_SEND_MESSAGE_DESCRIPTOR);
 
-                Type returnType = signature.getAsmMethod().getReturnType();
-                if (returnType.getSort() == Type.BOOLEAN) {
-                    // BOOL is returned from native as an instance of Character class,
-                    // since BOOL is encoded as 'signed char' in Objective-C
-                    StackValue.coerce(JL_OBJECT_TYPE, CHAR_TYPE, v);
-                    StackValue.coerce(CHAR_TYPE, BOOLEAN_TYPE, v);
-                }
-                else {
-                    StackValue.coerce(JL_OBJECT_TYPE, returnType, v);
-                }
+                StackValue.coerce(JL_OBJECT_TYPE, returnType, v);
 
                 v.areturn(returnType);
             }
@@ -290,5 +284,29 @@ public class ObjCClassCodegen {
         FunctionDescriptor unwrapped = CodegenUtil.unwrapFakeOverride(method);
         assert unwrapped instanceof ObjCMethodDescriptor : "Obj-C method original is not an Obj-C method: " + method + ", " + unwrapped;
         return ((ObjCMethodDescriptor) unwrapped).getObjCName();
+    }
+
+    @NotNull
+    private static String getTypeReflectString(@NotNull Type type) {
+        switch (type.getSort()) {
+            case Type.VOID: return "void";
+            case Type.BOOLEAN: return "boolean";
+            case Type.CHAR: return "char";
+            case Type.BYTE: return "byte";
+            case Type.SHORT: return "short";
+            case Type.INT: return "int";
+            case Type.FLOAT: return "float";
+            case Type.LONG: return "long";
+            case Type.DOUBLE: return "double";
+            case Type.ARRAY: throw new IllegalStateException("Unsupported type: " + type);
+        }
+        assert type.getSort() == Type.OBJECT : "Unsupported type sort: " + type;
+
+        String className = type.getClassName();
+        if ("jet.objc.ObjCClass".equals(className)) {
+            return "interface " + className;
+        }
+
+        return "class " + className;
     }
 }

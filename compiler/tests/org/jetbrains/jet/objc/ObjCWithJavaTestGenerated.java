@@ -186,11 +186,6 @@ public class ObjCWithJavaTestGenerated extends AbstractObjCWithJavaTest {
                 doTest("compiler/testData/objc/java/callbacks/returnType/bool.kt");
             }
             
-            @TestMetadata("callbackFunction.kt")
-            public void testCallbackFunction() throws Exception {
-                doTest("compiler/testData/objc/java/callbacks/returnType/callbackFunction.kt");
-            }
-            
             @TestMetadata("char.kt")
             public void testChar() throws Exception {
                 doTest("compiler/testData/objc/java/callbacks/returnType/char.kt");

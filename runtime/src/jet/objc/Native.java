@@ -38,5 +38,5 @@ public class Native {
 
     public static native long objc_getClass(String name);
 
-    public static native Object objc_msgSend(ObjCObject receiver, String selectorName, Object... args);
+    public static native Object objc_msgSend(String returnType, ObjCObject receiver, String selectorName, Object... args);
 }

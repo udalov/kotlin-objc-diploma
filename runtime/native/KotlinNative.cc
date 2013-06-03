@@ -407,31 +407,25 @@ enum TypeKind {
     TYPE_POINTER,
     TYPE_SELECTOR,
     TYPE_CLASS,
+    TYPE_ID,
     TYPE_OBJECT,
 };
 
-TypeKind typeKindFromEncoding(char *encoding) {
-    while (IGNORED_TYPE_ENCODINGS.find(*encoding) != std::string::npos) {
-        encoding++;
-    }
-    // This method cannot return TYPE_BOOLEAN since BOOL is encoded as 'signed char' in Objective-C.
-    // There's a hack on this in the caller, which coerces java.lang.Character to java.lang.Boolean
-    switch (*encoding) {
-        case _C_CHR: case _C_UCHR: return TYPE_CHAR;
-        case _C_INT: case _C_UINT: return TYPE_INT;
-        case _C_SHT: case _C_USHT: return TYPE_SHORT;
-        case _C_LNG: case _C_ULNG: case _C_LNG_LNG: case _C_ULNG_LNG: return TYPE_LONG;
-        case _C_FLT: return TYPE_FLOAT;
-        case _C_DBL: return TYPE_DOUBLE;
-        case _C_VOID: return TYPE_VOID;
+struct Type {
+    TypeKind kind;
+    // For kind = TYPE_OBJECT, internal name of the corresponding JVM class (e.g. "objc/NSObject")
+    std::string className;
 
-        case _C_SEL: return TYPE_SELECTOR;
-        case _C_CLASS: return TYPE_CLASS;
-        case _C_PTR: case _C_CHARPTR: return TYPE_POINTER;
+    Type(TypeKind kind, const std::string& className):
+        kind(kind),
+        className(className)
+    { }
 
-        default: return TYPE_OBJECT;
-    }
-}
+    Type(TypeKind kind):
+        kind(kind),
+        className("")
+    { }
+};
 
 class MsgSendInvocation {
     const id receiver;
@@ -439,8 +433,6 @@ class MsgSendInvocation {
     const std::vector<void *>& args;
     
     Method method;
-
-    char *returnTypeEncoding;
 
     public:
 
@@ -451,17 +443,6 @@ class MsgSendInvocation {
     {
         Class receiverClass = object_getClass(receiver);
         method = class_getInstanceMethod(receiverClass, selector);
-        returnTypeEncoding = 0;
-    }
-
-    ~MsgSendInvocation() {
-        if (returnTypeEncoding) {
-            free(returnTypeEncoding);
-        }
-    }
-
-    TypeKind returnTypeKind() const {
-        return typeKindFromEncoding(returnTypeEncoding);
     }
 
     void *invoke() {
@@ -471,8 +452,11 @@ class MsgSendInvocation {
         std::vector<void *> argValues;
         calculateArgumentTypesAndValues(numArguments, argTypes, argValues);
 
-        returnTypeEncoding = method_copyReturnType(method);
+        char *returnTypeEncoding = method_copyReturnType(method);
+        // TODO: also use Type instead of encodings
         ffi_type *methodReturnType = ffiTypeFromEncoding(returnTypeEncoding);
+        free(returnTypeEncoding);
+
         void (*fun)();
         ffi_type *returnType;
         if (methodReturnType == &ffi_type_double || methodReturnType == &ffi_type_float) {
@@ -524,7 +508,9 @@ class MsgSendInvocation {
     }
 };
 
-jobject coerceNativeToJVM(JNIEnv *env, void *value, TypeKind kind) {
+jobject coerceNativeToJVM(JNIEnv *env, void *value, const Type& type) {
+    TypeKind kind = type.kind;
+
     if (kind == TYPE_VOID) {
         return NULL;
     } else if (kind == TYPE_INT) {
@@ -552,7 +538,7 @@ jobject coerceNativeToJVM(JNIEnv *env, void *value, TypeKind kind) {
         return env->GetStaticObjectField(clazz, classObjectField);
     } else if (kind == TYPE_POINTER) {
         return env->NewObject(cache->pointerClass, cache->pointerConstructor, value);
-    } else if (kind == TYPE_OBJECT) {
+    } else if (kind == TYPE_ID || kind == TYPE_OBJECT) {
         id object = (id) value;
         // TODO: don't call getClassName if value==nil
         Class clazz = object_getClass(object);
@@ -582,9 +568,46 @@ jobject coerceNativeToJVM(JNIEnv *env, void *value, TypeKind kind) {
     }
 }
 
+// TODO: do not always instantiate Type
+Type typeFromReflectString(const std::string& name) {
+    if (name == "char") return Type(TYPE_CHAR);
+    else if (name == "boolean") return Type(TYPE_BOOLEAN);
+    else if (name == "int") return Type(TYPE_INT);
+    else if (name == "short") return Type(TYPE_SHORT);
+    else if (name == "long") return Type(TYPE_LONG);
+    else if (name == "float") return Type(TYPE_FLOAT);
+    else if (name == "double") return Type(TYPE_DOUBLE);
+    else if (name == "void") return Type(TYPE_VOID);
+    else if (name == "interface jet.objc.ObjCClass") return Type(TYPE_CLASS);
+    else if (name.find("interface jet.Function") == 0) {
+        // TODO: support returning closures
+        fprintf(stderr, "Returning functions from native code is not supported\n");
+        exit(42);
+    } else {
+        static const std::string CLASS_PREFIX = "class ";
+        if (name.substr(0, CLASS_PREFIX.length()) != CLASS_PREFIX) {
+            fprintf(stderr, "Unsupported JVM type: %s\n", name.c_str());
+            exit(42);
+        }
+        std::string className = name.substr(CLASS_PREFIX.length());
+
+        if (className == "jet.objc.Pointer") return Type(TYPE_POINTER);
+        else if (className == "jet.objc.ObjCSelector") return Type(TYPE_SELECTOR);
+        else if (className == "jet.objc.ObjCObject") return Type(TYPE_ID);
+        else {
+            // assert(env->CallBooleanMethod(cache->objcObjectClass, cache->classIsAssignableFromMethod, classObject));
+            std::replace(className.begin(), className.end(), '.', '/');
+            assert(className.substr(0, OBJC_PACKAGE_PREFIX.length()) == OBJC_PACKAGE_PREFIX);
+
+            return Type(TYPE_OBJECT, className);
+        }
+    }
+}
+
 JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend(
         JNIEnv *env,
         jclass,
+        jstring returnTypeDescriptor,
         jobject receiverJObject,
         jstring selectorName,
         jobjectArray argArray
@@ -599,7 +622,9 @@ JNIEXPORT jobject JNICALL Java_jet_objc_Native_objc_1msgSend(
 
     MsgSendInvocation invocation(receiver, selector, args);
     void *result = invocation.invoke();
-    TypeKind returnType = invocation.returnTypeKind();
+
+    AutoJString descriptorJString(env, returnTypeDescriptor);
+    Type returnType = typeFromReflectString(descriptorJString.str());
 
     return coerceNativeToJVM(env, result, returnType);
 }
@@ -615,33 +640,17 @@ struct ClosureData {
     JavaVM *vm;
     jobject function;
     jmethodID invokeMethodID;
-    std::vector<TypeKind> argTypes;
+    std::vector<Type> argTypes;
     std::vector<ffi_type *> ffiArgTypes;
 };
 
-TypeKind typeKindFromJavaClass(JNIEnv *env, jobject classObject) {
+Type typeFromJavaClass(JNIEnv *env, jobject classObject) {
     // TYPE_CLASS is never returned by this method, since every Objective-C class is also an object
-    AutoJString nameStr(env, (jstring) env->CallObjectMethod(classObject, cache->objectToStringMethod));
-    std::string name = nameStr.str();
-    if (name == "char") return TYPE_CHAR;
-    else if (name == "boolean") return TYPE_BOOLEAN;
-    else if (name == "int") return TYPE_INT;
-    else if (name == "short") return TYPE_SHORT;
-    else if (name == "long") return TYPE_LONG;
-    else if (name == "float") return TYPE_FLOAT;
-    else if (name == "double") return TYPE_DOUBLE;
-    else if (name == "void") return TYPE_VOID;
-    else if (name == "class jet.objc.ObjCSelector") return TYPE_SELECTOR;
-    else if (name == "class jet.objc.Pointer") return TYPE_POINTER;
-    // else if (name.find("interface jet.Function") == 0) return ???
-    else {
-        // TODO: Uncomment and fix the test when a callback returns another callback: for some reason it happens to work
-        // assert(env->CallBooleanMethod(cache->objcObjectClass, cache->classIsAssignableFromMethod, classObject));
-        return TYPE_OBJECT;
-    }
+    AutoJString name(env, (jstring) env->CallObjectMethod(classObject, cache->objectToStringMethod));
+    return typeFromReflectString(name.str());
 }
 
-void coerceArrayOfNativeToJVM(JNIEnv *env, void *args[], const std::vector<TypeKind>& argTypes, std::vector<jvalue>& jvmArgs) {
+void coerceArrayOfNativeToJVM(JNIEnv *env, void *args[], const std::vector<Type>& argTypes, std::vector<jvalue>& jvmArgs) {
     int size = argTypes.size();
     jvmArgs.reserve(size);
 
@@ -715,7 +724,7 @@ jobject reflectMethodFromKotlinFunction(JNIEnv *env, jobject function, bool brid
     return NULL;
 }
 
-void calculateClosureArgumentTypes(JNIEnv *env, jobject method, std::vector<TypeKind>& argTypes, std::vector<ffi_type *>& ffiArgTypes) {
+void calculateClosureArgumentTypes(JNIEnv *env, jobject method, std::vector<Type>& argTypes, std::vector<ffi_type *>& ffiArgTypes) {
     jobjectArray parameterTypes = (jobjectArray) env->CallObjectMethod(method, cache->methodGetParameterTypesMethod);
     jsize size = env->GetArrayLength(parameterTypes);
     argTypes.reserve(size);
@@ -723,9 +732,9 @@ void calculateClosureArgumentTypes(JNIEnv *env, jobject method, std::vector<Type
 
     for (jsize i = 0; i < size; i++) {
         jobject classObject = env->GetObjectArrayElement(parameterTypes, i);
-        TypeKind kind = typeKindFromJavaClass(env, classObject);
-        argTypes.push_back(kind);
-        ffi_type *paramType = ffiTypeFromTypeKind(kind);
+        Type type = typeFromJavaClass(env, classObject);
+        argTypes.push_back(type);
+        ffi_type *paramType = ffiTypeFromTypeKind(type.kind);
         ffiArgTypes.push_back(paramType);
     }
 }
@@ -743,13 +752,13 @@ void *createNativeClosureForFunction(JNIEnv *env, jobject function) {
 
     jobject method = reflectMethodFromKotlinFunction(env, data->function, false);
     jobject returnTypeClassObject = env->CallObjectMethod(method, cache->methodGetReturnTypeMethod);
-    TypeKind returnTypeKind = typeKindFromJavaClass(env, returnTypeClassObject);
-    ffi_type *returnType = ffiTypeFromTypeKind(returnTypeKind);
+    Type returnType = typeFromJavaClass(env, returnTypeClassObject);
+    ffi_type *ffiReturnType = ffiTypeFromTypeKind(returnType.kind);
 
     calculateClosureArgumentTypes(env, method, data->argTypes, data->ffiArgTypes);
 
     ffi_type **argTypes = data->ffiArgTypes.empty() ? NULL : &data->ffiArgTypes[0];
-    if (ffi_prep_cif(&data->cif, FFI_DEFAULT_ABI, data->ffiArgTypes.size(), returnType, argTypes) != FFI_OK) {
+    if (ffi_prep_cif(&data->cif, FFI_DEFAULT_ABI, data->ffiArgTypes.size(), ffiReturnType, argTypes) != FFI_OK) {
         fprintf(stderr, "Error preparing CIF\n");
         return 0;
     }

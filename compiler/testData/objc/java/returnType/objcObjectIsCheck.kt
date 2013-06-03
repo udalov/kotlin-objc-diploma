@@ -5,11 +5,13 @@ import objc.Printer
 import objc.PrinterProvider
 
 fun main(args: Array<String>) {
-    var printer : Printer
+    for (i in 0..10) {
+        val printer = PrinterProvider.getPrinter()
+        if (printer is OKPrinter) {
+            printer.print()
+            return
+        }
+    }
 
-    do {
-        printer = PrinterProvider.getPrinter()
-    } while (printer !is OKPrinter)
-
-    (printer : Printer).print()   // KT-3572
+    print("Fail")
 }
