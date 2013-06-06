@@ -26,18 +26,18 @@ import java.util.Map;
 public class ObjCInteropParameters {
     private ObjCInteropParameters() {}
 
-    private final static Map<Project, String> HEADERS = new HashMap<Project, String>();
+    private final static Map<Project, String> ARGS = new HashMap<Project, String>();
 
     @Nullable
     public static String getArgs(@NotNull Project project) {
-        return HEADERS.get(project);
+        return ARGS.get(project);
     }
 
     public static void setArgs(@NotNull Project project, @NotNull String args) {
-        HEADERS.put(project, args);
+        ARGS.put(project, args);
     }
 
     public static void clear() {
-        HEADERS.clear();
+        ARGS.clear();
     }
 }

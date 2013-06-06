@@ -210,13 +210,15 @@ public class ObjCDescriptorResolver {
     }
 
     private static void resolveClassObject(@NotNull ObjCClassDescriptor descriptor, @NotNull ObjCClassDescriptor metaclass) {
+        assert descriptor.getKind() == ClassKind.CLASS : "Class objects exist only for Objective-C classes: " + descriptor;
+
         Name name = DescriptorUtils.getClassObjectName(descriptor.getName());
-        Collection<JetType> supertypes = new ArrayList<JetType>(3);
-        supertypes.add(ObjCBuiltIns.getInstance().getObjCClassClass().getDefaultType());
-        supertypes.add(metaclass.getDefaultType());
-        if (descriptor.getKind() == ClassKind.CLASS) {
-            supertypes.add(new DeferredHierarchyRootType(descriptor));
-        }
+
+        Collection<JetType> supertypes = Arrays.asList(
+                ObjCBuiltIns.getInstance().getObjCClassClass().getDefaultType(),
+                metaclass.getDefaultType(),
+                new DeferredHierarchyRootType(descriptor)
+        );
 
         ObjCClassDescriptor classObject = new ObjCClassDescriptor(descriptor, ClassKind.CLASS_OBJECT, Modality.FINAL, name, supertypes);
 
