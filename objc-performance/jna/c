@@ -1,0 +1,4 @@
+#!/bin/bash
+
+javac -classpath .:jna.jar JNATest.java &&
+java -Djna.library.path=.. -ea -classpath .:jna.jar JNATest

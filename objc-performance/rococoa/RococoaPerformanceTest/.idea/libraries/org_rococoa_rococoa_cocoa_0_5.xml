@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="org.rococoa:rococoa-cocoa:0.5" type="repository">
+    <properties maven-id="org.rococoa:rococoa-cocoa:0.5" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/rococoa-cocoa-0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/rococoa-core-0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jna-3.4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/cglib-2.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-3.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.6.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
