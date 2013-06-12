@@ -17,6 +17,7 @@
 package org.jetbrains.jet.objc;
 
 import com.google.common.base.Predicates;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.UsefulTestCase;
@@ -44,27 +45,34 @@ import org.jetbrains.jet.utils.ExceptionUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.jetbrains.jet.objc.ObjCTestUtil.*;
 
 public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
+    public static final String KOTLIN_FOUNDATION_HEADER_PATH = "compiler/objc/foundation/foundation.h";
+    public static final String KOTLIN_FOUNDATION_SOURCE_PATH = "compiler/objc/foundation/foundation.kt";
+    public static final String FOUNDATION_DYLIB_PATH = "/System/Library/Frameworks/Foundation.framework/Versions/Current/Foundation";
+
     private File tmpDir;
-    private JetCoreEnvironment environment;
+    private Project project;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
         tmpDir = JetTestUtils.tmpDirForTest(this);
-        environment = createEnvironment(getTestRootDisposable(), ConfigurationKind.ALL);
+        JetCoreEnvironment environment = createEnvironment(getTestRootDisposable(), ConfigurationKind.ALL);
+        project = environment.getProject();
     }
 
     @Override
     protected void tearDown() throws Exception {
         tmpDir = null;
-        environment = null;
+        project = null;
         ObjCInteropParameters.clear();
 
         super.tearDown();
@@ -76,18 +84,30 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
         String header = fileNameCommon + ".h";
         String implementation = fileNameCommon + ".m";
 
-        File dylib = new File(tmpDir, "libKotlinObjCTest.dylib");
-        compileObjectiveC(implementation, dylib);
+        // If .m exists, it's compiled into a .dylib and the result is assumed to be dynamically linked to Foundation.
+        // Otherwise, we take Foundation dylib from the standard system path
+        File dylib;
+        if (new File(implementation).exists()) {
+            dylib = new File(tmpDir, "libKotlinObjCTest.dylib");
+            compileObjectiveC(implementation, dylib);
+        }
+        else {
+            dylib = new File(FOUNDATION_DYLIB_PATH);
+        }
 
         String actual = runTestGetOutput(kotlinSource, header, dylib);
         assertEquals("OK", actual);
     }
 
     @NotNull
-    protected String runTestGetOutput(@NotNull String kotlinSource, @NotNull String clangArgs, @NotNull File dylib) {
-        ObjCInteropParameters.setArgs(environment.getProject(), clangArgs);
+    protected String runTestGetOutput(@NotNull String kotlinSource, @NotNull String header, @NotNull File dylib) {
+        File headerFile = combineHeaders(KOTLIN_FOUNDATION_HEADER_PATH, header);
+        ObjCInteropParameters.setArgs(project, headerFile.getPath());
 
-        List<JetFile> files = Collections.singletonList(createJetFile(kotlinSource));
+        List<JetFile> files = Arrays.asList(
+                createJetFile(kotlinSource),
+                createJetFile(KOTLIN_FOUNDATION_SOURCE_PATH)
+        );
         AnalyzeExhaust analyzeExhaust = analyze(files);
 
         NamespaceDescriptor descriptor = extractObjCNamespaceFromAnalyzeExhaust(analyzeExhaust);
@@ -98,6 +118,29 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
         generate(files, analyzeExhaust, codegen.getBindingContext());
 
         return runCompiledKotlinClass();
+    }
+
+    // Creates a single header file containing "#import " of all of the given header files
+    private static File combineHeaders(@NotNull String... headers) {
+        try {
+            File file = FileUtil.createTempFile("objc-java-header", ".h");
+            PrintWriter out = new PrintWriter(file);
+            try {
+                for (String header : headers) {
+                    File headerFile = new File(header);
+                    if (headerFile.exists()) {
+                        out.println("#import \"" + headerFile.getAbsolutePath() + "\"");
+                    }
+                }
+            } finally {
+                out.close();
+            }
+
+            return file;
+        }
+        catch (IOException e) {
+            throw ExceptionUtils.rethrow(e);
+        }
     }
 
     @NotNull
@@ -134,7 +177,7 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
     @NotNull
     private AnalyzeExhaust analyze(@NotNull List<JetFile> files) {
         AnalyzeExhaust analyzeExhaust = AnalyzerFacadeForObjC.INSTANCE.analyzeFiles(
-                environment.getProject(),
+                project,
                 files,
                 Collections.<AnalyzerScriptParameter>emptyList(),
                 Predicates.<PsiFile>alwaysTrue());
@@ -147,7 +190,7 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
     private void generate(@NotNull List<JetFile> files, @NotNull AnalyzeExhaust analyzeExhaust, @NotNull BindingContext objcBinding) {
         BindingContext context = new ChainedBindingContext(analyzeExhaust.getBindingContext(), objcBinding);
 
-        GenerationState state = new GenerationState(environment.getProject(), ClassBuilderFactories.TEST, context, files);
+        GenerationState state = new GenerationState(project, ClassBuilderFactories.TEST, context, files);
         KotlinCodegenFacade.compileCorrectFiles(state, CompilationErrorHandler.THROW_EXCEPTION);
 
         CompileEnvironmentUtil.writeToOutputDirectory(state.getFactory(), tmpDir);
@@ -157,7 +200,7 @@ public abstract class AbstractObjCWithJavaTest extends UsefulTestCase {
     private JetFile createJetFile(@NotNull String fileName) {
         try {
             String content = FileUtil.loadFile(new File(fileName), true);
-            return JetTestUtils.createFile(fileName, content, environment.getProject());
+            return JetTestUtils.createFile(fileName, content, project);
         }
         catch (IOException e) {
             throw ExceptionUtils.rethrow(e);
